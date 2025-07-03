@@ -55,6 +55,7 @@ export default function GameClient() {
 
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
+  const isUpdatingInventory = useRef(false);
 
   const { toast } = useToast();
 
@@ -146,42 +147,14 @@ export default function GameClient() {
     const nextDay = day + 1;
     setDay(nextDay);
     
-    const newSupplies: Weapon[] = [];
-    const basicWeaponTypes: ('Sword' | 'Axe' | 'Bow')[] = ['Sword', 'Axe', 'Bow'];
-    const minStock = 4 + Math.floor((nextDay - 1) / 3); // Days 1-3: 4, Days 4-6: 5, Day 7: 6
-
-    basicWeaponTypes.forEach(type => {
-        const currentStock = inventory.filter(w => w.type === type).length;
-        const needed = Math.max(0, minStock - currentStock);
-        for (let i = 0; i < needed; i++) {
-            newSupplies.push(generateNewItem(nextDay, type));
-        }
+    toast({ 
+        title: `제 ${nextDay}일`, 
+        description: "새로운 하루가 시작되었습니다." 
     });
-
-    if (newSupplies.length === 0) {
-        const bonusCount = 1 + Math.floor(Math.random() * 2); // 1~2개 추가 보급
-        for (let i = 0; i < bonusCount; i++) {
-            const randomType = basicWeaponTypes[Math.floor(Math.random() * basicWeaponTypes.length)];
-            newSupplies.push(generateNewItem(nextDay, randomType));
-        }
-    }
-    
-    if (newSupplies.length > 0) {
-        setInventory(prevInventory => [...prevInventory, ...newSupplies]);
-        toast({ 
-            title: `제 ${nextDay}일`, 
-            description: `새로운 하루가 시작되었습니다. 보급품 ${newSupplies.length}개가 도착했습니다.` 
-        });
-    } else {
-        toast({ 
-            title: `제 ${nextDay}일`, 
-            description: "새로운 하루가 시작되었습니다." 
-        });
-    }
     
     setWorkshopSlots([null, null]);
     fetchCustomers();
-  }, [day, inventory, toast, fetchCustomers]);
+  }, [day, toast, fetchCustomers]);
 
   const handleNextDay = useCallback(() => {
     if (day >= MAX_DAYS) {
@@ -285,7 +258,7 @@ export default function GameClient() {
     const recipe = findRecipe(w1.type, w2.type);
     
     if (recipe) {
-      setInventory(inventory.filter(w => w.id !== w1.id && w.id !== w2.id));
+      const inventoryAfterRemoval = inventory.filter(w => w.id !== w1.id && w.id !== w2.id);
       
       let newWeaponData: { name: string, type: WeaponType, multiplier: number };
       const basePrice = w1.price + w2.price;
@@ -303,7 +276,7 @@ export default function GameClient() {
         price: Math.floor(basePrice * newWeaponData.multiplier) 
       };
 
-      setInventory(prev => [...prev, finalWeapon]);
+      setInventory([...inventoryAfterRemoval, finalWeapon]);
       toast({ title: "희귀 무기 조합 성공!", description: `새로운 무기 '${finalWeapon.name}' (${finalWeapon.type})이(가) 탄생했습니다!` });
       
       setDiscoveredRecipes(prev => new Set(prev).add(recipe.id));
@@ -437,6 +410,33 @@ export default function GameClient() {
       setGameState('lost');
     }
   }, [lives, gameState]);
+
+  useEffect(() => {
+    // Prevent re-triggering while we are adding items from this effect
+    if (isUpdatingInventory.current) {
+        isUpdatingInventory.current = false;
+        return;
+    }
+
+    const basicWeaponTypes: ('Sword' | 'Axe' | 'Bow')[] = ['Sword', 'Axe', 'Bow'];
+    const itemsToAdd: Weapon[] = [];
+
+    basicWeaponTypes.forEach(type => {
+        const count = inventory.filter(w => w.type === type).length;
+        if (count < 2) {
+            itemsToAdd.push(generateNewItem(day, type));
+        }
+    });
+
+    if (itemsToAdd.length > 0) {
+        isUpdatingInventory.current = true; // Set lock before updating state
+        setInventory(prev => [...prev, ...itemsToAdd]);
+        toast({ 
+            title: "재고 자동 보충!",
+            description: `부족한 기본 무기(${itemsToAdd.map(i => i.type).join(', ')})가 보충되었습니다.`
+        });
+    }
+  }, [inventory, day, toast]);
 
   return (
     <div className="flex flex-col h-screen bg-background text-foreground font-body p-4 md:p-6 lg:p-8 overflow-hidden">
