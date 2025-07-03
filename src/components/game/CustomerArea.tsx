@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import type { Customer, CustomerSprite } from '@/lib/game-types';
 import { KnightIcon, MageIcon, RogueIcon, VillagerIcon } from '@/lib/icons';
 import { cn } from '@/lib/utils';
@@ -13,7 +14,7 @@ interface CustomerAreaProps {
 }
 
 const CustomerSpriteCmp = ({ type }: { type: CustomerSprite }) => {
-  const className = "w-24 h-24 md:w-32 md:h-32 drop-shadow-[0_4px_6px_rgba(0,0,0,0.4)]";
+  const className = "w-32 h-32 md:w-48 md:h-48 drop-shadow-[0_4px_6px_rgba(0,0,0,0.4)]";
   switch (type) {
     case 'Knight': return <KnightIcon className={className} />;
     case 'Mage': return <MageIcon className={className} />;
@@ -31,10 +32,18 @@ const CustomerArea: React.FC<CustomerAreaProps> = ({ customers, activeCustomerId
       <h2 className="text-2xl font-headline font-semibold mb-4 text-primary-foreground/90">손님 대기열</h2>
       
       <div className="flex-grow bg-[#2E2926] rounded-lg relative flex items-end justify-center overflow-hidden border-2 border-stone-900 shadow-inner">
+        <Image
+          src="https://placehold.co/800x600.png"
+          alt="Weapon shop background"
+          data-ai-hint="pixel art shop"
+          fill
+          className="absolute inset-0 w-full h-full object-cover z-0"
+          style={{ imageRendering: 'pixelated' }}
+        />
         
         {/* Shop Counter */}
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-[#4E342E] border-t-4 border-[#2E2926] z-10 shadow-[0_-8px_20px_rgba(0,0,0,0.5)]">
-          <div className="h-5 bg-[#3E2723] opacity-80 border-b-2 border-black/50"></div>
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-[#4E342E]/80 border-t-4 border-[#2E2926] z-10 shadow-[0_-8px_20px_rgba(0,0,0,0.5)]">
+          <div className="h-5 bg-[#3E2723]/90 opacity-80 border-b-2 border-black/50"></div>
         </div>
 
         {/* Customer queue container */}
@@ -50,9 +59,9 @@ const CustomerArea: React.FC<CustomerAreaProps> = ({ customers, activeCustomerId
                       'absolute transition-all duration-500 ease-in-out group',
                   )}
                   style={{
-                      right: `${15 + index * 10}%`,
-                      bottom: '5rem', // 80px
-                      transform: `scale(${1 - index * 0.15})`,
+                      right: `${15 + index * 12}%`, // Increased spacing for larger sprites
+                      bottom: '6.5rem', // 104px, adjusted for larger sprites
+                      transform: `scale(${1 - index * 0.2})`, // Increased scale difference
                       zIndex: zIndex,
                   }}
                 >
@@ -95,7 +104,7 @@ const CustomerArea: React.FC<CustomerAreaProps> = ({ customers, activeCustomerId
               );
             })
           ) : (
-            <p className="text-muted-foreground text-center self-center text-lg pb-16">오늘은 손님이 더 이상 없네요.</p>
+            <p className="text-muted-foreground text-center self-center text-lg pb-16 z-10 relative">오늘은 손님이 더 이상 없네요.</p>
           )}
         </div>
       </div>

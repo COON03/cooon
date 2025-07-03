@@ -85,56 +85,69 @@ export const GoldCoinIcon = ({ className }: IconProps) => (
 );
 
 export const KnightIcon = ({ className }: IconProps) => (
-    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" style={iconStyle} className={className}>
-        <path d="M9 14H23V26H9V14Z" fill="#BDBDBD"/>
-        <path d="M10 15H22V25H10V15Z" fill="#E0E0E0"/>
-        <path d="M7 12H25V19H7V12Z" fill="#9E9E9E"/>
-        <path d="M8 13H24V18H8V13Z" fill="#BDBDBD"/>
-        <path d="M12 8H20V12H12V8Z" fill="#9E9E9E"/>
-        <path d="M13 9H19V11H13V9Z" fill="#BDBDBD"/>
-        <path d="M14 6H18V8H14V6Z" fill="#F44336"/>
-        <path d="M13 7H19V8H13V7Z" fill="#D32F2F"/>
-        <path d="M15 14H17V16H15V14Z" fill="#424242"/>
+    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style={iconStyle} className={className}>
+        <path fill="#6d6d6d" d="M19 14h10v2h-10z"/>
+        <path fill="#a5a5a5" d="M18 16h12v14h-12z"/>
+        <path fill="#e0e0e0" d="M19 17h10v12h-10z"/>
+        <path fill="#6d6d6d" d="M17 12h14v2h-14z"/>
+        <path fill="#a5a5a5" d="M16 14h2v12h-2z M30 14h2v12h-2z"/>
+        <path fill="#8e8e8e" d="M16 26h16v4h-16z"/>
+        <path fill="#a5a5a5" d="M21 10h6v4h-6z"/>
+        <path fill="#c0c0c0" d="M22 11h4v2h-4z"/>
+        <path fill="#424242" d="M23 18h2v4h-2z"/>
+        <path fill="#ff0000" d="M22 8h4v2h-4z"/>
+        <path fill="#d00000" d="M21 9h6v1h-6z"/>
+        <path fill="#6d6d6d" d="M14 30h20v2h-20z"/>
+        <path fill="#a5a5a5" d="M16 32h4v10h-4z M28 32h4v10h-4z"/>
+        <path fill="#8e8e8e" d="M17 33h2v8h-2z M29 33h2v8h-2z"/>
     </svg>
 );
 
 export const MageIcon = ({ className }: IconProps) => (
-    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" style={iconStyle} className={className}>
-        <path d="M9 18H23V26H9V18Z" fill="#4A148C"/>
-        <path d="M10 19H22V25H10V19Z" fill="#6A1B9A"/>
-        <path d="M16 4L9 18H23L16 4Z" fill="#4A148C"/>
-        <path d="M16 6L11 17H21L16 6Z" fill="#6A1B9A"/>
-        <path d="M12 18H20V22H12V18Z" fill="#FFECB3"/>
-        <path d="M14 19H18V21H14V19Z" fill="#FFE082"/>
-        <path d="M14 20H15V21H14V20Z" fill="#212121"/>
-        <path d="M17 20H18V21H17V20Z" fill="#212121"/>
-        <path d="M15 10H17V12H15V10Z" fill="#FFD600"/>
+    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style={iconStyle} className={className}>
+        <path fill="#4a148c" d="M24 6L14 18h20L24 6z"/>
+        <path fill="#6a1b9a" d="M24 8l-8 10h16L24 8z"/>
+        <path fill="#ffd700" d="M22 16h4v2h-4z"/>
+        <path fill="#4a148c" d="M14 36h20v2H14z"/>
+        <path fill="#6a1b9a" d="M15 18h18v18H15z"/>
+        <path fill="#8e24aa" d="M17 19h14v16H17z"/>
+        <path fill="#ffe0b2" d="M20 22h8v8h-8z"/>
+        <path fill="#ffcc80" d="M21 23h6v6h-6z"/>
+        <path fill="#212121" d="M22 25h1v1h-1z M25 25h1v1h-1z"/>
+        <path fill="#4e342e" d="M23 29h2v1h-2z"/>
+        <path fill="#4a148c" d="M12 20h4v10h-4z M32 20h4v10h-4z"/>
+        <path fill="#6a1b9a" d="M13 21h2v8h-2z M33 21h2v8h-2z"/>
     </svg>
 );
 
 export const RogueIcon = ({ className }: IconProps) => (
-    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" style={iconStyle} className={className}>
-        <path d="M9 10H23V26H9V10Z" fill="#212121"/>
-        <path d="M10 11H22V25H10V11Z" fill="#424242"/>
-        <path d="M16 8L9 15H23L16 8Z" fill="#212121"/>
-        <path d="M16 10L11 15H21L16 10Z" fill="#424242"/>
-        <path d="M12 16H20V20H12V16Z" fill="#111111"/>
-        <path d="M14 17H15V18H14V17Z" fill="#FAFAFA"/>
-        <path d="M17 17H18V18H17V17Z" fill="#FAFAFA"/>
-        <path d="M10 24H22V26H10V24Z" fill="#5D4037"/>
+    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style={iconStyle} className={className}>
+        <path fill="#212121" d="M24 10l-8 8h16l-8-8z"/>
+        <path fill="#424242" d="M24 12l-6 6h12l-6-6z"/>
+        <path fill="#212121" d="M16 18h16v18H16z"/>
+        <path fill="#424242" d="M18 19h12v16H18z"/>
+        <path fill="#333333" d="M14 16h20v2H14z"/>
+        <path fill="#111111" d="M20 22h8v6h-8z"/>
+        <path fill="#bdbdbd" d="M22 24h1v1h-1z M25 24h1v1h-1z"/>
+        <path fill="#5d4037" d="M18 36h12v4H18z"/>
+        <path fill="#795548" d="M19 37h10v2H19z"/>
+        <path fill="#c0c0c0" d="M14 24h2v6h-2z M32 24h2v6h-2z"/>
+        <path fill="#a0a0a0" d="M13 25h2v4h-2z M33 25h2v4h-2z"/>
     </svg>
 );
 
 export const VillagerIcon = ({ className }: IconProps) => (
-    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" style={iconStyle} className={className}>
-        <path d="M9 16H23V26H9V16Z" fill="#8D6E63"/>
-        <path d="M10 17H22V25H10V17Z" fill="#A1887F"/>
-        <path d="M12 8H20V16H12V8Z" fill="#FFE0B2"/>
-        <path d="M13 9H19V15H13V9Z" fill="#FFCC80"/>
-        <path d="M12 6H20V8H12V6Z" fill="#4E342E"/>
-        <path d="M11 7H21V9H11V7Z" fill="#3E2723"/>
-        <path d="M14 11H15V12H14V11Z" fill="#212121"/>
-        <path d="M17 11H18V12H17V11Z" fill="#212121"/>
-        <path d="M15 14H17V15H15Z" fill="#B71C1C"/>
+    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style={iconStyle} className={className}>
+        <path fill="#4e342e" d="M18 10h12v4H18z"/>
+        <path fill="#3e2723" d="M19 11h10v2H19z"/>
+        <path fill="#ffe0b2" d="M18 14h12v10H18z"/>
+        <path fill="#ffcc80" d="M19 15h10v8H19z"/>
+        <path fill="#212121" d="M21 18h1v2h-1z M26 18h1v2h-1z"/>
+        <path fill="#a1887f" d="M22 21h4v1h-4z"/>
+        <path fill="#8d6e63" d="M16 24h16v14H16z"/>
+        <path fill="#a1887f" d="M18 25h12v12H18z"/>
+        <path fill="#795548" d="M16 24h16v2H16z"/>
+        <path fill="#5d4037" d="M23 26h2v10h-2z"/>
+        <path fill="#6d4c41" d="M14 26h4v10h-4z M30 26h4v10h-4z"/>
     </svg>
 );
