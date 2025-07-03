@@ -294,7 +294,7 @@ export default function GameClient() {
     <div className="flex flex-col h-screen bg-background text-foreground font-body p-4 md:p-6 lg:p-8 overflow-hidden">
         <Header day={day} maxDays={MAX_DAYS} gold={gold} targetGold={TARGET_GOLD} trust={trust} maxTrust={MAX_TRUST} />
         
-        <main className="flex-grow grid grid-cols-1 md:grid-cols-3 gap-6 mt-6 overflow-hidden">
+        <main className="flex-grow grid grid-cols-1 md:grid-cols-3 gap-6 mt-4 overflow-hidden">
             <div className="md:col-span-2 relative overflow-hidden rounded-lg">
                 <CustomerArea
                   customers={customers} 
@@ -302,7 +302,7 @@ export default function GameClient() {
                   timer={customerTimer}
                   maxTime={CUSTOMER_TIMER_SECONDS}
                 />
-                <div className="absolute bottom-0 left-0 right-0">
+                <div className="absolute bottom-0 left-0 right-0 z-30">
                     <div className="p-4 bg-card/80 backdrop-blur-sm rounded-t-lg border-t border-border/50">
                         <WorkshopArea slots={workshopSlots} onCombine={handleCombine} onClear={handleClearWorkshop} />
                     </div>

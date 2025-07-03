@@ -30,7 +30,7 @@ const CustomerArea: React.FC<CustomerAreaProps> = ({ customers, activeCustomerId
   return (
     <div className="w-full h-full bg-[#2E2926] relative flex items-end justify-center overflow-hidden">
       <Image
-        src="https://placehold.co/1200x800.png"
+        src="https://placehold.co/1200x800/2E2926/2E2926.png"
         alt="Weapon shop background"
         data-ai-hint="pixel art shop interior"
         fill
@@ -57,7 +57,7 @@ const CustomerArea: React.FC<CustomerAreaProps> = ({ customers, activeCustomerId
                 )}
                 style={{
                     right: `${15 + index * 12}%`,
-                    bottom: '6.5rem',
+                    bottom: '8rem',
                     transform: `scale(${1 - index * 0.2})`,
                     zIndex: zIndex,
                 }}
