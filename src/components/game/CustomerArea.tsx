@@ -101,10 +101,13 @@ const CustomerArea: React.FC<CustomerAreaProps> = ({ customers, activeCustomerId
                 
                 {/* Active Customer Speech Bubbles */}
                 {isActuallyActive && activeCustomer && (
-                  <div className="absolute bottom-full mb-4 w-auto flex justify-center items-start gap-4 left-1/2 -translate-x-1/2">
+                  <div className="absolute bottom-full w-auto flex justify-center items-start gap-4 left-1/2 -translate-x-1/2">
                     {/* Left Bubble: Unique / Impatient Dialogue */}
                     <div
-                      className="relative w-44 bg-card text-card-foreground p-3 rounded-lg shadow-lg text-center z-30 animate-bubble-bob"
+                      className={cn(
+                        "relative w-44 bg-card text-card-foreground p-3 rounded-lg shadow-lg text-center z-30 animate-bubble-bob",
+                         isImpatient && "border-2 border-yellow-400"
+                      )}
                     >
                       <p className="text-sm italic">
                         "{isImpatient ? impatientDialogue : activeCustomer.requestText}"
