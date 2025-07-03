@@ -1,4 +1,4 @@
-import type { Weapon, Customer } from './game-types';
+import type { Weapon, Customer, WeaponType } from './game-types';
 
 export const initialWeapons: Weapon[] = [
   { id: 'w1', name: '녹슨 검', type: 'Sword', price: 20 },
@@ -7,9 +7,6 @@ export const initialWeapons: Weapon[] = [
   { id: 'w4', name: '낡은 검', type: 'Sword', price: 22 },
   { id: 'w5', name: '이 빠진 손도끼', type: 'Axe', price: 28 },
   { id: 'w6', name: '부러진 단궁', type: 'Bow', price: 32 },
-  { id: 'w7', name: '평범한 검', type: 'Sword', price: 20 },
-  { id: 'w8', name: '전사의 도끼', type: 'Axe', price: 25 },
-  { id: 'w9', name: '사냥꾼의 활', type: 'Bow', price: 30 },
 ];
 
 export const allCustomers: Customer[] = [
@@ -27,32 +24,30 @@ export const allCustomers: Customer[] = [
     { id: 'c12', name: '깐깐한 귀족', sprite: 'Knight', requestText: "내 품격에 맞는 무기는... 아주 찾기 어려울걸? 채찍이라도 보여주게.", wants: { type: 'Whip' }, offerMultiplier: 4.0, patience: 25, personality: 'picky' },
 ];
 
-export const generateNewItem = (day: number): Weapon => {
-    const types: Weapon['type'][] = ['Sword', 'Axe', 'Bow'];
-    const type = types[Math.floor(Math.random() * types.length)];
+export const generateNewItem = (day: number, type: 'Sword' | 'Axe' | 'Bow'): Weapon => {
     
     let name = '';
     let price = 0;
 
     switch(type) {
         case 'Sword':
-            name = '평범한 롱소드';
+            name = '보급용 검';
             price = 20 + day * 2;
             break;
         case 'Axe':
-            name = '전투 도끼';
+            name = '보급용 도끼';
             price = 25 + day * 2;
             break;
         case 'Bow':
-            name = '사냥꾼의 활';
+            name = '보급용 활';
             price = 30 + day * 2;
             break;
     }
 
     return {
-        id: `w_new_${Date.now()}_${Math.random()}`,
-        name: `${name} #${day}`,
-        type,
+        id: `w_new_${type}_${Date.now()}_${Math.random()}`,
+        name: `${name}`,
+        type: type,
         price: Math.floor(price)
     };
 };

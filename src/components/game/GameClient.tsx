@@ -149,13 +149,44 @@ export default function GameClient() {
       if (gameState === 'playing') {
         setGameState(gold >= TARGET_GOLD ? 'won' : 'lost');
       }
-    } else {
-      setDay(day + 1);
-      setInventory(prev => [...prev, generateNewItem(day + 1)]);
-      toast({ title: `제 ${day + 1}일`, description: "새로운 하루가 시작되었습니다." });
+      return;
     }
+
+    const nextDay = day + 1;
+    setDay(nextDay);
+    
+    const newSupplies: Weapon[] = [];
+    const basicWeaponTypes: ('Sword' | 'Axe' | 'Bow')[] = ['Sword', 'Axe', 'Bow'];
+    const minStock = 3;
+
+    basicWeaponTypes.forEach(type => {
+        const currentStock = inventory.filter(w => w.type === type).length;
+        const needed = Math.max(0, minStock - currentStock);
+        for (let i = 0; i < needed; i++) {
+            newSupplies.push(generateNewItem(nextDay, type));
+        }
+    });
+
+    if (newSupplies.length === 0) {
+        const randomType = basicWeaponTypes[Math.floor(Math.random() * basicWeaponTypes.length)];
+        newSupplies.push(generateNewItem(nextDay, randomType));
+    }
+    
+    if (newSupplies.length > 0) {
+        setInventory(prevInventory => [...prevInventory, ...newSupplies]);
+        toast({ 
+            title: `제 ${nextDay}일`, 
+            description: `새로운 하루가 시작되었습니다. 보급품 ${newSupplies.length}개가 도착했습니다.` 
+        });
+    } else {
+        toast({ 
+            title: `제 ${nextDay}일`, 
+            description: "새로운 하루가 시작되었습니다." 
+        });
+    }
+    
     setWorkshopSlots([null, null]);
-  }, [day, gameState, gold, toast]);
+  }, [day, gameState, gold, inventory, toast]);
 
   const handleSell = () => {
     const selectedItems = workshopSlots.filter(Boolean) as Weapon[];
