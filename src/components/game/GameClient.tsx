@@ -7,8 +7,11 @@ import Header from './Header';
 import CustomerArea from './CustomerArea';
 import InventoryArea from './InventoryArea';
 import EndGameDialog from './EndGameDialog';
+import RecipeBook from './RecipeBook';
+import { findRecipe } from '@/lib/recipe-data';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
+import { Book } from 'lucide-react';
 
 const TARGET_GOLD = 1000;
 const MAX_DAYS = 7;
@@ -32,6 +35,9 @@ export default function GameClient() {
   
   const [departingInfo, setDepartingInfo] = useState<{ id: string; message: string } | null>(null);
   const [isInteracting, setIsInteracting] = useState(false);
+
+  const [discoveredRecipes, setDiscoveredRecipes] = useState<Set<string>>(new Set());
+  const [isRecipeBookOpen, setIsRecipeBookOpen] = useState(false);
 
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
@@ -127,6 +133,7 @@ export default function GameClient() {
     setInventory([...initialWeapons]);
     setGameState('playing');
     setWorkshopSlots([null, null]);
+    setDiscoveredRecipes(new Set());
   }, []);
 
   const handleNextDay = useCallback(() => {
@@ -186,36 +193,31 @@ export default function GameClient() {
         return;
     }
 
-    const types = [w1.type, w2.type].sort();
-    let newWeapon: Omit<Weapon, 'id'> | null = null;
-    
-    const recipes: { [key: string]: { type: WeaponType, name: string, multiplier: number } | { types: WeaponType[], names: string[], multiplier: number } } = {
-        'Axe,Axe': { types: ['Claw', 'Chain'], names: ['강철 클로', '가시 사슬'], multiplier: 1.8 },
-        'Axe,Bow': { type: 'Whip', name: '가시 채찍', multiplier: 1.9 },
-        'Axe,Sword': { type: 'Scythe', name: '영혼 수확의 낫', multiplier: 1.8 },
-        'Bow,Bow': { type: 'Boomerang', name: '마력 깃든 부메랑', multiplier: 1.7 },
-        'Bow,Sword': { type: 'Magic Staff', name: '신비한 마법 스태프', multiplier: 2.2 },
-        'Sword,Sword': { type: 'Rapier', name: '결투용 레이피어', multiplier: 1.7 },
-    };
-
-    const recipe = recipes[types.join(',')];
-
-    if (recipe) {
-        const basePrice = w1.price + w2.price;
-        if ('types' in recipe) { // Random result recipe
-            const randomIndex = Math.floor(Math.random() * recipe.types.length);
-            newWeapon = { name: recipe.names[randomIndex], type: recipe.types[randomIndex], price: Math.floor(basePrice * recipe.multiplier) };
-        } else { // Single result recipe
-            newWeapon = { name: recipe.name, type: recipe.type, price: Math.floor(basePrice * recipe.multiplier) };
-        }
-    }
+    const recipe = findRecipe(w1.type, w2.type);
     
     setInventory(inventory.filter(w => w.id !== w1.id && w.id !== w2.id));
 
-    if (newWeapon) {
-      const finalWeapon: Weapon = { ...newWeapon, id: `w_rare_${Date.now()}` };
+    if (recipe) {
+      let newWeaponData: { name: string, type: WeaponType, multiplier: number };
+      const basePrice = w1.price + w2.price;
+
+      if (recipe.isRandom && recipe.randomOutputs) {
+          newWeaponData = recipe.randomOutputs[Math.floor(Math.random() * recipe.randomOutputs.length)];
+      } else {
+          newWeaponData = recipe.output;
+      }
+      
+      const finalWeapon: Weapon = { 
+        id: `w_rare_${Date.now()}`, 
+        name: newWeaponData.name, 
+        type: newWeaponData.type, 
+        price: Math.floor(basePrice * newWeaponData.multiplier) 
+      };
+
       setInventory(prev => [...prev, finalWeapon]);
       toast({ title: "희귀 무기 조합 성공!", description: `새로운 무기 '${finalWeapon.name}' (${finalWeapon.type})이(가) 탄생했습니다!` });
+      
+      setDiscoveredRecipes(prev => new Set(prev).add(recipe.id));
     } else {
       const failedWeapon: Weapon = {
         id: `w_fail_${Date.now()}`, name: '실패한 합금', type: w1.type,
@@ -343,6 +345,16 @@ export default function GameClient() {
 
   return (
     <div className="flex flex-col h-screen bg-background text-foreground font-body p-4 md:p-6 lg:p-8 overflow-hidden">
+        <Button 
+            variant="outline" 
+            size="icon" 
+            className="absolute top-6 left-6 z-50 h-12 w-12 rounded-full shadow-lg bg-card hover:bg-card/80"
+            onClick={() => setIsRecipeBookOpen(true)}
+        >
+            <Book className="w-6 h-6" />
+            <span className="sr-only">무기 도감 열기</span>
+        </Button>
+
         <Header day={day} maxDays={MAX_DAYS} gold={gold} targetGold={TARGET_GOLD} trust={trust} maxTrust={MAX_TRUST} />
         
         <main className="flex-grow grid grid-cols-1 md:grid-cols-3 gap-6 mt-2 overflow-hidden">
@@ -383,6 +395,11 @@ export default function GameClient() {
         </footer>
 
         <EndGameDialog gameState={gameState} gold={gold} onPlayAgain={resetGame} />
+        <RecipeBook 
+            isOpen={isRecipeBookOpen} 
+            onOpenChange={setIsRecipeBookOpen} 
+            discoveredRecipes={discoveredRecipes}
+        />
     </div>
   );
 }
