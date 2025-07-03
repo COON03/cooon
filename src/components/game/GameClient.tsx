@@ -58,6 +58,7 @@ export default function GameClient() {
   const [timerBonus, setTimerBonus] = useState(1.0);
   const [badCustomerRate, setBadCustomerRate] = useState(1.0);
   const [impatientDialogue, setImpatientDialogue] = useState<string | null>(null);
+  const [isDayCleared, setIsDayCleared] = useState(false);
 
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
@@ -161,6 +162,7 @@ export default function GameClient() {
     });
     
     setWorkshopSlots([null, null]);
+    setIsDayCleared(false);
     fetchCustomers();
   }, [day, toast, fetchCustomers]);
 
@@ -219,6 +221,7 @@ export default function GameClient() {
     setInventory([...initialWeapons]);
     setGameState('playing');
     setWorkshopSlots([null, null]);
+    setIsDayCleared(false);
     setDiscoveredRecipes(new Set(allRecipes.map(r => r.id)));
     fetchCustomers();
   }, [fetchCustomers]);
@@ -240,13 +243,18 @@ export default function GameClient() {
 
     if (meetsReqs) {
       const salePrice = Math.floor(weapon.price * customer.offerMultiplier);
-      setGold(gold + salePrice);
+      const newGold = gold + salePrice;
+      setGold(newGold);
       setInventory(inventory.filter(w => w.id !== weapon.id));
       playBellSound();
       toast({ title: "거래 성공!", description: `${weapon.name}을(를) ${salePrice}골드에 판매했습니다.` });
       
       const message = getRandomDialogue(customer.successDialogues, "이거 좋군! 고맙네.");
       setDepartingInfo({ id: customer.id, message, status: 'success' });
+
+      if (newGold >= currentTargetGold) {
+        setIsDayCleared(true);
+      }
     } else {
       setLives(l => Math.max(0, l - 1));
       toast({ variant: "destructive", title: "거래 실패!", description: `손님의 요구에 맞지 않아 생명력이 1 감소합니다.` });
@@ -273,8 +281,8 @@ export default function GameClient() {
     const recipe = findRecipe(w1.type, w2.type);
     
     if (recipe) {
-      const firstItemIndex = inventory.findIndex(w => w.id === w1.id);
-      if (firstItemIndex === -1) return;
+      const lastItemIndex = inventory.findIndex(w => w.id === w2.id);
+      if (lastItemIndex === -1) return;
 
       let inventoryAfterRemoval = inventory.filter(w => w.id !== w1.id && w.id !== w2.id);
       
@@ -294,7 +302,7 @@ export default function GameClient() {
         price: Math.floor(basePrice * newWeaponData.multiplier) 
       };
 
-      inventoryAfterRemoval.splice(firstItemIndex, 0, finalWeapon);
+      inventoryAfterRemoval.splice(lastItemIndex, 0, finalWeapon);
       setInventory(inventoryAfterRemoval);
 
       toast({ title: "희귀 무기 조합 성공!", description: `새로운 무기 '${finalWeapon.name}' (${finalWeapon.type})이(가) 탄생했습니다!` });
@@ -427,13 +435,16 @@ export default function GameClient() {
   }, [activeCustomer, gameState, isInteracting, timerBonus, playBellSound, playTickSound, toast, impatientDialogue]);
 
   useEffect(() => {
-    if (gameStarted && customers.length === 0 && gameState === 'playing' && day <= MAX_DAYS && !isInteracting) {
+    const ranOutOfCustomers = gameStarted && customers.length === 0 && gameState === 'playing' && day <= MAX_DAYS && !isInteracting;
+    const metGoal = isDayCleared && !isInteracting && gameState === 'playing';
+
+    if (ranOutOfCustomers || metGoal) {
       const timer = setTimeout(() => {
         handleNextDay();
-      }, 1500);
+      }, ranOutOfCustomers ? 1500 : 200);
       return () => clearTimeout(timer);
     }
-  }, [customers.length, gameStarted, gameState, day, isInteracting, handleNextDay]);
+  }, [customers.length, gameStarted, gameState, day, isInteracting, handleNextDay, isDayCleared]);
 
   useEffect(() => {
     if (lives <= 0 && gameState === 'playing') {
@@ -442,7 +453,6 @@ export default function GameClient() {
   }, [lives, gameState]);
 
   useEffect(() => {
-    // Prevent re-triggering while we are adding items from this effect
     if (isUpdatingInventory.current) {
         isUpdatingInventory.current = false;
         return;
@@ -459,7 +469,7 @@ export default function GameClient() {
     });
 
     if (itemsToAdd.length > 0) {
-        isUpdatingInventory.current = true; // Set lock before updating state
+        isUpdatingInventory.current = true;
         setInventory(prev => [...prev, ...itemsToAdd]);
         toast({ 
             title: "재고 자동 보충!",
@@ -505,14 +515,14 @@ export default function GameClient() {
 
         <footer className="mt-4 flex flex-wrap gap-4 justify-between items-center">
             <div className="flex items-center gap-2">
-                <Button onClick={handleSell} disabled={isInteracting || selectedCount !== 1 || !activeCustomer} size="lg">
+                <Button onClick={handleSell} disabled={isInteracting || selectedCount !== 1 || !activeCustomer || isDayCleared} size="lg">
                     판매하기
                 </Button>
                 
                 <div className="flex items-center gap-2">
                     <Button 
                         onClick={handleCombine} 
-                        disabled={isInteracting || !combinationPreview} 
+                        disabled={isInteracting || !combinationPreview || isDayCleared} 
                         variant="secondary" 
                         size="lg"
                     >
@@ -528,12 +538,12 @@ export default function GameClient() {
                     )}
                 </div>
 
-                <Button onClick={handleClearWorkshop} disabled={isInteracting || selectedCount === 0} variant="outline" size="lg">
+                <Button onClick={handleClearWorkshop} disabled={isInteracting || selectedCount === 0 || isDayCleared} variant="outline" size="lg">
                     선택 초기화
                 </Button>
             </div>
-            <Button onClick={handleNextDay} variant="secondary" size="lg" disabled={isInteracting || (customers.length > 0 && day < MAX_DAYS)}>
-                다음 날로 ({day}/{MAX_DAYS})
+            <Button onClick={handleNextDay} variant="secondary" size="lg" disabled={isInteracting || (customers.length > 0 && day < MAX_DAYS) || isDayCleared}>
+                {isDayCleared ? '목표 달성!' : `다음 날로 (${day}/${MAX_DAYS})`}
             </Button>
         </footer>
 
