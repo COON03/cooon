@@ -4,6 +4,9 @@ export const initialWeapons: Weapon[] = [
   { id: 'w1', name: '녹슨 검', type: 'Sword', attack: 5, speed: 7, price: 20 },
   { id: 'w2', name: '나무꾼의 도끼', type: 'Axe', attack: 8, speed: 4, price: 25 },
   { id: 'w3', name: '연습용 활', type: 'Bow', attack: 6, speed: 9, price: 30 },
+  { id: 'w4', name: '낡은 단검', type: 'Sword', attack: 6, speed: 6, price: 22 },
+  { id: 'w5', name: '이 빠진 손도끼', type: 'Axe', attack: 9, speed: 3, price: 28 },
+  { id: 'w6', name: '부러진 단궁', type: 'Bow', attack: 5, speed: 10, price: 32 },
 ];
 
 export const allCustomers: Customer[] = [

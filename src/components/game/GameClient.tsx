@@ -87,37 +87,76 @@ export default function GameClient() {
   };
 
   const handleCombine = () => {
-    if (!workshopSlots[0] || !workshopSlots[1]) {
+    const [w1, w2] = workshopSlots;
+    if (!w1 || !w2) {
         toast({ variant: "destructive", title: "조합 실패", description: "무기 2개를 선택해주세요." });
         return;
     }
-    const [w1, w2] = workshopSlots;
 
-    // Remove from inventory
+    const types = [w1.type, w2.type].sort();
+    let newWeapon: Weapon | null = null;
+
+    if (types[0] === 'Axe' && types[1] === 'Axe') {
+        newWeapon = { id: `w_rare_${Date.now()}`, name: '강철 클로', type: 'Claw', attack: Math.floor((w1.attack + w2.attack) * 0.9), speed: Math.floor((w1.speed + w2.speed) * 0.6), price: Math.floor((w1.price + w2.price) * 1.6) };
+    } else if (types[0] === 'Axe' && types[1] === 'Bow') {
+        newWeapon = { id: `w_rare_${Date.now()}`, name: '영혼 수확의 낫', type: 'Scythe', attack: Math.floor((w1.attack + w2.attack) * 0.8), speed: Math.floor((w1.speed + w2.speed) * 0.8), price: Math.floor((w1.price + w2.price) * 1.8) };
+    } else if (types[0] === 'Axe' && types[1] === 'Sword') {
+        newWeapon = { id: `w_rare_${Date.now()}`, name: '돌격 창', type: 'Spear', attack: Math.floor((w1.attack + w2.attack) * 0.7), speed: Math.floor((w1.speed + w2.speed) * 0.9), price: Math.floor((w1.price + w2.price) * 1.7) };
+    } else if (types[0] === 'Bow' && types[1] === 'Sword') {
+        newWeapon = { id: `w_rare_${Date.now()}`, name: '그림자 단도', type: 'Dagger', attack: Math.floor((w1.attack + w2.attack) * 0.6), speed: Math.floor((w1.speed + w2.speed) * 1.1), price: Math.floor((w1.price + w2.price) * 1.8) };
+    } else if (types[0] === 'Sword' && types[1] === 'Sword') {
+        newWeapon = { id: `w_rare_${Date.now()}`, name: '가시 채찍', type: 'Whip', attack: Math.floor((w1.attack + w2.attack) * 0.5), speed: Math.floor((w1.speed + w2.speed) * 1.2), price: Math.floor((w1.price + w2.price) * 1.9) };
+    } else if (types[0] === 'Bow' && types[1] === 'Bow') {
+        newWeapon = { id: `w_rare_${Date.now()}`, name: '신속의 단도', type: 'Dagger', attack: Math.floor((w1.attack + w2.attack) * 0.7), speed: Math.floor((w1.speed + w2.speed) * 1.0), price: Math.floor((w1.price + w2.price) * 1.7) };
+    }
+    
+    // Remove used items from inventory
     setInventory(inventory.filter(w => w.id !== w1.id && w.id !== w2.id));
 
-    // Combine logic
-    const newWeapon: Weapon = {
-        id: `w_comb_${Date.now()}`,
-        name: `${w1.name.split(' ')[0]}-${w2.name.split(' ')[0]} 합금`,
-        type: w1.type, // For simplicity, keep first weapon's type
-        attack: Math.floor((w1.attack + w2.attack) * 0.8),
-        speed: Math.floor((w1.speed + w2.speed) * 0.8),
-        price: Math.floor((w1.price + w2.price) * 1.1),
-    };
+    if (newWeapon) {
+      setInventory(prev => [...prev, newWeapon!]);
+      toast({ title: "희귀 무기 조합 성공!", description: `새로운 무기 '${newWeapon.name}' (${newWeapon.type})이(가) 탄생했습니다!` });
+    } else {
+      const failedWeapon: Weapon = {
+        id: `w_fail_${Date.now()}`, name: '실패한 합금', type: w1.type,
+        attack: Math.floor((w1.attack + w2.attack) * 0.5),
+        speed: Math.floor((w1.speed + w2.speed) * 0.5),
+        price: Math.floor((w1.price + w2.price) * 0.6),
+      };
+      setInventory(prev => [...prev, failedWeapon]);
+      toast({ variant: "destructive", title: "조합 실패!", description: `알 수 없는 조합입니다. 불안정한 합금이 생성되었습니다.` });
+    }
     
-    setInventory(prev => [...prev, newWeapon]);
     setWorkshopSlots([null, null]);
-    toast({ title: "조합 성공!", description: `새로운 무기 ${newWeapon.name}이(가) 탄생했습니다!` });
   };
 
   const handleSelectInventory = (id: string) => {
-    if (workshopSlots[0] && workshopSlots[0].id !== id && !workshopSlots[1]) {
-        setWorkshopSlots([workshopSlots[0], inventory.find(w => w.id === id) || null]);
-    } else if (!workshopSlots[0]) {
-        setWorkshopSlots([inventory.find(w => w.id === id) || null, null]);
+    // Prevent selecting for trade if it's already in the workshop
+    const isInWorkshop = workshopSlots.some(w => w?.id === id);
+    if(isInWorkshop) return;
+    
+    // Logic for adding to workshop
+    const isWorkshopTargeted = !workshopSlots[0] || !workshopSlots[1];
+    if (isWorkshopTargeted) {
+        if (workshopSlots[0]?.id === id) { // Deselect if clicking the same item
+            setWorkshopSlots([null, workshopSlots[1]]);
+        } else if (workshopSlots[1]?.id === id) {
+            setWorkshopSlots([workshopSlots[0], null]);
+        } else if (!workshopSlots[0]) {
+            setWorkshopSlots([inventory.find(w => w.id === id) || null, workshopSlots[1]]);
+            setSelectedInventoryId(null); // Clear trade selection
+        } else if (!workshopSlots[1]) {
+            setWorkshopSlots([workshopSlots[0], inventory.find(w => w.id === id) || null]);
+            setSelectedInventoryId(null); // Clear trade selection
+        }
+    }
+    
+    // Logic for selecting for trade
+    const isWorkshopFull = workshopSlots[0] !== null && workshopSlots[1] !== null;
+    if(!isWorkshopFull) {
+        setSelectedInventoryId(prevId => (prevId === id ? null : id));
     } else {
-      setSelectedInventoryId(id === selectedInventoryId ? null : id);
+        setSelectedInventoryId(prevId => (prevId === id ? null : id));
     }
   }
 

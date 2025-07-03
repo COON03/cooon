@@ -33,6 +33,49 @@ export const BowIcon = ({ className }: IconProps) => (
   </svg>
 );
 
+export const ScytheIcon = ({ className }: IconProps) => (
+  <svg width="24" height="24" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style={iconStyle} className={className}>
+    <path d="M3 13L10 6L12 8L5 15H3V13Z" fill="#A0522D" />
+    <path d="M4 12L10 6L11 7L5 13H4V12Z" fill="#804000" />
+    <path d="M9 5L13 1L15 3L11 7L9 5Z" fill="#C0C0C0" />
+    <path d="M10 5L13 2L14 3L11 6L10 5Z" fill="white" />
+  </svg>
+);
+
+export const SpearIcon = ({ className }: IconProps) => (
+  <svg width="24" height="24" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style={iconStyle} className={className}>
+    <path d="M8 1L7 2H9L8 1Z" fill="#C0C0C0" />
+    <path d="M8 2L7 3H9L8 2Z" fill="white" />
+    <path d="M8 2V15H7V2H8Z" fill="#A0522D" />
+    <path d="M8 3V15H7V3H8Z" fill="#804000" />
+  </svg>
+);
+
+export const DaggerIcon = ({ className }: IconProps) => (
+  <svg width="24" height="24" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style={iconStyle} className={className}>
+    <path d="M8 4L7 5V9L5 11V12H11V11L9 9V5L8 4Z" fill="#C0C0C0" />
+    <path d="M8 5L9 6V9L8 10L7 9V6L8 5Z" fill="white" />
+    <path d="M6 12H10V13H6V12Z" fill="#A52A2A" />
+  </svg>
+);
+
+export const WhipIcon = ({ className }: IconProps) => (
+  <svg width="24" height="24" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style={iconStyle} className={className}>
+    <path d="M3 11H5V13H3V11Z" fill="#A0522D"/>
+    <path d="M5 12C6 11 8 8 10 6C12 4 13 2 13 2" stroke="#717171" strokeWidth="1"/>
+    <path d="M5 11C6 10 8 7 10 5C12 3 13 1 13 1" stroke="#C0C0C0" strokeWidth="1"/>
+  </svg>
+);
+
+export const ClawIcon = ({ className }: IconProps) => (
+  <svg width="24" height="24" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style={iconStyle} className={className}>
+    <path d="M3 10H8V12H3V10Z" fill="#A0522D" />
+    <path d="M2 4L4 6L6 4Z M6 4L8 6L10 4Z M10 4L12 6L14 4Z" fill="#C0C0C0" />
+    <path d="M3 5L5 7L7 5Z M7 5L9 7L11 5Z M11 5L13 7L15 5Z" fill="white" />
+    <path d="M2 4V8H3V4L2 4Z M6 4V8H7V4L6 4Z M10 4V8H11V4L10 4Z" fill="#B0B0B0" />
+  </svg>
+);
+
 export const GoldCoinIcon = ({ className }: IconProps) => (
   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style={iconStyle} className={cn("inline-block", className)}>
     <circle cx="8" cy="8" r="7" fill="#FFD700" />

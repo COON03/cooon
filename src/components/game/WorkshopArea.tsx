@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Weapon } from '@/lib/game-types';
-import { AxeIcon, BowIcon, SwordIcon } from '@/lib/icons';
+import { AxeIcon, BowIcon, SwordIcon, ScytheIcon, SpearIcon, DaggerIcon, WhipIcon, ClawIcon } from '@/lib/icons';
 
 interface WorkshopAreaProps {
   slots: (Weapon | null)[];
@@ -15,6 +15,11 @@ const WeaponIcon = ({ type }: { type: Weapon['type'] }) => {
       case 'Sword': return <SwordIcon className="w-12 h-12 text-muted-foreground" />;
       case 'Axe': return <AxeIcon className="w-12 h-12 text-muted-foreground" />;
       case 'Bow': return <BowIcon className="w-12 h-12 text-muted-foreground" />;
+      case 'Scythe': return <ScytheIcon className="w-12 h-12 text-muted-foreground" />;
+      case 'Spear': return <SpearIcon className="w-12 h-12 text-muted-foreground" />;
+      case 'Dagger': return <DaggerIcon className="w-12 h-12 text-muted-foreground" />;
+      case 'Whip': return <WhipIcon className="w-12 h-12 text-muted-foreground" />;
+      case 'Claw': return <ClawIcon className="w-12 h-12 text-muted-foreground" />;
       default: return null;
     }
 };

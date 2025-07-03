@@ -1,4 +1,4 @@
-export type WeaponType = 'Sword' | 'Axe' | 'Bow';
+export type WeaponType = 'Sword' | 'Axe' | 'Bow' | 'Scythe' | 'Spear' | 'Dagger' | 'Whip' | 'Claw';
 
 export interface Weapon {
   id: string;

@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Weapon } from '@/lib/game-types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { SwordIcon, AxeIcon, BowIcon, GoldCoinIcon } from '@/lib/icons';
+import { SwordIcon, AxeIcon, BowIcon, GoldCoinIcon, ScytheIcon, SpearIcon, DaggerIcon, WhipIcon, ClawIcon } from '@/lib/icons';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '../ui/scroll-area';
 
@@ -17,6 +17,11 @@ const WeaponIcon = ({ type }: { type: Weapon['type'] }) => {
     case 'Sword': return <SwordIcon className="w-10 h-10" />;
     case 'Axe': return <AxeIcon className="w-10 h-10" />;
     case 'Bow': return <BowIcon className="w-10 h-10" />;
+    case 'Scythe': return <ScytheIcon className="w-10 h-10" />;
+    case 'Spear': return <SpearIcon className="w-10 h-10" />;
+    case 'Dagger': return <DaggerIcon className="w-10 h-10" />;
+    case 'Whip': return <WhipIcon className="w-10 h-10" />;
+    case 'Claw': return <ClawIcon className="w-10 h-10" />;
     default: return null;
   }
 };
