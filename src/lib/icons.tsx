@@ -2,6 +2,7 @@ import { cn } from '@/lib/utils';
 
 interface IconProps {
   className?: string;
+  mood?: 'happy' | 'angry';
 }
 
 const iconStyle = { imageRendering: 'pixelated' } as React.CSSProperties;
@@ -102,51 +103,91 @@ export const GoldCoinIcon = ({ className }: IconProps) => (
   </svg>
 );
 
-export const KnightIcon = ({ className }: IconProps) => (
+export const KnightIcon = ({ className, mood }: IconProps) => (
     <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style={iconStyle} className={className}>
         <path d="M24 40C17.3726 40 12 34.6274 12 28C12 21.3726 17.3726 16 24 16C30.6274 16 36 21.3726 36 28C36 34.6274 30.6274 40 24 40Z" fill="#9CA3AF"/>
         <path d="M24 38C18.4772 38 14 33.5228 14 28C14 22.4772 18.4772 18 24 18C29.5228 18 34 22.4772 34 28C34 33.5228 29.5228 38 24 38Z" fill="#D1D5DB"/>
         <path d="M18 14H30L32 20H16L18 14Z" fill="#6B7280"/>
         <path d="M20 22H28V26H20V22Z" fill="#374151"/>
         <rect x="23" y="10" width="2" height="5" fill="#DC2626"/>
-        <rect x="21" y="23" width="2" height="2" fill="white"/>
-        <rect x="25" y="23" width="2" height="2" fill="white"/>
+        {!mood && (<>
+            <rect x="21" y="23" width="2" height="2" fill="white"/>
+            <rect x="25" y="23" width="2" height="2" fill="white"/>
+        </>)}
+        {mood === 'happy' && (<>
+            <path d="M21 25 q 1 -2 3 0" stroke="white" strokeWidth="1.5" fill="none" />
+            <path d="M25 25 q 1 -2 3 0" stroke="white" strokeWidth="1.5" fill="none" />
+        </>)}
+        {mood === 'angry' && (<>
+            <path d="M20 23 l 4 1.5" stroke="white" strokeWidth="1.5" />
+            <path d="M28 23 l -4 1.5" stroke="white" strokeWidth="1.5" />
+        </>)}
         <path d="M8 28C8 26.8954 8.89543 26 10 26C11.1046 26 12 26.8954 12 28C12 29.1046 11.1046 30 10 30C8.89543 30 8 29.1046 8 28Z" fill="#9CA3AF"/>
     </svg>
 );
 
-export const MageIcon = ({ className }: IconProps) => (
+export const MageIcon = ({ className, mood }: IconProps) => (
     <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style={iconStyle} className={className}>
         <path d="M24 40C17.3726 40 12 34.6274 12 28C12 21.3726 17.3726 16 24 16C30.6274 16 36 21.3726 36 28C36 34.6274 30.6274 40 24 40Z" fill="#A78BFA"/>
         <path d="M24 38C18.4772 38 14 33.5228 14 28C14 22.4772 18.4772 18 24 18C29.5228 18 34 22.4772 34 28C34 33.5228 29.5228 38 24 38Z" fill="#C4B5FD"/>
         <path d="M24 6L14 20H34L24 6Z" fill="#6D28D9"/>
         <path d="M24 8L16 20H32L24 8Z" fill="#8B5CF6"/>
         <rect x="14" y="19" width="20" height="2" fill="#FBBF24"/>
-        <rect x="21" y="24" width="2" height="2" fill="#FAF5FF"/>
-        <rect x="25" y="24" width="2" height="2" fill="#FAF5FF"/>
+        {!mood && (<>
+            <rect x="21" y="24" width="2" height="2" fill="#FAF5FF"/>
+            <rect x="25" y="24" width="2" height="2" fill="#FAF5FF"/>
+        </>)}
+        {mood === 'happy' && (<>
+            <path d="M21 26 q 1 -2 3 0" stroke="#FAF5FF" strokeWidth="1.5" fill="none" />
+            <path d="M25 26 q 1 -2 3 0" stroke="#FAF5FF" strokeWidth="1.5" fill="none" />
+        </>)}
+        {mood === 'angry' && (<>
+            <path d="M20 24 l 4 1.5" stroke="#FAF5FF" strokeWidth="1.5" />
+            <path d="M28 24 l -4 1.5" stroke="#FAF5FF" strokeWidth="1.5" />
+        </>)}
         <path d="M38 28C38 26.8954 38.8954 26 40 26C41.1046 26 42 26.8954 42 28C42 29.1046 41.1046 30 40 30C38.8954 30 38 29.1046 38 28Z" fill="#C4B5FD"/>
     </svg>
 );
 
-export const RogueIcon = ({ className }: IconProps) => (
+export const RogueIcon = ({ className, mood }: IconProps) => (
     <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style={iconStyle} className={className}>
         <path d="M24 40C17.3726 40 12 34.6274 12 28C12 21.3726 17.3726 16 24 16C30.6274 16 36 21.3726 36 28C36 34.6274 30.6274 40 24 40Z" fill="#4A5568"/>
         <path d="M24 38C18.4772 38 14 33.5228 14 28C14 22.4772 18.4772 18 24 18C29.5228 18 34 22.4772 34 28C34 33.5228 29.5228 38 24 38Z" fill="#718096"/>
         <path d="M16 24V20C16 16 20 12 24 12C28 12 32 16 32 20V24H16Z" fill="#1A202C"/>
-        <rect x="21" y="23" width="2" height="2" fill="#FCA5A5"/>
-        <rect x="25" y="23" width="2" height="2" fill="#FCA5A5"/>
+        {!mood && (<>
+            <rect x="21" y="23" width="2" height="2" fill="#FCA5A5"/>
+            <rect x="25" y="23" width="2" height="2" fill="#FCA5A5"/>
+        </>)}
+        {mood === 'happy' && (<>
+            <path d="M21 25 q 1 -2 3 0" stroke="#FCA5A5" strokeWidth="1.5" fill="none" />
+            <path d="M25 25 q 1 -2 3 0" stroke="#FCA5A5" strokeWidth="1.5" fill="none" />
+        </>)}
+        {mood === 'angry' && (<>
+            <path d="M20 23 l 4 1.5" stroke="#FCA5A5" strokeWidth="1.5" />
+            <path d="M28 23 l -4 1.5" stroke="#FCA5A5" strokeWidth="1.5" />
+        </>)}
         <path d="M8 28C8 26.8954 8.89543 26 10 26C11.1046 26 12 26.8954 12 28C12 29.1046 11.1046 30 10 30C8.89543 30 8 29.1046 8 28Z" fill="#718096"/>
     </svg>
 );
 
-export const VillagerIcon = ({ className }: IconProps) => (
+export const VillagerIcon = ({ className, mood }: IconProps) => (
     <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style={iconStyle} className={className}>
         <path d="M24 40C17.3726 40 12 34.6274 12 28C12 21.3726 17.3726 16 24 16C30.6274 16 36 21.3726 36 28C36 34.6274 30.6274 40 24 40Z" fill="#D97706"/>
         <path d="M24 38C18.4772 38 14 33.5228 14 28C14 22.4772 18.4772 18 24 18C29.5228 18 34 22.4772 34 28C34 33.5228 29.5228 38 24 38Z" fill="#F59E0B"/>
         <rect x="16" y="12" width="16" height="6" fill="#78350F"/>
         <rect x="16" y="17" width="16" height="2" fill="#FBBF24"/>
-        <rect x="21" y="24" width="2" height="2" fill="#000000"/>
-        <rect x="25" y="24" width="2" height="2" fill="#000000"/>
+        {!mood && (<>
+            <rect x="21" y="24" width="2" height="2" fill="#000000"/>
+            <rect x="25" y="24" width="2" height="2" fill="#000000"/>
+        </>)}
+        {mood === 'happy' && (<>
+            <path d="M21 26 q 1 -2 3 0" stroke="black" strokeWidth="1.5" fill="none" />
+            <path d="M25 26 q 1 -2 3 0" stroke="black" strokeWidth="1.5" fill="none" />
+        </>)}
+        {mood === 'angry' && (<>
+            <path d="M20 24 l 4 1.5" stroke="black" strokeWidth="1.5" />
+            <path d="M28 24 l -4 1.5" stroke="black" strokeWidth="1.5" />
+        </>)}
         <path d="M38 28C38 26.8954 38.8954 26 40 26C41.1046 26 42 26.8954 42 28C42 29.1046 41.1046 30 40 30C38.8954 30 38 29.1046 38 28Z" fill="#F59E0B"/>
     </svg>
 );

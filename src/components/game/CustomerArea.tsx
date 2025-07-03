@@ -11,17 +11,17 @@ interface CustomerAreaProps {
   activeCustomerId: string | null;
   timer: number;
   maxTime: number;
-  departingInfo: { id: string; message: string } | null;
+  departingInfo: { id: string; message: string; status: 'success' | 'fail' } | null;
 }
 
-const CustomerSpriteCmp = ({ type }: { type: CustomerSprite }) => {
+const CustomerSpriteCmp = ({ type, mood }: { type: CustomerSprite, mood?: 'happy' | 'angry' }) => {
   const className = "w-32 h-32 md:w-48 md:h-48 drop-shadow-[0_4px_6px_rgba(0,0,0,0.4)]";
   switch (type) {
-    case 'Knight': return <KnightIcon className={className} />;
-    case 'Mage': return <MageIcon className={className} />;
-    case 'Rogue': return <RogueIcon className={className} />;
-    case 'Villager': return <VillagerIcon className={className} />;
-    default: return <KnightIcon className={className} />;
+    case 'Knight': return <KnightIcon className={className} mood={mood} />;
+    case 'Mage': return <MageIcon className={className} mood={mood} />;
+    case 'Rogue': return <RogueIcon className={className} mood={mood} />;
+    case 'Villager': return <VillagerIcon className={className} mood={mood} />;
+    default: return <KnightIcon className={className} mood={mood} />;
   }
 };
 
@@ -49,17 +49,22 @@ const CustomerArea: React.FC<CustomerAreaProps> = ({ customers, activeCustomerId
         {customers.length > 0 ? (
           customers.map((customer, index) => {
             const isDeparting = customer.id === departingInfo?.id;
+            const departureStatus = isDeparting ? departingInfo?.status : null;
             const isActuallyActive = customer.id === activeCustomerId && !departingInfo;
             const isVisuallyActive = isActuallyActive || isDeparting;
             const isQueued = index > 0 && !isDeparting;
             const zIndex = 20 - index;
+            const mood = departureStatus === 'success' ? 'happy' : departureStatus === 'fail' ? 'angry' : undefined;
 
             return (
               <div
                 key={customer.id}
                 className={cn(
-                  'absolute transition-all duration-1000 ease-in-out',
-                  isDeparting && 'left-[120%] opacity-0'
+                  'absolute',
+                  isActuallyActive && 'animate-talking-bob',
+                  departureStatus === 'success' ? 'animate-exit-happy' :
+                  departureStatus === 'fail' ? 'animate-exit-angry' :
+                  'transition-all duration-1000 ease-in-out'
                 )}
                 style={{
                     left: isVisuallyActive ? '60%' : `${45 - (index-1) * 18}%`,
@@ -78,7 +83,7 @@ const CustomerArea: React.FC<CustomerAreaProps> = ({ customers, activeCustomerId
                           {customer.name}
                       </div>
                   ) : null}
-                  <CustomerSpriteCmp type={customer.sprite} />
+                  <CustomerSpriteCmp type={customer.sprite} mood={mood} />
                 </div>
                 
                 {/* Departing Speech Bubble */}
@@ -93,13 +98,13 @@ const CustomerArea: React.FC<CustomerAreaProps> = ({ customers, activeCustomerId
                 {isActuallyActive && activeCustomer && (
                   <>
                     {/* Left Bubble: Unique Dialogue */}
-                    <div className="absolute bottom-full w-48 bg-white/95 text-black p-3 rounded-lg shadow-lg text-center z-30 animate-bubble-bob" style={{ right: 'calc(50% + 1rem)' }}>
+                    <div className="absolute bottom-full mb-4 w-48 bg-white/95 text-black p-3 rounded-lg shadow-lg text-center z-30 animate-bubble-bob" style={{ right: 'calc(100% - 8rem)', top: '-10rem' }}>
                         <p className="text-sm italic">"{activeCustomer.requestText}"</p>
                         <div className="absolute w-0 h-0 border-x-8 border-x-transparent border-t-8 border-t-white/95 bottom-[-8px] right-4"></div>
                     </div>
 
                     {/* Right Bubble: Requirements */}
-                    <div className="absolute bottom-full w-56 bg-card text-card-foreground p-3 rounded-lg shadow-lg text-center z-30" style={{ left: 'calc(50% + 1rem)' }}>
+                    <div className="absolute bottom-full mb-4 w-56 bg-card text-card-foreground p-3 rounded-lg shadow-lg text-center z-30" style={{ left: 'calc(100% - 8rem)', top: '-12rem' }}>
                         <ul className="text-sm list-disc list-inside text-left mx-auto max-w-max">
                           <li>종류: <span className="font-semibold text-accent">{activeCustomer.wants.type}</span></li>
                         </ul>

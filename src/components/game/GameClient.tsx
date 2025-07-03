@@ -36,7 +36,7 @@ export default function GameClient() {
   const [customerTimer, setCustomerTimer] = useState(CUSTOMER_TIMER_DEFAULT);
   const [gameStarted, setGameStarted] = useState(false);
   
-  const [departingInfo, setDepartingInfo] = useState<{ id: string; message: string } | null>(null);
+  const [departingInfo, setDepartingInfo] = useState<{ id: string; message: string; status: 'success' | 'fail' } | null>(null);
   const [isInteracting, setIsInteracting] = useState(false);
 
   const [discoveredRecipes, setDiscoveredRecipes] = useState<Set<string>>(new Set(allRecipes.map(r => r.id)));
@@ -233,11 +233,11 @@ export default function GameClient() {
       setInventory(inventory.filter(w => w.id !== weapon.id));
       playBellSound();
       toast({ title: "거래 성공!", description: `${weapon.name}을(를) ${salePrice}골드에 판매했습니다.` });
-      setDepartingInfo({ id: customer.id, message: "이거 좋군! 고맙네." });
+      setDepartingInfo({ id: customer.id, message: "이거 좋군! 고맙네.", status: 'success' });
     } else {
       setLives(l => Math.max(0, l - 1));
       toast({ variant: "destructive", title: "거래 실패!", description: `손님의 요구에 맞지 않아 생명력이 1 감소합니다.` });
-      setDepartingInfo({ id: customer.id, message: "흠, 이건 내가 찾던 게 아니야." });
+      setDepartingInfo({ id: customer.id, message: "흠, 이건 내가 찾던 게 아니야.", status: 'fail' });
     }
     setWorkshopSlots([null, null]);
 
@@ -367,7 +367,7 @@ export default function GameClient() {
             playBellSound();
             
             setIsInteracting(true);
-            setDepartingInfo({ id: activeCustomer.id, message: "기다리다 지쳤네. 다음에 오지." });
+            setDepartingInfo({ id: activeCustomer.id, message: "기다리다 지쳤네. 다음에 오지.", status: 'fail' });
 
             setTimeout(() => {
                 setLives(l => Math.max(0, l - 1));
