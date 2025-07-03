@@ -152,9 +152,10 @@ export default function GameClient() {
     }
   }, [day, playBellSound, badCustomerRate]);
   
-  const startNewDay = useCallback(() => {
+  const startNewDay = useCallback((startingGold: number) => {
     const nextDay = day + 1;
     setDay(nextDay);
+    setGold(startingGold);
     
     toast({ 
         title: `제 ${nextDay}일`, 
@@ -187,9 +188,11 @@ export default function GameClient() {
   const handleSelectSkill = useCallback((skill: PassiveSkill) => {
     setIsSkillSelectionOpen(false);
 
+    let startingGoldForNextDay = 0;
+
     switch (skill.id) {
       case 'ADD_GOLD':
-        setGold(g => g + 100);
+        startingGoldForNextDay += 100;
         toast({ title: "스킬 획득!", description: skill.description });
         break;
       case 'ADD_HEART':
@@ -207,7 +210,7 @@ export default function GameClient() {
         break;
     }
     
-    startNewDay();
+    startNewDay(startingGoldForNextDay);
 
   }, [startNewDay, toast]);
 
@@ -438,7 +441,7 @@ export default function GameClient() {
     const ranOutOfCustomers = gameStarted && customers.length === 0 && gameState === 'playing' && day <= MAX_DAYS && !isInteracting;
     const metGoal = isDayCleared && !isInteracting && gameState === 'playing';
 
-    if (ranOutOfCustomers || metGoal) {
+    if ((ranOutOfCustomers || metGoal) && day < MAX_DAYS) {
       const timer = setTimeout(() => {
         handleNextDay();
       }, ranOutOfCustomers ? 1500 : 200);
@@ -542,9 +545,11 @@ export default function GameClient() {
                     선택 초기화
                 </Button>
             </div>
-            <Button onClick={handleNextDay} variant="secondary" size="lg" disabled={isInteracting || (customers.length > 0 && day < MAX_DAYS) || isDayCleared}>
-                {isDayCleared ? '목표 달성!' : `다음 날로 (${day}/${MAX_DAYS})`}
-            </Button>
+            {isDayCleared && day < MAX_DAYS && (
+              <Button onClick={handleNextDay} variant="secondary" size="lg" disabled={isInteracting}>
+                  목표 달성! 다음 날로
+              </Button>
+            )}
         </footer>
 
         <EndGameDialog gameState={gameState} gold={gold} onPlayAgain={resetGame} />
