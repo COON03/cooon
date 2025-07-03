@@ -415,9 +415,13 @@ export default function GameClient() {
             return CUSTOMER_TIMER_DEFAULT;
           }
 
-          if (newTimerValue <= Math.floor(patience * 0.4) && !impatientDialogue) {
-            const dialogue = getRandomDialogue(activeCustomer.impatientDialogues, "시간이 없는데...");
-            setImpatientDialogue(dialogue);
+          if (newTimerValue <= Math.floor(patience * 0.4)) {
+            setImpatientDialogue(currentDialogue => {
+              if (currentDialogue === null) {
+                return getRandomDialogue(activeCustomer.impatientDialogues, "시간이 없는데...");
+              }
+              return currentDialogue;
+            });
           }
           
           if (newTimerValue <= Math.floor(patience / 2) && newTimerValue > Math.floor(patience / 2) - 1) {
@@ -435,7 +439,7 @@ export default function GameClient() {
         clearInterval(timerIntervalRef.current);
       }
     };
-  }, [activeCustomer, gameState, isInteracting, timerBonus, playBellSound, playTickSound, toast, impatientDialogue]);
+  }, [activeCustomer, gameState, isInteracting, timerBonus, playBellSound, playTickSound, toast]);
 
   useEffect(() => {
     const ranOutOfCustomers = gameStarted && customers.length === 0 && gameState === 'playing' && day <= MAX_DAYS && !isInteracting;
