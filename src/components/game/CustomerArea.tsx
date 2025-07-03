@@ -103,10 +103,25 @@ const CustomerArea: React.FC<CustomerAreaProps> = ({ customers, activeCustomerId
                 {/* Active Customer Speech Bubbles */}
                 {isActuallyActive && activeCustomer && (
                   <>
-                    {/* Left Bubble: Unique Dialogue */}
-                    <div className="absolute bottom-full mb-4 w-48 bg-white/95 text-black p-3 rounded-lg shadow-lg text-center z-30 animate-bubble-bob" style={{ right: 'calc(100% - 8rem)', top: '-10rem' }}>
-                        <p className="text-sm italic">"{activeCustomer.requestText}"</p>
-                        <div className="absolute w-0 h-0 border-x-8 border-x-transparent border-t-8 border-t-white/95 bottom-[-8px] right-4"></div>
+                    {/* Left Bubble: Unique / Impatient Dialogue */}
+                    <div
+                      className={cn(
+                        'absolute bottom-full mb-4 w-48 p-3 rounded-lg shadow-lg text-center z-30 animate-bubble-bob',
+                        isImpatient
+                          ? 'bg-card text-card-foreground border-l-4 border-yellow-400'
+                          : 'bg-white/95 text-black'
+                      )}
+                      style={{ right: 'calc(100% - 8rem)', top: '-10rem' }}
+                    >
+                      <p className={cn('text-sm italic', isImpatient && 'font-bold')}>
+                        "{isImpatient ? impatientDialogue : activeCustomer.requestText}"
+                      </p>
+                      <div
+                        className={cn(
+                          'absolute w-0 h-0 border-x-8 border-x-transparent border-t-8 bottom-[-8px] right-4',
+                          isImpatient ? 'border-t-card' : 'border-t-white/95'
+                        )}
+                      ></div>
                     </div>
 
                     {/* Right Bubble: Requirements */}
@@ -126,14 +141,6 @@ const CustomerArea: React.FC<CustomerAreaProps> = ({ customers, activeCustomerId
                         </div>
                         <div className="absolute w-0 h-0 border-x-8 border-x-transparent border-t-8 border-t-card bottom-[-8px] left-4"></div>
                     </div>
-                    
-                    {/* Impatient Bubble */}
-                    {isImpatient && (
-                      <div className="absolute bottom-full mb-4 w-56 bg-card border-l-4 border-yellow-400 text-card-foreground p-3 rounded-lg shadow-lg text-center z-30 animate-bubble-bob" style={{ left: 'calc(100% - 8rem)', top: '-5rem' }}>
-                          <p className="font-bold text-sm italic">"{impatientDialogue}"</p>
-                          <div className="absolute w-0 h-0 border-x-8 border-x-transparent border-t-8 border-t-card bottom-[-8px] left-4"></div>
-                      </div>
-                    )}
                   </>
                 )}
               </div>
