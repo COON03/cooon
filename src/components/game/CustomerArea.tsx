@@ -31,7 +31,7 @@ const CustomerArea: React.FC<CustomerAreaProps> = ({ customers, activeCustomerId
   return (
     <div className="w-full h-full bg-[#6d5645] relative flex items-end justify-center overflow-hidden">
       <Image
-        src="https://placehold.co/1200x800/6d5645/6d5645.png"
+        src="https://placehold.co/1200x800/8d715b/8d715b.png"
         alt="Weapon shop background"
         data-ai-hint="pixel art shop interior"
         fill
@@ -102,8 +102,6 @@ const CustomerArea: React.FC<CustomerAreaProps> = ({ customers, activeCustomerId
                     <div className="absolute bottom-full w-56 bg-card text-card-foreground p-3 rounded-lg shadow-lg text-center z-30" style={{ left: 'calc(50% + 1rem)' }}>
                         <ul className="text-sm list-disc list-inside text-left mx-auto max-w-max">
                           <li>종류: <span className="font-semibold text-accent">{activeCustomer.wants.type}</span></li>
-                          <li>최소 공격력: <span className="font-semibold text-red-400">{activeCustomer.wants.minAttack}</span></li>
-                          <li>최소 속도: <span className="font-semibold text-blue-400">{activeCustomer.wants.minSpeed}</span></li>
                         </ul>
                         <div className="mt-3">
                             <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">

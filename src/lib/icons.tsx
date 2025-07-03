@@ -43,23 +43,6 @@ export const ScytheIcon = ({ className }: IconProps) => (
     </svg>
 );
 
-export const SpearIcon = ({ className }: IconProps) => (
-    <svg width="24" height="24" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style={iconStyle} className={className}>
-        <path d="M8 2V15H7V2H8Z" fill="#854d0e" />
-        <path d="M8 3V15H7V3H8Z" fill="#a16207" />
-        <path d="M8 1L6 4H10L8 1Z" fill="#fde047" />
-        <path d="M8 2L7 4H9L8 2Z" fill="#fef08a" />
-    </svg>
-);
-
-export const DaggerIcon = ({ className }: IconProps) => (
-    <svg width="24" height="24" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style={iconStyle} className={className}>
-        <path d="M8 4L7 5V9L5 11V12H11V11L9 9V5L8 4Z" fill="#1e3a8a" />
-        <path d="M8 5L9 6V9L8 10L7 9V6L8 5Z" fill="#60a5fa" />
-        <path d="M6 12H10V13H6V12Z" fill="#9333ea" />
-    </svg>
-);
-
 export const WhipIcon = ({ className }: IconProps) => (
     <svg width="24" height="24" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style={iconStyle} className={className}>
         <path d="M3 11H5V13H3V11Z" fill="#78350f" />
@@ -74,6 +57,40 @@ export const ClawIcon = ({ className }: IconProps) => (
         <path d="M2 4L4 6L6 4Z M6 4L8 6L10 4Z M10 4L12 6L14 4Z" fill="#fde047" />
         <path d="M3 5L5 7L7 5Z M7 5L9 7L11 5Z M11 5L13 7L15 5Z" fill="#fef9c3" />
         <path d="M2 4V8H3V4L2 4Z M6 4V8H7V4L6 4Z M10 4V8H11V4L10 4Z" fill="#eab308" />
+    </svg>
+);
+
+export const MagicStaffIcon = ({ className }: IconProps) => (
+    <svg width="24" height="24" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style={iconStyle} className={className}>
+        <path d="M7 4H9V15H7V4Z" fill="#854d0e"/>
+        <path d="M8 5H9V15H8V5Z" fill="#a16207"/>
+        <path d="M8 0L6 2L8 4L10 2L8 0Z" fill="#8b5cf6"/>
+        <path d="M8 1L7 2L8 3L9 2L8 1Z" fill="#c4b5fd"/>
+    </svg>
+);
+
+export const ChainIcon = ({ className }: IconProps) => (
+    <svg width="24" height="24" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style={iconStyle} className={className}>
+        <path d="M4 2H7V5H4V2Z M9 5H12V8H9V5Z M4 8H7V11H4V8Z" fill="#71717a"/>
+        <path d="M5 3H6V4H5V3Z M10 6H11V7H10V6Z M5 9H6V10H5V9Z" fill="#a1a1aa"/>
+        <path d="M6 5L9 5L9 6L6 6V5Z M8 8L7 8L7 9L8 9V8Z" fill="#a1a1aa"/>
+        <path d="M12 11H14V13H12V11Z" fill="#facc15"/>
+    </svg>
+);
+
+export const RapierIcon = ({ className }: IconProps) => (
+    <svg width="24" height="24" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style={iconStyle} className={className}>
+        <path d="M8 1L7 2V11L8 12L9 11V2L8 1Z" fill="#e5e7eb"/>
+        <path d="M8 2L9 3V11L8 11.5V2Z" fill="#f9fafb"/>
+        <path d="M4 11H12V13H4V11Z" fill="#ca8a04"/>
+        <path d="M5 13V14H11V13H5Z" fill="#fde047"/>
+    </svg>
+);
+
+export const BoomerangIcon = ({ className }: IconProps) => (
+    <svg width="24" height="24" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style={iconStyle} className={className}>
+        <path d="M4 2L8 6V8L2 2V4L6 8H4L2 6V2Z" fill="#a16207"/>
+        <path d="M4 2H2V6L4 4V2Z" fill="#eab308"/>
     </svg>
 );
 

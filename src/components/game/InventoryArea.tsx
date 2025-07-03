@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Weapon, WeaponType } from '@/lib/game-types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { SwordIcon, AxeIcon, BowIcon, GoldCoinIcon, ScytheIcon, SpearIcon, DaggerIcon, WhipIcon, ClawIcon } from '@/lib/icons';
+import { SwordIcon, AxeIcon, BowIcon, GoldCoinIcon, ScytheIcon, WhipIcon, ClawIcon, MagicStaffIcon, ChainIcon, RapierIcon, BoomerangIcon } from '@/lib/icons';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '../ui/scroll-area';
 
@@ -11,7 +11,7 @@ interface InventoryAreaProps {
   onSelect: (id: string) => void;
 }
 
-const rareWeaponTypes: WeaponType[] = ['Scythe', 'Spear', 'Dagger', 'Whip', 'Claw'];
+const rareWeaponTypes: WeaponType[] = ['Scythe', 'Magic Staff', 'Chain', 'Claw', 'Rapier', 'Whip', 'Boomerang'];
 
 const WeaponIcon = ({ type }: { type: Weapon['type'] }) => {
   const isRare = rareWeaponTypes.includes(type);
@@ -22,10 +22,12 @@ const WeaponIcon = ({ type }: { type: Weapon['type'] }) => {
     case 'Axe': return <AxeIcon className={className} />;
     case 'Bow': return <BowIcon className={className} />;
     case 'Scythe': return <ScytheIcon className={className} />;
-    case 'Spear': return <SpearIcon className={className} />;
-    case 'Dagger': return <DaggerIcon className={className} />;
     case 'Whip': return <WhipIcon className={className} />;
     case 'Claw': return <ClawIcon className={className} />;
+    case 'Magic Staff': return <MagicStaffIcon className={className} />;
+    case 'Chain': return <ChainIcon className={className} />;
+    case 'Rapier': return <RapierIcon className={className} />;
+    case 'Boomerang': return <BoomerangIcon className={className} />;
     default: return null;
   }
 };
@@ -59,11 +61,7 @@ const InventoryArea: React.FC<InventoryAreaProps> = ({ inventory, onSelect, work
                   <CardDescription>{weapon.type}</CardDescription>
                 </div>
               </CardHeader>
-              <CardContent className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm pb-2">
-                <div className="font-semibold">공격력: <span className="text-red-400">{weapon.attack}</span></div>
-                <div className="font-semibold">속도: <span className="text-blue-400">{weapon.speed}</span></div>
-              </CardContent>
-              <CardFooter className="pb-4">
+              <CardFooter className="pb-4 pt-2">
                 <div className="flex items-center font-bold text-yellow-400">
                   <GoldCoinIcon className="w-4 h-4 mr-1"/>
                   <span>{weapon.price} G</span>

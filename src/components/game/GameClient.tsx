@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { initialWeapons, allCustomers, generateNewItem } from '@/lib/game-data';
-import type { Weapon, Customer } from '@/lib/game-types';
+import type { Weapon, Customer, WeaponType } from '@/lib/game-types';
 import Header from './Header';
 import CustomerArea from './CustomerArea';
 import InventoryArea from './InventoryArea';
@@ -87,21 +87,17 @@ export default function GameClient() {
   }, []);
 
   const fetchCustomers = useCallback(() => {
-    // 날이 갈수록 손님 수가 점차 증가합니다. (10명 ~ 30명)
     const customersPerDay = [0, 10, 13, 16, 20, 24, 27, 30]; 
     const numCustomers = customersPerDay[day] || 30;
 
-    // 날이 갈수록 더 어려운 손님들이 해금됩니다.
     const unlockedCustomers = allCustomers.filter((_, index) => {
         const unlockedCount = Math.min(allCustomers.length, 2 + Math.floor(day * 2));
         return index < unlockedCount;
     });
     
-    // 후반부로 갈수록 까다로운 손님(성격이 normal이 아니거나, 희귀 무기를 찾는 손님)의 등장 확률이 높아집니다.
-    const difficultCustomers = unlockedCustomers.filter(c => c.personality !== 'normal' || ['Scythe', 'Spear', 'Dagger', 'Whip', 'Claw'].includes(c.wants.type));
+    const difficultCustomers = unlockedCustomers.filter(c => c.personality !== 'normal' || ['Scythe', 'Magic Staff', 'Chain', 'Claw', 'Rapier', 'Whip', 'Boomerang'].includes(c.wants.type));
     
     let potentialPool = [...unlockedCustomers];
-    // 날짜가 지날수록 difficultCustomers를 풀에 더 많이 추가하여 등장 확률을 높입니다.
     if (difficultCustomers.length > 0) {
       for (let i = 1; i < day; i++) {
           potentialPool.push(...difficultCustomers);
@@ -110,16 +106,13 @@ export default function GameClient() {
 
     const shuffled = [...potentialPool].sort(() => 0.5 - Math.random());
 
-    // 중복을 허용하여 오늘의 손님을 선택합니다.
     const todaysCustomers: Customer[] = [];
     if (shuffled.length > 0) {
         for (let i = 0; i < numCustomers; i++) {
-            // 풀이 비어있지 않다면, 순환 참조를 통해 손님을 선택합니다.
             todaysCustomers.push(shuffled[i % shuffled.length]);
         }
     }
     
-    // React key를 위해 각 손님에게 고유 ID를 부여합니다.
     setCustomers(todaysCustomers.map(c => ({...c, id: `${c.id}_${Math.random()}`})));
 
     if (todaysCustomers.length > 0) {
@@ -134,7 +127,6 @@ export default function GameClient() {
     setInventory([...initialWeapons]);
     setGameState('playing');
     setWorkshopSlots([null, null]);
-    // fetchCustomers will be called by useEffect
   }, []);
 
   const handleNextDay = useCallback(() => {
@@ -163,9 +155,7 @@ export default function GameClient() {
         return;
     }
 
-    const meetsReqs = weapon.type === customer.wants.type &&
-                      weapon.attack >= customer.wants.minAttack &&
-                      weapon.speed >= customer.wants.minSpeed;
+    const meetsReqs = weapon.type === customer.wants.type;
 
     if (meetsReqs) {
       const salePrice = Math.floor(weapon.price * customer.offerMultiplier);
@@ -197,33 +187,39 @@ export default function GameClient() {
     }
 
     const types = [w1.type, w2.type].sort();
-    let newWeapon: Weapon | null = null;
+    let newWeapon: Omit<Weapon, 'id'> | null = null;
+    
+    const recipes: { [key: string]: { type: WeaponType, name: string, multiplier: number } | { types: WeaponType[], names: string[], multiplier: number } } = {
+        'Axe,Axe': { types: ['Claw', 'Chain'], names: ['강철 클로', '가시 사슬'], multiplier: 1.8 },
+        'Axe,Bow': { type: 'Whip', name: '가시 채찍', multiplier: 1.9 },
+        'Axe,Sword': { type: 'Scythe', name: '영혼 수확의 낫', multiplier: 1.8 },
+        'Bow,Bow': { type: 'Boomerang', name: '마력 깃든 부메랑', multiplier: 1.7 },
+        'Bow,Sword': { type: 'Magic Staff', name: '신비한 마법 스태프', multiplier: 2.2 },
+        'Sword,Sword': { type: 'Rapier', name: '결투용 레이피어', multiplier: 1.7 },
+    };
 
-    if (types[0] === 'Axe' && types[1] === 'Axe') {
-        newWeapon = { id: `w_rare_${Date.now()}`, name: '강철 클로', type: 'Claw', attack: Math.floor((w1.attack + w2.attack) * 0.9), speed: Math.floor((w1.speed + w2.speed) * 0.6), price: Math.floor((w1.price + w2.price) * 1.6) };
-    } else if (types[0] === 'Axe' && types[1] === 'Bow') {
-        newWeapon = { id: `w_rare_${Date.now()}`, name: '영혼 수확의 낫', type: 'Scythe', attack: Math.floor((w1.attack + w2.attack) * 0.8), speed: Math.floor((w1.speed + w2.speed) * 0.8), price: Math.floor((w1.price + w2.price) * 1.8) };
-    } else if (types[0] === 'Axe' && types[1] === 'Sword') {
-        newWeapon = { id: `w_rare_${Date.now()}`, name: '돌격 창', type: 'Spear', attack: Math.floor((w1.attack + w2.attack) * 0.7), speed: Math.floor((w1.speed + w2.speed) * 0.9), price: Math.floor((w1.price + w2.price) * 1.7) };
-    } else if (types[0] === 'Bow' && types[1] === 'Sword') {
-        newWeapon = { id: `w_rare_${Date.now()}`, name: '그림자 단도', type: 'Dagger', attack: Math.floor((w1.attack + w2.attack) * 0.6), speed: Math.floor((w1.speed + w2.speed) * 1.1), price: Math.floor((w1.price + w2.price) * 1.8) };
-    } else if (types[0] === 'Sword' && types[1] === 'Sword') {
-        newWeapon = { id: `w_rare_${Date.now()}`, name: '가시 채찍', type: 'Whip', attack: Math.floor((w1.attack + w2.attack) * 0.5), speed: Math.floor((w1.speed + w2.speed) * 1.2), price: Math.floor((w1.price + w2.price) * 1.9) };
-    } else if (types[0] === 'Bow' && types[1] === 'Bow') {
-        newWeapon = { id: `w_rare_${Date.now()}`, name: '신속의 단도', type: 'Dagger', attack: Math.floor((w1.attack + w2.attack) * 0.7), speed: Math.floor((w1.speed + w2.speed) * 1.0), price: Math.floor((w1.price + w2.price) * 1.7) };
+    const recipe = recipes[types.join(',')];
+
+    if (recipe) {
+        const basePrice = w1.price + w2.price;
+        if ('types' in recipe) { // Random result recipe
+            const randomIndex = Math.floor(Math.random() * recipe.types.length);
+            newWeapon = { name: recipe.names[randomIndex], type: recipe.types[randomIndex], price: Math.floor(basePrice * recipe.multiplier) };
+        } else { // Single result recipe
+            newWeapon = { name: recipe.name, type: recipe.type, price: Math.floor(basePrice * recipe.multiplier) };
+        }
     }
     
     setInventory(inventory.filter(w => w.id !== w1.id && w.id !== w2.id));
 
     if (newWeapon) {
-      setInventory(prev => [...prev, newWeapon!]);
-      toast({ title: "희귀 무기 조합 성공!", description: `새로운 무기 '${newWeapon.name}' (${newWeapon.type})이(가) 탄생했습니다!` });
+      const finalWeapon: Weapon = { ...newWeapon, id: `w_rare_${Date.now()}` };
+      setInventory(prev => [...prev, finalWeapon]);
+      toast({ title: "희귀 무기 조합 성공!", description: `새로운 무기 '${finalWeapon.name}' (${finalWeapon.type})이(가) 탄생했습니다!` });
     } else {
       const failedWeapon: Weapon = {
         id: `w_fail_${Date.now()}`, name: '실패한 합금', type: w1.type,
-        attack: Math.floor((w1.attack + w2.attack) * 0.5),
-        speed: Math.floor((w1.speed + w2.speed) * 0.5),
-        price: Math.floor((w1.price + w2.price) * 0.6),
+        price: Math.floor((w1.price + w2.price) * 0.5),
       };
       setInventory(prev => [...prev, failedWeapon]);
       toast({ variant: "destructive", title: "조합 실패!", description: `알 수 없는 조합입니다. 불안정한 합금이 생성되었습니다.` });
@@ -259,9 +255,11 @@ export default function GameClient() {
   };
 
   useEffect(() => {
-    resetGame();
-    setGameStarted(true);
-  }, [resetGame]);
+    if (!gameStarted) {
+      resetGame();
+      setGameStarted(true);
+    }
+  }, [gameStarted, resetGame]);
   
   useEffect(() => {
     if(gameStarted) {
