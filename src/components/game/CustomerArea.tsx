@@ -28,85 +28,81 @@ const CustomerArea: React.FC<CustomerAreaProps> = ({ customers, activeCustomerId
   const activeCustomer = customers.find(c => c.id === activeCustomerId);
 
   return (
-    <div className='flex flex-col h-full'>
-      <h2 className="text-2xl font-headline font-semibold mb-4 text-primary-foreground/90">손님 대기열</h2>
+    <div className="w-full h-full bg-[#2E2926] relative flex items-end justify-center overflow-hidden">
+      <Image
+        src="https://placehold.co/1200x800.png"
+        alt="Weapon shop background"
+        data-ai-hint="pixel art shop interior"
+        fill
+        className="absolute inset-0 w-full h-full object-cover z-0"
+        style={{ imageRendering: 'pixelated' }}
+      />
       
-      <div className="flex-grow bg-[#2E2926] rounded-lg relative flex items-end justify-center overflow-hidden border-2 border-stone-900 shadow-inner">
-        <Image
-          src="https://placehold.co/800x600.png"
-          alt="Weapon shop background"
-          data-ai-hint="pixel art shop"
-          fill
-          className="absolute inset-0 w-full h-full object-cover z-0"
-          style={{ imageRendering: 'pixelated' }}
-        />
-        
-        {/* Shop Counter */}
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-[#4E342E]/80 border-t-4 border-[#2E2926] z-10 shadow-[0_-8px_20px_rgba(0,0,0,0.5)]">
-          <div className="h-5 bg-[#3E2723]/90 opacity-80 border-b-2 border-black/50"></div>
-        </div>
+      {/* Shop Counter */}
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-[#4E342E]/80 border-t-4 border-[#2E2926] z-10 shadow-[0_-8px_20px_rgba(0,0,0,0.5)]">
+        <div className="h-5 bg-[#3E2723]/90 opacity-80 border-b-2 border-black/50"></div>
+      </div>
 
-        {/* Customer queue container */}
-        <div className="relative w-full h-full flex justify-center items-end z-20">
-          {customers.length > 0 ? (
-            customers.slice().reverse().map((customer, index) => {
-              const isFrontOfQueue = index === customers.length - 1;
-              const zIndex = 20 - index;
-              return (
-                <div
-                  key={customer.id}
-                  className={cn(
-                      'absolute transition-all duration-500 ease-in-out group',
-                  )}
-                  style={{
-                      right: `${15 + index * 12}%`, // Increased spacing for larger sprites
-                      bottom: '6.5rem', // 104px, adjusted for larger sprites
-                      transform: `scale(${1 - index * 0.2})`, // Increased scale difference
-                      zIndex: zIndex,
-                  }}
-                >
-                  <div className={cn(
-                      'transition-transform duration-300', 
-                      isFrontOfQueue ? 'scale-110' : 'group-hover:scale-105'
-                  )}>
-                    <CustomerSpriteCmp type={customer.sprite} />
-                  </div>
-                  
-                  {isFrontOfQueue && activeCustomer && (
-                    <div className="absolute bottom-full mb-4 w-64 bg-card text-card-foreground p-3 rounded-lg shadow-lg text-center left-1/2 -translate-x-1/2 z-30">
-                      <p className="font-bold text-lg">{activeCustomer.name}</p>
-                      <p className="text-sm my-1 italic text-muted-foreground">"{activeCustomer.requestText}"</p>
-                      <ul className="text-sm list-disc list-inside mt-2 text-left mx-auto max-w-max">
-                        <li>종류: <span className="font-semibold text-accent">{activeCustomer.wants.type}</span></li>
-                        <li>최소 공격력: <span className="font-semibold text-red-400">{activeCustomer.wants.minAttack}</span></li>
-                        <li>최소 속도: <span className="font-semibold text-blue-400">{activeCustomer.wants.minSpeed}</span></li>
-                      </ul>
-                      <div className="mt-3">
-                          <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
-                              <div className="flex items-center">
-                                  <TimerIcon className="w-3 h-3 mr-1" />
-                                  <span>남은 시간</span>
-                              </div>
-                              <span>{timer}초</span>
-                          </div>
-                          <Progress value={(timer / maxTime) * 100} className="h-1.5" />
-                      </div>
-                      <div className="absolute w-0 h-0 border-x-8 border-x-transparent border-t-8 border-t-card bottom-[-8px] left-1/2 -translate-x-1/2"></div>
-                    </div>
-                  )}
-                  
-                  {!isFrontOfQueue && (
-                       <div className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 bg-black/60 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
-                           {customer.name}
-                       </div>
-                   )}
+      {/* Customer queue container */}
+      <div className="relative w-full h-full flex justify-center items-end z-20">
+        {customers.length > 0 ? (
+          customers.slice().reverse().map((customer, index) => {
+            const isFrontOfQueue = index === customers.length - 1;
+            const zIndex = 20 - index;
+            return (
+              <div
+                key={customer.id}
+                className={cn(
+                    'absolute transition-all duration-500 ease-in-out group',
+                )}
+                style={{
+                    right: `${15 + index * 12}%`,
+                    bottom: '6.5rem',
+                    transform: `scale(${1 - index * 0.2})`,
+                    zIndex: zIndex,
+                }}
+              >
+                <div className={cn(
+                    'transition-transform duration-300', 
+                    isFrontOfQueue ? 'scale-110' : 'group-hover:scale-105'
+                )}>
+                  <CustomerSpriteCmp type={customer.sprite} />
                 </div>
-              );
-            })
-          ) : (
-            <p className="text-muted-foreground text-center self-center text-lg pb-16 z-10 relative">오늘은 손님이 더 이상 없네요.</p>
-          )}
-        </div>
+                
+                {isFrontOfQueue && activeCustomer && (
+                  <div className="absolute bottom-full mb-4 w-64 bg-card text-card-foreground p-3 rounded-lg shadow-lg text-center left-1/2 -translate-x-1/2 z-30">
+                    <p className="font-bold text-lg">{activeCustomer.name}</p>
+                    <p className="text-sm my-1 italic text-muted-foreground">"{activeCustomer.requestText}"</p>
+                    <ul className="text-sm list-disc list-inside mt-2 text-left mx-auto max-w-max">
+                      <li>종류: <span className="font-semibold text-accent">{activeCustomer.wants.type}</span></li>
+                      <li>최소 공격력: <span className="font-semibold text-red-400">{activeCustomer.wants.minAttack}</span></li>
+                      <li>최소 속도: <span className="font-semibold text-blue-400">{activeCustomer.wants.minSpeed}</span></li>
+                    </ul>
+                    <div className="mt-3">
+                        <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
+                            <div className="flex items-center">
+                                <TimerIcon className="w-3 h-3 mr-1" />
+                                <span>남은 시간</span>
+                            </div>
+                            <span>{timer}초</span>
+                        </div>
+                        <Progress value={(timer / maxTime) * 100} className="h-1.5" />
+                    </div>
+                    <div className="absolute w-0 h-0 border-x-8 border-x-transparent border-t-8 border-t-card bottom-[-8px] left-1/2 -translate-x-1/2"></div>
+                  </div>
+                )}
+                
+                {!isFrontOfQueue && (
+                     <div className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 bg-black/60 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                         {customer.name}
+                     </div>
+                 )}
+              </div>
+            );
+          })
+        ) : (
+          <p className="text-muted-foreground text-center self-center text-lg pb-16 z-10 relative">오늘은 손님이 더 이상 없네요.</p>
+        )}
       </div>
     </div>
   );
