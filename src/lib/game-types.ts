@@ -22,4 +22,6 @@ export interface Customer {
     minSpeed: number;
   };
   offerMultiplier: number; // e.g., 1.2 for 20% over base price
+  patience: number; // Transaction time limit in seconds
+  personality: 'normal' | 'impatient' | 'picky'; // Affects timer and penalties
 }

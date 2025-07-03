@@ -13,8 +13,9 @@ import { useToast } from '@/hooks/use-toast';
 const TARGET_GOLD = 1000;
 const MAX_DAYS = 7;
 const MAX_TRUST = 100;
-const CUSTOMER_TIMER_SECONDS = 30;
+const CUSTOMER_TIMER_DEFAULT = 30;
 const TRUST_PENALTY = 10;
+const PICKY_TRUST_PENALTY = 20;
 
 export default function GameClient() {
   const [day, setDay] = useState(1);
@@ -26,7 +27,7 @@ export default function GameClient() {
   const [workshopSlots, setWorkshopSlots] = useState<(Weapon | null)[]>([null, null]);
 
   const [trust, setTrust] = useState(MAX_TRUST);
-  const [customerTimer, setCustomerTimer] = useState(CUSTOMER_TIMER_SECONDS);
+  const [customerTimer, setCustomerTimer] = useState(CUSTOMER_TIMER_DEFAULT);
   const [gameStarted, setGameStarted] = useState(false);
   
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -34,7 +35,7 @@ export default function GameClient() {
 
   const { toast } = useToast();
 
-  const activeCustomerId = customers.length > 0 ? customers[0].id : null;
+  const activeCustomer = customers.length > 0 ? customers[0] : null;
   const selectedCount = workshopSlots.filter(Boolean).length;
 
   const playTickSound = useCallback(() => {
@@ -127,26 +128,27 @@ export default function GameClient() {
       clearInterval(timerIntervalRef.current);
     }
 
-    if (activeCustomerId && gameState === 'playing') {
-      setCustomerTimer(CUSTOMER_TIMER_SECONDS);
+    if (activeCustomer && gameState === 'playing') {
+      setCustomerTimer(activeCustomer.patience);
       timerIntervalRef.current = setInterval(() => {
         setCustomerTimer(prev => {
           if (prev <= 1) {
             if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
             playBellSound();
-            setTrust(t => Math.max(0, t - TRUST_PENALTY));
-            toast({ variant: "destructive", title: "시간 초과!", description: "손님이 기다리다 지쳐 떠났습니다. 신뢰도가 하락합니다." });
+            const penalty = activeCustomer.personality === 'picky' ? PICKY_TRUST_PENALTY : TRUST_PENALTY;
+            setTrust(t => Math.max(0, t - penalty));
+            toast({ variant: "destructive", title: "시간 초과!", description: `손님이 기다리다 지쳐 떠났습니다. 신뢰도가 ${penalty} 하락합니다.` });
             setCustomers(c => c.slice(1));
-            return CUSTOMER_TIMER_SECONDS;
+            return CUSTOMER_TIMER_DEFAULT;
           }
-          if (prev <= Math.floor(CUSTOMER_TIMER_SECONDS / 2) && prev > Math.floor(CUSTOMER_TIMER_SECONDS / 2) - 1) {
+          if (prev <= Math.floor(activeCustomer.patience / 2) && prev > Math.floor(activeCustomer.patience / 2) - 1) {
             playTickSound();
           }
           return prev - 1;
         });
       }, 1000);
     } else {
-        setCustomerTimer(CUSTOMER_TIMER_SECONDS);
+        setCustomerTimer(CUSTOMER_TIMER_DEFAULT);
     }
 
     return () => {
@@ -154,7 +156,7 @@ export default function GameClient() {
         clearInterval(timerIntervalRef.current);
       }
     };
-  }, [activeCustomerId, gameState, playTickSound, toast, playBellSound]);
+  }, [activeCustomer, gameState, playTickSound, toast, playBellSound]);
 
   useEffect(() => {
     if (gameStarted && customers.length === 0 && gameState === 'playing' && day <= MAX_DAYS) {
@@ -173,7 +175,7 @@ export default function GameClient() {
 
   const handleSell = () => {
     const selectedItems = workshopSlots.filter(Boolean) as Weapon[];
-    if (selectedItems.length !== 1 || !activeCustomerId) return;
+    if (selectedItems.length !== 1 || !activeCustomer) return;
 
     const weapon = selectedItems[0];
     const customer = customers[0];
@@ -192,8 +194,9 @@ export default function GameClient() {
       playBellSound();
       toast({ title: "거래 성공!", description: `${weapon.name}을(를) ${salePrice}골드에 판매했습니다.` });
     } else {
-      setTrust(t => Math.max(0, t - TRUST_PENALTY));
-      toast({ variant: "destructive", title: "거래 실패!", description: "손님의 요구사항에 맞지 않아 신뢰도가 하락합니다." });
+      const penalty = customer.personality === 'picky' ? PICKY_TRUST_PENALTY : TRUST_PENALTY;
+      setTrust(t => Math.max(0, t - penalty));
+      toast({ variant: "destructive", title: "거래 실패!", description: `손님의 요구에 맞지 않아 신뢰도가 ${penalty} 하락합니다.` });
     }
     setWorkshopSlots([null, null]);
   };
@@ -289,9 +292,9 @@ export default function GameClient() {
             <div className="md:col-span-2 relative overflow-hidden rounded-lg">
                 <CustomerArea
                   customers={customers} 
-                  activeCustomerId={activeCustomerId}
+                  activeCustomerId={activeCustomer?.id ?? null}
                   timer={customerTimer}
-                  maxTime={CUSTOMER_TIMER_SECONDS}
+                  maxTime={activeCustomer?.patience ?? CUSTOMER_TIMER_DEFAULT}
                 />
             </div>
 
@@ -306,7 +309,7 @@ export default function GameClient() {
 
         <footer className="mt-4 flex flex-wrap gap-4 justify-between items-center">
             <div className="flex items-center gap-2">
-                <Button onClick={handleSell} disabled={selectedCount !== 1 || !activeCustomerId} size="lg">
+                <Button onClick={handleSell} disabled={selectedCount !== 1 || !activeCustomer} size="lg">
                     판매하기
                 </Button>
                 <Button onClick={handleCombine} disabled={selectedCount !== 2} variant="secondary" size="lg">
