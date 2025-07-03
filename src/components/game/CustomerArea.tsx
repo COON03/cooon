@@ -93,13 +93,13 @@ const CustomerArea: React.FC<CustomerAreaProps> = ({ customers, activeCustomerId
                 {isActuallyActive && activeCustomer && (
                   <>
                     {/* Left Bubble: Unique Dialogue */}
-                    <div className="absolute bottom-full mb-2 w-48 bg-white/95 text-black p-3 rounded-lg shadow-lg text-center z-30 animate-bubble-bob" style={{ right: 'calc(50% + 1rem)' }}>
+                    <div className="absolute bottom-full w-48 bg-white/95 text-black p-3 rounded-lg shadow-lg text-center z-30 animate-bubble-bob" style={{ right: 'calc(50% + 1rem)' }}>
                         <p className="text-sm italic">"{activeCustomer.requestText}"</p>
                         <div className="absolute w-0 h-0 border-x-8 border-x-transparent border-t-8 border-t-white/95 bottom-[-8px] right-4"></div>
                     </div>
 
                     {/* Right Bubble: Requirements */}
-                    <div className="absolute bottom-full mb-2 w-56 bg-card text-card-foreground p-3 rounded-lg shadow-lg text-center z-30" style={{ left: 'calc(50% + 1rem)' }}>
+                    <div className="absolute bottom-full w-56 bg-card text-card-foreground p-3 rounded-lg shadow-lg text-center z-30" style={{ left: 'calc(50% + 1rem)' }}>
                         <ul className="text-sm list-disc list-inside text-left mx-auto max-w-max">
                           <li>종류: <span className="font-semibold text-accent">{activeCustomer.wants.type}</span></li>
                           <li>최소 공격력: <span className="font-semibold text-red-400">{activeCustomer.wants.minAttack}</span></li>

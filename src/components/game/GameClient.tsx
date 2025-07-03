@@ -87,38 +87,40 @@ export default function GameClient() {
   }, []);
 
   const fetchCustomers = useCallback(() => {
-    const customersPerDay = [0, 2, 3, 3, 4, 4, 5, 5]; // index is day
-    const numCustomers = customersPerDay[day] || 5;
+    // 날이 갈수록 손님 수가 점차 증가합니다. (10명 ~ 30명)
+    const customersPerDay = [0, 10, 13, 16, 20, 24, 27, 30]; 
+    const numCustomers = customersPerDay[day] || 30;
 
-    // Filter customers that can appear on the current day.
-    // The allCustomers array is already sorted roughly by difficulty.
+    // 날이 갈수록 더 어려운 손님들이 해금됩니다.
     const unlockedCustomers = allCustomers.filter((_, index) => {
-        // More customers get unlocked as days go by
-        const unlockedCount = Math.min(allCustomers.length, 2 + Math.floor(day * 1.5));
+        const unlockedCount = Math.min(allCustomers.length, 2 + Math.floor(day * 2));
         return index < unlockedCount;
     });
-
-    // On later days (day 4+), give more weight to impatient/picky customers to increase their frequency
-    const bonusCustomers = day > 3 ? unlockedCustomers.filter(c => c.personality !== 'normal') : [];
-
-    const potentialPool = [...unlockedCustomers, ...bonusCustomers];
-
-    const shuffled = [...potentialPool].sort(() => 0.5 - Math.random());
     
-    // Get unique customers from the shuffled pool
-    const todaysCustomers: Customer[] = [];
-    const seenIds = new Set<string>();
-    for (const customer of shuffled) {
-      if (!seenIds.has(customer.id)) {
-        todaysCustomers.push(customer);
-        seenIds.add(customer.id);
-      }
-      if (todaysCustomers.length >= numCustomers) {
-        break;
+    // 후반부로 갈수록 까다로운 손님(성격이 normal이 아니거나, 희귀 무기를 찾는 손님)의 등장 확률이 높아집니다.
+    const difficultCustomers = unlockedCustomers.filter(c => c.personality !== 'normal' || ['Scythe', 'Spear', 'Dagger', 'Whip', 'Claw'].includes(c.wants.type));
+    
+    let potentialPool = [...unlockedCustomers];
+    // 날짜가 지날수록 difficultCustomers를 풀에 더 많이 추가하여 등장 확률을 높입니다.
+    if (difficultCustomers.length > 0) {
+      for (let i = 1; i < day; i++) {
+          potentialPool.push(...difficultCustomers);
       }
     }
+
+    const shuffled = [...potentialPool].sort(() => 0.5 - Math.random());
+
+    // 중복을 허용하여 오늘의 손님을 선택합니다.
+    const todaysCustomers: Customer[] = [];
+    if (shuffled.length > 0) {
+        for (let i = 0; i < numCustomers; i++) {
+            // 풀이 비어있지 않다면, 순환 참조를 통해 손님을 선택합니다.
+            todaysCustomers.push(shuffled[i % shuffled.length]);
+        }
+    }
     
-    setCustomers(todaysCustomers);
+    // React key를 위해 각 손님에게 고유 ID를 부여합니다.
+    setCustomers(todaysCustomers.map(c => ({...c, id: `${c.id}_${Math.random()}`})));
 
     if (todaysCustomers.length > 0) {
       playBellSound();
@@ -132,8 +134,7 @@ export default function GameClient() {
     setInventory([...initialWeapons]);
     setGameState('playing');
     setWorkshopSlots([null, null]);
-    const shuffled = [...allCustomers].sort(() => 0.5 - Math.random());
-    setCustomers(shuffled.slice(0, 2));
+    // fetchCustomers will be called by useEffect
   }, []);
 
   const handleNextDay = useCallback(() => {
@@ -143,7 +144,6 @@ export default function GameClient() {
       }
     } else {
       setDay(day + 1);
-      // fetchCustomers is now called by useEffect on day change
       setInventory(prev => [...prev, generateNewItem(day + 1)]);
       toast({ title: `제 ${day + 1}일`, description: "새로운 하루가 시작되었습니다." });
     }
