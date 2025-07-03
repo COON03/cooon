@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { initialWeapons, allCustomers, generateNewItem } from '@/lib/game-data';
-import type { Weapon, Customer, WeaponType } from '@/lib/game-types';
+import type { Weapon, Customer, WeaponType, PassiveSkill } from '@/lib/game-types';
 import Header from './Header';
 import CustomerArea from './CustomerArea';
 import InventoryArea from './InventoryArea';
@@ -14,13 +14,13 @@ import { useToast } from '@/hooks/use-toast';
 import { ArrowRight, Book } from 'lucide-react';
 import { WeaponIcon } from './WeaponIcon';
 import { Card } from '../ui/card';
+import PassiveSkillDialog from './PassiveSkillDialog';
+import { allSkills } from '@/lib/skill-data';
 
 const TARGET_GOLD = 1000;
 const MAX_DAYS = 7;
-const MAX_TRUST = 100;
+const INITIAL_LIVES = 5;
 const CUSTOMER_TIMER_DEFAULT = 30;
-const TRUST_PENALTY = 10;
-const PICKY_TRUST_PENALTY = 20;
 
 export default function GameClient() {
   const [day, setDay] = useState(1);
@@ -31,7 +31,8 @@ export default function GameClient() {
   
   const [workshopSlots, setWorkshopSlots] = useState<(Weapon | null)[]>([null, null]);
 
-  const [trust, setTrust] = useState(MAX_TRUST);
+  const [lives, setLives] = useState(INITIAL_LIVES);
+  const [maxLives, setMaxLives] = useState(INITIAL_LIVES);
   const [customerTimer, setCustomerTimer] = useState(CUSTOMER_TIMER_DEFAULT);
   const [gameStarted, setGameStarted] = useState(false);
   
@@ -45,6 +46,12 @@ export default function GameClient() {
     name: string;
     type: WeaponType | 'Random';
   } | null>(null);
+
+  // Passive skill states
+  const [isSkillSelectionOpen, setIsSkillSelectionOpen] = useState(false);
+  const [availableSkills, setAvailableSkills] = useState<PassiveSkill[]>([]);
+  const [timerBonus, setTimerBonus] = useState(1.0);
+  const [badCustomerRate, setBadCustomerRate] = useState(1.0);
 
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
@@ -99,16 +106,6 @@ export default function GameClient() {
     osc2.stop(time + 0.6);
   }, []);
 
-  const resetGame = useCallback(() => {
-    setDay(1);
-    setGold(100);
-    setTrust(MAX_TRUST);
-    setInventory([...initialWeapons]);
-    setGameState('playing');
-    setWorkshopSlots([null, null]);
-    setDiscoveredRecipes(new Set(allRecipes.map(r => r.id)));
-  }, []);
-
   const fetchCustomers = useCallback(() => {
     const customersPerDay = [0, 10, 13, 16, 20, 24, 27, 30]; 
     const numCustomers = customersPerDay[day] || 30;
@@ -122,7 +119,8 @@ export default function GameClient() {
     if (unlockedCustomers.length > 0) {
       const difficultCustomers = unlockedCustomers.filter(c => c.personality !== 'normal' || ['Scythe', 'Magic Staff', 'Chain', 'Claw', 'Rapier', 'Whip', 'Boomerang'].includes(c.wants.type));
       if (difficultCustomers.length > 0) {
-        for (let i = 1; i < day; i++) {
+        const difficultCustomersToAdd = Math.max(1, Math.floor((day - 1) * badCustomerRate));
+        for (let i = 0; i < difficultCustomersToAdd; i++) {
             potentialPool.push(...difficultCustomers);
         }
       }
@@ -142,16 +140,9 @@ export default function GameClient() {
     if (todaysCustomers.length > 0) {
       playBellSound();
     }
-  }, [day, playBellSound]);
+  }, [day, playBellSound, badCustomerRate]);
   
-  const handleNextDay = useCallback(() => {
-    if (day >= MAX_DAYS) {
-      if (gameState === 'playing') {
-        setGameState(gold >= TARGET_GOLD ? 'won' : 'lost');
-      }
-      return;
-    }
-
+  const startNewDay = useCallback(() => {
     const nextDay = day + 1;
     setDay(nextDay);
     
@@ -186,7 +177,64 @@ export default function GameClient() {
     }
     
     setWorkshopSlots([null, null]);
-  }, [day, gameState, gold, inventory, toast]);
+    fetchCustomers();
+  }, [day, inventory, toast, fetchCustomers]);
+
+  const handleNextDay = useCallback(() => {
+    if (day >= MAX_DAYS) {
+      if (gameState === 'playing') {
+        setGameState(gold >= TARGET_GOLD ? 'won' : 'lost');
+      }
+      return;
+    }
+    
+    // Open skill selection
+    const shuffledSkills = [...allSkills].sort(() => 0.5 - Math.random());
+    setAvailableSkills(shuffledSkills.slice(0, 3));
+    setIsSkillSelectionOpen(true);
+
+  }, [day, gameState, gold]);
+
+  const handleSelectSkill = useCallback((skill: PassiveSkill) => {
+    setIsSkillSelectionOpen(false);
+
+    switch (skill.id) {
+      case 'ADD_GOLD':
+        setGold(g => g + 100);
+        toast({ title: "스킬 획득!", description: skill.description });
+        break;
+      case 'ADD_HEART':
+        setMaxLives(l => l + 1);
+        setLives(l => l + 1);
+        toast({ title: "스킬 획득!", description: skill.description });
+        break;
+      case 'TIMER_BOOST':
+        setTimerBonus(b => b + 0.05);
+        toast({ title: "스킬 획득!", description: skill.description });
+        break;
+      case 'REDUCE_BAD_CUSTOMERS':
+        setBadCustomerRate(r => Math.max(0.5, r - 0.25));
+        toast({ title: "스킬 획득!", description: skill.description });
+        break;
+    }
+    
+    startNewDay();
+
+  }, [startNewDay, toast]);
+
+  const resetGame = useCallback(() => {
+    setDay(1);
+    setGold(100);
+    setLives(INITIAL_LIVES);
+    setMaxLives(INITIAL_LIVES);
+    setTimerBonus(1.0);
+    setBadCustomerRate(1.0);
+    setInventory([...initialWeapons]);
+    setGameState('playing');
+    setWorkshopSlots([null, null]);
+    setDiscoveredRecipes(new Set(allRecipes.map(r => r.id)));
+    fetchCustomers();
+  }, [fetchCustomers]);
 
   const handleSell = () => {
     const selectedItems = workshopSlots.filter(Boolean) as Weapon[];
@@ -211,9 +259,8 @@ export default function GameClient() {
       toast({ title: "거래 성공!", description: `${weapon.name}을(를) ${salePrice}골드에 판매했습니다.` });
       setDepartingInfo({ id: customer.id, message: "이거 좋군! 고맙네." });
     } else {
-      const penalty = customer.personality === 'picky' ? PICKY_TRUST_PENALTY : TRUST_PENALTY;
-      setTrust(t => Math.max(0, t - penalty));
-      toast({ variant: "destructive", title: "거래 실패!", description: `손님의 요구에 맞지 않아 신뢰도가 ${penalty} 하락합니다.` });
+      setLives(l => Math.max(0, l - 1));
+      toast({ variant: "destructive", title: "거래 실패!", description: `손님의 요구에 맞지 않아 생명력이 1 감소합니다.` });
       setDepartingInfo({ id: customer.id, message: "흠, 이건 내가 찾던 게 아니야." });
     }
     setWorkshopSlots([null, null]);
@@ -295,12 +342,6 @@ export default function GameClient() {
       setGameStarted(true);
     }
   }, [gameStarted, resetGame]);
-  
-  useEffect(() => {
-    if(gameStarted) {
-      fetchCustomers();
-    }
-  }, [day, gameStarted, fetchCustomers]);
 
   useEffect(() => {
     const [w1, w2] = workshopSlots;
@@ -341,7 +382,8 @@ export default function GameClient() {
     }
 
     if (activeCustomer && gameState === 'playing' && !isInteracting) {
-      setCustomerTimer(activeCustomer.patience);
+      const patience = Math.floor(activeCustomer.patience * timerBonus);
+      setCustomerTimer(patience);
       timerIntervalRef.current = setInterval(() => {
         setCustomerTimer(prev => {
           if (prev <= 1) {
@@ -352,9 +394,8 @@ export default function GameClient() {
             setDepartingInfo({ id: activeCustomer.id, message: "기다리다 지쳤네. 다음에 오지." });
 
             setTimeout(() => {
-                const penalty = activeCustomer.personality === 'picky' ? PICKY_TRUST_PENALTY : TRUST_PENALTY;
-                setTrust(t => Math.max(0, t - penalty));
-                toast({ variant: "destructive", title: "시간 초과!", description: `손님이 기다리다 지쳐 떠났습니다. 신뢰도가 ${penalty} 하락합니다.` });
+                setLives(l => Math.max(0, l - 1));
+                toast({ variant: "destructive", title: "시간 초과!", description: `손님이 기다리다 지쳐 떠났습니다. 생명력이 1 하락합니다.` });
                 setCustomers(c => c.slice(1));
                 setDepartingInfo(null);
                 setIsInteracting(false);
@@ -362,7 +403,7 @@ export default function GameClient() {
 
             return CUSTOMER_TIMER_DEFAULT;
           }
-          if (prev <= Math.floor(activeCustomer.patience / 2) && prev > Math.floor(activeCustomer.patience / 2) - 1) {
+          if (prev <= Math.floor(patience / 2) && prev > Math.floor(patience / 2) - 1) {
             playTickSound();
           }
           return prev - 1;
@@ -377,7 +418,7 @@ export default function GameClient() {
         clearInterval(timerIntervalRef.current);
       }
     };
-  }, [activeCustomer, gameState, playTickSound, toast, playBellSound, isInteracting]);
+  }, [activeCustomer, gameState, playTickSound, toast, playBellSound, isInteracting, timerBonus]);
 
   useEffect(() => {
     if (gameStarted && customers.length === 0 && gameState === 'playing' && day <= MAX_DAYS && !isInteracting) {
@@ -389,10 +430,10 @@ export default function GameClient() {
   }, [customers.length, gameStarted, gameState, day, isInteracting, handleNextDay]);
 
   useEffect(() => {
-    if (trust <= 0 && gameState === 'playing') {
+    if (lives <= 0 && gameState === 'playing') {
       setGameState('lost');
     }
-  }, [trust, gameState]);
+  }, [lives, gameState]);
 
   return (
     <div className="flex flex-col h-screen bg-background text-foreground font-body p-4 md:p-6 lg:p-8 overflow-hidden">
@@ -406,7 +447,7 @@ export default function GameClient() {
             <span className="sr-only">무기 도감 열기</span>
         </Button>
 
-        <Header day={day} maxDays={MAX_DAYS} gold={gold} targetGold={TARGET_GOLD} trust={trust} maxTrust={MAX_TRUST} />
+        <Header day={day} maxDays={MAX_DAYS} gold={gold} targetGold={TARGET_GOLD} lives={lives} maxLives={maxLives} />
         
         <main className="flex-grow grid grid-cols-1 md:grid-cols-3 gap-6 mt-2 overflow-hidden">
             <div className="md:col-span-2 relative overflow-hidden rounded-lg">
@@ -414,7 +455,7 @@ export default function GameClient() {
                   customers={customers} 
                   activeCustomerId={activeCustomer?.id ?? null}
                   timer={customerTimer}
-                  maxTime={activeCustomer?.patience ?? CUSTOMER_TIMER_DEFAULT}
+                  maxTime={activeCustomer ? Math.floor(activeCustomer.patience * timerBonus) : CUSTOMER_TIMER_DEFAULT}
                   departingInfo={departingInfo}
                 />
             </div>
@@ -467,6 +508,11 @@ export default function GameClient() {
             isOpen={isRecipeBookOpen} 
             onOpenChange={setIsRecipeBookOpen} 
             discoveredRecipes={discoveredRecipes}
+        />
+        <PassiveSkillDialog 
+            isOpen={isSkillSelectionOpen}
+            skills={availableSkills}
+            onSelectSkill={handleSelectSkill}
         />
     </div>
   );

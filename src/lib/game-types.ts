@@ -21,3 +21,11 @@ export interface Customer {
   patience: number; // Transaction time limit in seconds
   personality: 'normal' | 'impatient' | 'picky'; // Affects timer and penalties
 }
+
+export type SkillId = 'ADD_GOLD' | 'ADD_HEART' | 'TIMER_BOOST' | 'REDUCE_BAD_CUSTOMERS';
+
+export interface PassiveSkill {
+  id: SkillId;
+  title: string;
+  description: string;
+}

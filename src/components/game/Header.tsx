@@ -2,20 +2,21 @@ import React from 'react';
 import { Progress } from '@/components/ui/progress';
 import { GoldCoinIcon } from '@/lib/icons';
 import { Card, CardContent } from '@/components/ui/card';
-import { ShieldCheck } from 'lucide-react';
+import { Heart } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface HeaderProps {
   day: number;
   maxDays: number;
   gold: number;
   targetGold: number;
-  trust: number;
-  maxTrust: number;
+  lives: number;
+  maxLives: number;
 }
 
-const Header: React.FC<HeaderProps> = ({ day, maxDays, gold, targetGold, trust, maxTrust }) => {
+const Header: React.FC<HeaderProps> = ({ day, maxDays, gold, targetGold, lives, maxLives }) => {
   const goldProgress = Math.min((gold / targetGold) * 100, 100);
-  const trustProgress = Math.min((trust / maxTrust) * 100, 100);
+  const hearts = Array.from({ length: maxLives }, (_, i) => i < lives);
 
   return (
     <header className="flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -37,9 +38,13 @@ const Header: React.FC<HeaderProps> = ({ day, maxDays, gold, targetGold, trust, 
             </div>
             <div>
               <div className='text-sm text-muted-foreground mb-1 flex items-center'>
-                <ShieldCheck className="w-4 h-4 mr-1.5" />신뢰도 ({trust} / {maxTrust})
+                생명력
               </div>
-              <Progress value={trustProgress} className="h-3" />
+              <div className="flex items-center gap-1">
+                {hearts.map((isFilled, i) => (
+                    <Heart key={i} className={cn('w-6 h-6', isFilled ? 'text-red-500 fill-current' : 'text-muted/50')} />
+                ))}
+              </div>
             </div>
           </CardContent>
       </Card>
