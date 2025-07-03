@@ -20,7 +20,7 @@ export const allCustomers: Customer[] = [
     },
     { 
         id: 'c2', name: '성급한 산적', sprite: 'Rogue', requestText: "도끼! 아무 도끼나 빨리!", wants: { type: 'Axe' }, offerMultiplier: 1.8, patience: 10, personality: 'impatient',
-        successDialogues: ["야, 이거 꽤 괜찮은데?", "오, 쓸만하군!"],
+        successDialogues: ["크하하! 이걸로 두들겨 팰 생각에 신나는군!", "좋아! 이걸로 당장 써먹어주지!"],
         failDialogues: ["뭐야, 장난해?", "에이, 시간 없는데!"]
     },
     { 
@@ -35,7 +35,7 @@ export const allCustomers: Customer[] = [
     },
     { 
         id: 'c5', name: '드워프 전사', sprite: 'Rogue', requestText: "혹시 체인으로 된 무기는 없나?", wants: { type: 'Chain' }, offerMultiplier: 2.2, patience: 30, personality: 'normal',
-        successDialogues: ["나쁘지 않군. 다음에도 기대하지.", "오호, 이 정도면 쓸만해."],
+        successDialogues: ["대장장이 솜씨가 제법이군. 인정하지.", "이걸로 트롤 대가리를 깨부술 수 있겠어."],
         failDialogues: ["내구도가 영... 별로군.", "이걸 쓰라고 만든 건가?"]
     },
     { 
@@ -45,17 +45,17 @@ export const allCustomers: Customer[] = [
     },
     { 
         id: 'c7', name: '그림자 암살자', sprite: 'Rogue', requestText: "손에 장착할 클로... 10초 주지.", wants: { type: 'Claw' }, offerMultiplier: 3.0, patience: 10, personality: 'impatient',
-        successDialogues: ["흥, 그럭저럭 쓸만하군.", "이 정도면... 만족하지."],
+        successDialogues: ["피비린내를 감추기엔... 딱 좋군.", "어둠 속에서 유용하겠어."],
         failDialogues: ["시간 낭비였군.", "실망스럽군."]
     },
     { 
         id: 'c8', name: '고대 유적 탐험가', sprite: 'Villager', requestText: "이 채찍, 꽤 쓸만해 보이는데... 더 좋은 건 없나?", wants: { type: 'Whip' }, offerMultiplier: 3.2, patience: 30, personality: 'normal',
-        successDialogues: ["고마워~ 아저씨~!", "이거라면 탐험에 도움이 되겠어!"],
+        successDialogues: ["이야, 이거 물건이네요! 탐험에 딱이겠어요!", "이걸로 어떤 유적이든 문제 없겠어요!"],
         failDialogues: ["이런 걸로는 유적의 위험에 대비할 수 없어.", "더 나은 건 없나?"]
     },
     { 
         id: 'c9', name: '사령술사', sprite: 'Mage', requestText: "영혼을 거두는 낫이 필요하다.", wants: { type: 'Scythe' }, offerMultiplier: 3.5, patience: 45, personality: 'normal',
-        successDialogues: ["성역을 지킬 수 있겠군. 감사를 표하오.", "죽은 자들의 영혼이... 만족하는군."],
+        successDialogues: ["죽은 자들의 영혼이... 만족하는군.", "이걸로 내 군단을 더 강하게 만들 수 있겠군."],
         failDialogues: ["이런 무기로는 영혼을 거둘 수 없다.", "그림자의 힘이 부족하군."]
     },
     { 
@@ -65,7 +65,7 @@ export const allCustomers: Customer[] = [
     },
     { 
         id: 'c11', name: '수수께끼의 격투가', sprite: 'Rogue', requestText: "내 주먹보다 강한 클로가 있다면 보여줘.", wants: { type: 'Claw' }, offerMultiplier: 3.4, patience: 25, personality: 'normal',
-        successDialogues: ["나쁘지 않군. 다음에도 기대하지.", "내 기술을 쓰기에 부족함이 없겠어."],
+        successDialogues: ["내 주먹과 잘 어울리겠군.", "내 기술을 쓰기에 부족함이 없겠어."],
         failDialogues: ["내 주먹보다 약하군.", "맨손이 낫겠어."]
     },
     { 
