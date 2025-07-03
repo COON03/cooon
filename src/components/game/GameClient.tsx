@@ -148,7 +148,7 @@ export default function GameClient() {
     
     const newSupplies: Weapon[] = [];
     const basicWeaponTypes: ('Sword' | 'Axe' | 'Bow')[] = ['Sword', 'Axe', 'Bow'];
-    const minStock = 3 + Math.floor((nextDay - 1) / 3); // Days 1-3: 3, Days 4-6: 4, Day 7: 5
+    const minStock = 4 + Math.floor((nextDay - 1) / 3); // Days 1-3: 4, Days 4-6: 5, Day 7: 6
 
     basicWeaponTypes.forEach(type => {
         const currentStock = inventory.filter(w => w.type === type).length;
@@ -159,8 +159,11 @@ export default function GameClient() {
     });
 
     if (newSupplies.length === 0) {
-        const randomType = basicWeaponTypes[Math.floor(Math.random() * basicWeaponTypes.length)];
-        newSupplies.push(generateNewItem(nextDay, randomType));
+        const bonusCount = 1 + Math.floor(Math.random() * 2); // 1~2개 추가 보급
+        for (let i = 0; i < bonusCount; i++) {
+            const randomType = basicWeaponTypes[Math.floor(Math.random() * basicWeaponTypes.length)];
+            newSupplies.push(generateNewItem(nextDay, randomType));
+        }
     }
     
     if (newSupplies.length > 0) {
