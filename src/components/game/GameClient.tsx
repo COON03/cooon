@@ -57,6 +57,7 @@ export default function GameClient() {
   const [availableSkills, setAvailableSkills] = useState<PassiveSkill[]>([]);
   const [timerBonus, setTimerBonus] = useState(1.0);
   const [badCustomerRate, setBadCustomerRate] = useState(1.0);
+  const [impatientDialogue, setImpatientDialogue] = useState<string | null>(null);
 
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
@@ -375,13 +376,17 @@ export default function GameClient() {
     if (timerIntervalRef.current) {
       clearInterval(timerIntervalRef.current);
     }
+    setImpatientDialogue(null); // Reset for new customer
 
     if (activeCustomer && gameState === 'playing' && !isInteracting) {
       const patience = Math.floor(activeCustomer.patience * timerBonus);
       setCustomerTimer(patience);
+
       timerIntervalRef.current = setInterval(() => {
         setCustomerTimer(prev => {
-          if (prev <= 1) {
+          const newTimerValue = prev - 1;
+
+          if (newTimerValue <= 1) {
             if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
             playBellSound();
             
@@ -398,10 +403,16 @@ export default function GameClient() {
 
             return CUSTOMER_TIMER_DEFAULT;
           }
-          if (prev <= Math.floor(patience / 2) && prev > Math.floor(patience / 2) - 1) {
+
+          if (newTimerValue <= Math.floor(patience * 0.4) && !impatientDialogue) {
+            const dialogue = getRandomDialogue(activeCustomer.impatientDialogues, "시간이 없는데...");
+            setImpatientDialogue(dialogue);
+          }
+          
+          if (newTimerValue <= Math.floor(patience / 2) && newTimerValue > Math.floor(patience / 2) - 1) {
             playTickSound();
           }
-          return prev - 1;
+          return newTimerValue;
         });
       }, 1000);
     } else {
@@ -413,7 +424,7 @@ export default function GameClient() {
         clearInterval(timerIntervalRef.current);
       }
     };
-  }, [activeCustomer, gameState, playTickSound, toast, playBellSound, isInteracting, timerBonus]);
+  }, [activeCustomer, gameState, isInteracting, timerBonus, playBellSound, playTickSound, toast, impatientDialogue]);
 
   useEffect(() => {
     if (gameStarted && customers.length === 0 && gameState === 'playing' && day <= MAX_DAYS && !isInteracting) {
@@ -479,6 +490,7 @@ export default function GameClient() {
                   timer={customerTimer}
                   maxTime={activeCustomer ? Math.floor(activeCustomer.patience * timerBonus) : CUSTOMER_TIMER_DEFAULT}
                   departingInfo={departingInfo}
+                  impatientDialogue={impatientDialogue}
                 />
             </div>
 

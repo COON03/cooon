@@ -22,6 +22,7 @@ export interface Customer {
   personality: 'normal' | 'impatient' | 'picky'; // Affects timer and penalties
   successDialogues: string[];
   failDialogues: string[];
+  impatientDialogues: string[];
 }
 
 export type SkillId = 'ADD_GOLD' | 'ADD_HEART' | 'TIMER_BOOST' | 'REDUCE_BAD_CUSTOMERS';

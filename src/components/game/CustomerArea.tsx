@@ -12,9 +12,10 @@ interface CustomerAreaProps {
   timer: number;
   maxTime: number;
   departingInfo: { id: string; message: string; status: 'success' | 'fail' } | null;
+  impatientDialogue: string | null;
 }
 
-const CustomerSpriteCmp = ({ type, mood }: { type: CustomerSprite, mood?: 'happy' | 'angry' }) => {
+const CustomerSpriteCmp = ({ type, mood }: { type: CustomerSprite, mood?: 'happy' | 'angry' | 'impatient' }) => {
   const className = "w-32 h-32 md:w-48 md:h-48 drop-shadow-[0_4px_6px_rgba(0,0,0,0.4)]";
   switch (type) {
     case 'Knight': return <KnightIcon className={className} mood={mood} />;
@@ -25,7 +26,7 @@ const CustomerSpriteCmp = ({ type, mood }: { type: CustomerSprite, mood?: 'happy
   }
 };
 
-const CustomerArea: React.FC<CustomerAreaProps> = ({ customers, activeCustomerId, timer, maxTime, departingInfo }) => {
+const CustomerArea: React.FC<CustomerAreaProps> = ({ customers, activeCustomerId, timer, maxTime, departingInfo, impatientDialogue }) => {
   const activeCustomer = customers.find(c => c.id === activeCustomerId);
 
   return (
@@ -54,7 +55,12 @@ const CustomerArea: React.FC<CustomerAreaProps> = ({ customers, activeCustomerId
             const isVisuallyActive = isActuallyActive || isDeparting;
             const isQueued = index > 0 && !isDeparting;
             const zIndex = 20 - index;
-            const mood = departureStatus === 'success' ? 'happy' : departureStatus === 'fail' ? 'angry' : undefined;
+            
+            const isImpatient = isActuallyActive && !!impatientDialogue;
+            const mood = departureStatus === 'success' ? 'happy' 
+                       : departureStatus === 'fail' ? 'angry' 
+                       : isImpatient ? 'impatient' 
+                       : undefined;
 
             return (
               <div
@@ -120,6 +126,14 @@ const CustomerArea: React.FC<CustomerAreaProps> = ({ customers, activeCustomerId
                         </div>
                         <div className="absolute w-0 h-0 border-x-8 border-x-transparent border-t-8 border-t-card bottom-[-8px] left-4"></div>
                     </div>
+                    
+                    {/* Impatient Bubble */}
+                    {isImpatient && (
+                      <div className="absolute bottom-full mb-4 w-56 bg-card border-l-4 border-yellow-400 text-card-foreground p-3 rounded-lg shadow-lg text-center z-30 animate-bubble-bob" style={{ left: 'calc(100% - 8rem)', top: '-5rem' }}>
+                          <p className="font-bold text-sm italic">"{impatientDialogue}"</p>
+                          <div className="absolute w-0 h-0 border-x-8 border-x-transparent border-t-8 border-t-card bottom-[-8px] left-4"></div>
+                      </div>
+                    )}
                   </>
                 )}
               </div>
