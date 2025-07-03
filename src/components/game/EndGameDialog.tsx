@@ -40,7 +40,7 @@ const EndGameDialog: React.FC<EndGameDialogProps> = ({ gameState, gold, onPlayAg
             {gameState === 'won' ? '🎉 가게를 지켜냈습니다! 🎉' : '💸 파산하고 말았습니다... 💸'}
           </AlertDialogTitle>
           <AlertDialogDescription className="text-center pt-4">
-            7일간의 여정이 끝났습니다. 당신의 최종 결과는...
+            당신의 여정이 끝났습니다. 최종 결과는...
             <div className="my-6">
                 <p className="text-lg text-foreground">최종 자산</p>
                 <p className="text-4xl font-bold text-yellow-400 flex items-center justify-center gap-2">

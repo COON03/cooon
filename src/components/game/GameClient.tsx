@@ -17,7 +17,7 @@ import { Card } from '../ui/card';
 import PassiveSkillDialog from './PassiveSkillDialog';
 import { allSkills } from '@/lib/skill-data';
 
-const TARGET_GOLD = 1000;
+const DAILY_TARGETS = [0, 300, 400, 500, 700, 900, 1200, 1500]; // Day 0 is unused
 const MAX_DAYS = 7;
 const INITIAL_LIVES = 5;
 const CUSTOMER_TIMER_DEFAULT = 30;
@@ -61,6 +61,7 @@ export default function GameClient() {
 
   const activeCustomer = customers.length > 0 ? customers[0] : null;
   const selectedCount = workshopSlots.filter(Boolean).length;
+  const currentTargetGold = DAILY_TARGETS[day] || DAILY_TARGETS[MAX_DAYS];
 
   const playTickSound = useCallback(() => {
     if (!audioCtxRef.current) return;
@@ -120,7 +121,8 @@ export default function GameClient() {
     if (unlockedCustomers.length > 0) {
       const difficultCustomers = unlockedCustomers.filter(c => c.personality !== 'normal' || ['Scythe', 'Magic Staff', 'Chain', 'Claw', 'Rapier', 'Whip', 'Boomerang'].includes(c.wants.type));
       if (difficultCustomers.length > 0) {
-        const difficultCustomersToAdd = Math.max(1, Math.floor((day - 1) * badCustomerRate));
+        const difficultyMultiplier = day >= 4 ? 1.5 : 1.0;
+        const difficultCustomersToAdd = Math.max(1, Math.floor((day - 1) * badCustomerRate * difficultyMultiplier));
         for (let i = 0; i < difficultCustomersToAdd; i++) {
             potentialPool.push(...difficultCustomers);
         }
@@ -157,10 +159,13 @@ export default function GameClient() {
   }, [day, toast, fetchCustomers]);
 
   const handleNextDay = useCallback(() => {
+    if (gold < currentTargetGold) {
+      setGameState('lost');
+      return;
+    }
+
     if (day >= MAX_DAYS) {
-      if (gameState === 'playing') {
-        setGameState(gold >= TARGET_GOLD ? 'won' : 'lost');
-      }
+      setGameState('won');
       return;
     }
     
@@ -169,7 +174,7 @@ export default function GameClient() {
     setAvailableSkills(shuffledSkills.slice(0, 3));
     setIsSkillSelectionOpen(true);
 
-  }, [day, gameState, gold]);
+  }, [day, gold, currentTargetGold]);
 
   const handleSelectSkill = useCallback((skill: PassiveSkill) => {
     setIsSkillSelectionOpen(false);
@@ -258,7 +263,10 @@ export default function GameClient() {
     const recipe = findRecipe(w1.type, w2.type);
     
     if (recipe) {
-      const inventoryAfterRemoval = inventory.filter(w => w.id !== w1.id && w.id !== w2.id);
+      const firstItemIndex = inventory.findIndex(w => w.id === w1.id);
+      if (firstItemIndex === -1) return;
+
+      let inventoryAfterRemoval = inventory.filter(w => w.id !== w1.id && w.id !== w2.id);
       
       let newWeaponData: { name: string, type: WeaponType, multiplier: number };
       const basePrice = w1.price + w2.price;
@@ -276,7 +284,9 @@ export default function GameClient() {
         price: Math.floor(basePrice * newWeaponData.multiplier) 
       };
 
-      setInventory([...inventoryAfterRemoval, finalWeapon]);
+      inventoryAfterRemoval.splice(firstItemIndex, 0, finalWeapon);
+      setInventory(inventoryAfterRemoval);
+
       toast({ title: "희귀 무기 조합 성공!", description: `새로운 무기 '${finalWeapon.name}' (${finalWeapon.type})이(가) 탄생했습니다!` });
       
       setDiscoveredRecipes(prev => new Set(prev).add(recipe.id));
@@ -450,7 +460,7 @@ export default function GameClient() {
             <span className="sr-only">무기 도감 열기</span>
         </Button>
 
-        <Header day={day} maxDays={MAX_DAYS} gold={gold} targetGold={TARGET_GOLD} lives={lives} maxLives={maxLives} />
+        <Header day={day} maxDays={MAX_DAYS} gold={gold} targetGold={currentTargetGold} lives={lives} maxLives={maxLives} />
         
         <main className="flex-grow grid grid-cols-1 md:grid-cols-3 gap-6 mt-2 overflow-hidden">
             <div className="md:col-span-2 relative overflow-hidden rounded-lg">

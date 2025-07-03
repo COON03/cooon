@@ -33,7 +33,7 @@ const Header: React.FC<HeaderProps> = ({ day, maxDays, gold, targetGold, lives, 
                 </span>
             </div>
             <div>
-              <div className='text-sm text-muted-foreground mb-1'>목표: {targetGold} G</div>
+              <div className='text-sm text-muted-foreground mb-1'>오늘의 목표: {targetGold} G ({Math.floor(goldProgress)}%)</div>
               <Progress value={goldProgress} className="h-3" />
             </div>
             <div>
