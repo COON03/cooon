@@ -20,6 +20,8 @@ export interface Customer {
   offerMultiplier: number; // e.g., 1.2 for 20% over base price
   patience: number; // Transaction time limit in seconds
   personality: 'normal' | 'impatient' | 'picky'; // Affects timer and penalties
+  successDialogues: string[];
+  failDialogues: string[];
 }
 
 export type SkillId = 'ADD_GOLD' | 'ADD_HEART' | 'TIMER_BOOST' | 'REDUCE_BAD_CUSTOMERS';

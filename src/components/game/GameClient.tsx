@@ -22,6 +22,11 @@ const MAX_DAYS = 7;
 const INITIAL_LIVES = 5;
 const CUSTOMER_TIMER_DEFAULT = 30;
 
+const getRandomDialogue = (dialogues: string[] | undefined, defaultMessage: string): string => {
+  if (!dialogues || dialogues.length === 0) return defaultMessage;
+  return dialogues[Math.floor(Math.random() * dialogues.length)];
+};
+
 export default function GameClient() {
   const [day, setDay] = useState(1);
   const [gold, setGold] = useState(100);
@@ -238,11 +243,15 @@ export default function GameClient() {
       setInventory(inventory.filter(w => w.id !== weapon.id));
       playBellSound();
       toast({ title: "거래 성공!", description: `${weapon.name}을(를) ${salePrice}골드에 판매했습니다.` });
-      setDepartingInfo({ id: customer.id, message: "이거 좋군! 고맙네.", status: 'success' });
+      
+      const message = getRandomDialogue(customer.successDialogues, "이거 좋군! 고맙네.");
+      setDepartingInfo({ id: customer.id, message, status: 'success' });
     } else {
       setLives(l => Math.max(0, l - 1));
       toast({ variant: "destructive", title: "거래 실패!", description: `손님의 요구에 맞지 않아 생명력이 1 감소합니다.` });
-      setDepartingInfo({ id: customer.id, message: "흠, 이건 내가 찾던 게 아니야.", status: 'fail' });
+      
+      const message = getRandomDialogue(customer.failDialogues, "흠, 이건 내가 찾던 게 아니야.");
+      setDepartingInfo({ id: customer.id, message, status: 'fail' });
     }
     setWorkshopSlots([null, null]);
 
