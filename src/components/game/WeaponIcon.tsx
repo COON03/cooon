@@ -2,7 +2,7 @@ import React from 'react';
 import type { WeaponType } from '@/lib/game-types';
 import { SwordIcon, AxeIcon, BowIcon, ScytheIcon, WhipIcon, ClawIcon, MagicStaffIcon, ChainIcon, RapierIcon, BoomerangIcon } from '@/lib/icons';
 import { cn } from '@/lib/utils';
-import { Question } from 'lucide-react';
+import { HelpCircle } from 'lucide-react';
 
 const rareWeaponTypes: WeaponType[] = ['Scythe', 'Magic Staff', 'Chain', 'Claw', 'Rapier', 'Whip', 'Boomerang'];
 
@@ -13,7 +13,7 @@ export const WeaponIcon = ({ type, className: extraClassName }: { type: WeaponTy
   if (type === 'Random') {
       return (
           <div className={cn("flex items-center justify-center bg-muted/50 rounded-lg w-10 h-10", extraClassName)}>
-              <Question className="w-6 h-6 text-muted-foreground" />
+              <HelpCircle className="w-6 h-6 text-muted-foreground" />
           </div>
       );
   }
