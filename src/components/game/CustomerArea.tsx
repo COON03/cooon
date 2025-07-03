@@ -3,8 +3,7 @@ import Image from 'next/image';
 import type { Customer, CustomerSprite } from '@/lib/game-types';
 import { KnightIcon, MageIcon, RogueIcon, VillagerIcon } from '@/lib/icons';
 import { cn } from '@/lib/utils';
-import { Progress } from '../ui/progress';
-import { TimerIcon } from 'lucide-react';
+import TimerClock from './TimerClock';
 
 interface CustomerAreaProps {
   customers: Customer[];
@@ -105,39 +104,26 @@ const CustomerArea: React.FC<CustomerAreaProps> = ({ customers, activeCustomerId
                   <>
                     {/* Left Bubble: Unique / Impatient Dialogue */}
                     <div
-                      className={cn(
-                        'absolute bottom-full mb-4 w-48 p-3 rounded-lg shadow-lg text-center z-30 animate-bubble-bob',
-                        isImpatient
-                          ? 'bg-card text-card-foreground border-l-4 border-yellow-400'
-                          : 'bg-white/95 text-black'
-                      )}
-                      style={{ right: 'calc(100% - 8rem)', top: '-10rem' }}
+                      className="absolute bottom-full mb-4 w-48 bg-card text-card-foreground p-3 rounded-lg shadow-lg text-center z-30 animate-bubble-bob"
+                      style={{ right: '100%', top: '-14rem', marginRight: '1rem' }}
                     >
-                      <p className={cn('text-sm italic', isImpatient && 'font-bold')}>
+                      <p className="text-sm italic">
                         "{isImpatient ? impatientDialogue : activeCustomer.requestText}"
                       </p>
                       <div
-                        className={cn(
-                          'absolute w-0 h-0 border-x-8 border-x-transparent border-t-8 bottom-[-8px] right-4',
-                          isImpatient ? 'border-t-card' : 'border-t-white/95'
-                        )}
+                        className="absolute w-0 h-0 border-x-8 border-x-transparent border-t-8 border-t-card bottom-[-8px] right-4"
                       ></div>
                     </div>
 
                     {/* Right Bubble: Requirements */}
-                    <div className="absolute bottom-full mb-4 w-56 bg-card text-card-foreground p-3 rounded-lg shadow-lg text-center z-30" style={{ left: 'calc(100% - 8rem)', top: '-12rem' }}>
-                        <ul className="text-sm list-disc list-inside text-left mx-auto max-w-max">
-                          <li>종류: <span className="font-semibold text-accent">{activeCustomer.wants.type}</span></li>
-                        </ul>
-                        <div className="mt-3">
-                            <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
-                                <div className="flex items-center">
-                                    <TimerIcon className="w-3 h-3 mr-1" />
-                                    <span>남은 시간</span>
-                                </div>
-                                <span>{timer}초</span>
+                    <div className="absolute bottom-full mb-4 w-48 bg-card text-card-foreground p-3 rounded-lg shadow-lg z-30" style={{ left: '100%', top: '-12rem', marginLeft: '1rem' }}>
+                        <div className="flex flex-col items-center justify-center h-full text-center">
+                            <p className="font-semibold mb-2 text-muted-foreground">요구사항</p>
+                            <p className="text-accent font-bold text-lg mb-3">{activeCustomer.wants.type}</p>
+                             <div className="flex items-center gap-2">
+                                <TimerClock progress={(timer / maxTime) * 100} />
+                                <span className="text-sm text-muted-foreground font-semibold w-8">{timer}s</span>
                             </div>
-                            <Progress value={(timer / maxTime) * 100} className="h-1.5" />
                         </div>
                         <div className="absolute w-0 h-0 border-x-8 border-x-transparent border-t-8 border-t-card bottom-[-8px] left-4"></div>
                     </div>
