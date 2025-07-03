@@ -72,7 +72,7 @@ const CustomerArea: React.FC<CustomerAreaProps> = ({ customers, activeCustomerId
                   'transition-all duration-1000 ease-in-out'
                 )}
                 style={{
-                    left: isVisuallyActive ? '60%' : `${45 - (index-1) * 18}%`,
+                    left: isVisuallyActive ? '50%' : `${30 - (index-1) * 15}%`,
                     bottom: '8rem',
                     transform: `translateX(-50%) scale(${isVisuallyActive ? 1.1 : 1 - index * 0.2})`,
                     zIndex: zIndex,
@@ -101,11 +101,10 @@ const CustomerArea: React.FC<CustomerAreaProps> = ({ customers, activeCustomerId
                 
                 {/* Active Customer Speech Bubbles */}
                 {isActuallyActive && activeCustomer && (
-                  <>
+                  <div className="absolute bottom-full mb-8 w-[30rem] max-w-[90vw] flex justify-between items-start left-1/2 -translate-x-1/2">
                     {/* Left Bubble: Unique / Impatient Dialogue */}
                     <div
-                      className="absolute bottom-full mb-4 w-48 bg-card text-card-foreground p-3 rounded-lg shadow-lg text-center z-30 animate-bubble-bob"
-                      style={{ right: '100%', top: '-14rem', marginRight: '1rem' }}
+                      className="relative w-44 bg-card text-card-foreground p-3 rounded-lg shadow-lg text-center z-30 animate-bubble-bob"
                     >
                       <p className="text-sm italic">
                         "{isImpatient ? impatientDialogue : activeCustomer.requestText}"
@@ -116,7 +115,7 @@ const CustomerArea: React.FC<CustomerAreaProps> = ({ customers, activeCustomerId
                     </div>
 
                     {/* Right Bubble: Requirements */}
-                    <div className="absolute bottom-full mb-4 w-48 bg-card text-card-foreground p-3 rounded-lg shadow-lg z-30" style={{ left: '100%', top: '-12rem', marginLeft: '1rem' }}>
+                    <div className="relative w-44 bg-card text-card-foreground p-3 rounded-lg shadow-lg z-30">
                         <div className="flex flex-col items-center justify-center h-full text-center">
                             <p className="font-semibold mb-2 text-muted-foreground">요구사항</p>
                             <p className="text-accent font-bold text-lg mb-3">{activeCustomer.wants.type}</p>
@@ -127,7 +126,7 @@ const CustomerArea: React.FC<CustomerAreaProps> = ({ customers, activeCustomerId
                         </div>
                         <div className="absolute w-0 h-0 border-x-8 border-x-transparent border-t-8 border-t-card bottom-[-8px] left-4"></div>
                     </div>
-                  </>
+                  </div>
                 )}
               </div>
             );
