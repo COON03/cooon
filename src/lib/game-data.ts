@@ -13,12 +13,12 @@ export const initialWeapons: Weapon[] = [
 ];
 
 export const allCustomers: Customer[] = [
-    { id: 'c1', name: '초보 모험가', requestText: "빠르고 가벼운 검을 원해요!", wants: { type: 'Sword', minAttack: 4, minSpeed: 6 }, offerMultiplier: 1.5 },
-    { id: 'c2', name: '산적 두목', requestText: "가장 강력한 도끼를 가져와!", wants: { type: 'Axe', minAttack: 7, minSpeed: 3 }, offerMultiplier: 1.8 },
-    { id: 'c3', name: '엘프 정찰병', requestText: "신속하고 정확한 활이 필요해.", wants: { type: 'Bow', minAttack: 5, minSpeed: 8 }, offerMultiplier: 1.6 },
-    { id: 'c4', name: '왕실 기사', requestText: "균형 잡힌 좋은 검을 찾고 있네.", wants: { type: 'Sword', minAttack: 10, minSpeed: 10 }, offerMultiplier: 2.0 },
-    { id: 'c5', name: '드워프 전사', requestText: "묵직한 한 방이 있는 도끼는 없나?", wants: { type: 'Axe', minAttack: 15, minSpeed: 2 }, offerMultiplier: 2.2 },
-    { id: 'c6', name: '그림자 암살자', requestText: "어둠 속에서 활시위를 당길 것이다.", wants: { type: 'Bow', minAttack: 12, minSpeed: 15 }, offerMultiplier: 2.5 },
+    { id: 'c1', name: '초보 모험가', sprite: 'Villager', requestText: "빠르고 가벼운 검을 원해요!", wants: { type: 'Sword', minAttack: 4, minSpeed: 6 }, offerMultiplier: 1.5 },
+    { id: 'c2', name: '산적 두목', sprite: 'Rogue', requestText: "가장 강력한 도끼를 가져와!", wants: { type: 'Axe', minAttack: 7, minSpeed: 3 }, offerMultiplier: 1.8 },
+    { id: 'c3', name: '엘프 정찰병', sprite: 'Villager', requestText: "신속하고 정확한 활이 필요해.", wants: { type: 'Bow', minAttack: 5, minSpeed: 8 }, offerMultiplier: 1.6 },
+    { id: 'c4', name: '왕실 기사', sprite: 'Knight', requestText: "균형 잡힌 좋은 검을 찾고 있네.", wants: { type: 'Sword', minAttack: 10, minSpeed: 10 }, offerMultiplier: 2.0 },
+    { id: 'c5', name: '드워프 전사', sprite: 'Rogue', requestText: "묵직한 한 방이 있는 도끼는 없나?", wants: { type: 'Axe', minAttack: 15, minSpeed: 2 }, offerMultiplier: 2.2 },
+    { id: 'c6', name: '마법사 길드원', sprite: 'Mage', requestText: "마력이 깃든 활이 필요합니다.", wants: { type: 'Bow', minAttack: 12, minSpeed: 15 }, offerMultiplier: 2.5 },
 ];
 
 export const generateNewItem = (day: number): Weapon => {

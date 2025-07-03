@@ -10,8 +10,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ['Literata', 'serif'],
-        headline: ['Literata', 'serif'],
+        body: ['VT323', 'monospace'],
+        headline: ['VT323', 'monospace'],
         code: ['monospace'],
       },
       colors: {

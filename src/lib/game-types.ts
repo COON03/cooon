@@ -9,9 +9,12 @@ export interface Weapon {
   price: number;
 }
 
+export type CustomerSprite = 'Knight' | 'Mage' | 'Rogue' | 'Villager';
+
 export interface Customer {
   id: string;
   name: string;
+  sprite: CustomerSprite;
   requestText: string;
   wants: {
     type: WeaponType;

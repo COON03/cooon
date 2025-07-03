@@ -93,3 +93,31 @@ export const KnightIcon = ({ className }: IconProps) => (
     <rect x="4" y="3" width="8" height="1" fill="#D0D0D0"/>
   </svg>
 );
+
+export const MageIcon = ({ className }: IconProps) => (
+  <svg width="32" height="32" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style={iconStyle} className={className}>
+    <path d="M3 10H13V12H11V13H5V12H3V10Z" fill="#4B0082" />
+    <path d="M4 11H12V12H4V11Z" fill="#8A2BE2" />
+    <path d="M8 3L4 9H12L8 3Z" fill="#4B0082" />
+    <path d="M8 4L6 8H10L8 4Z" fill="#8A2BE2" />
+    <path d="M7 9H9V10H7V9Z" fill="#FFD700" />
+  </svg>
+);
+
+export const RogueIcon = ({ className }: IconProps) => (
+  <svg width="32" height="32" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style={iconStyle} className={className}>
+    <path d="M3 4H13V10H12V9H11V8H5V9H4V10H3V4Z" fill="#36454F" />
+    <path d="M4 5H12V7H4V5Z" fill="#5A5A5A" />
+    <path d="M6 7H10V8H6V7Z" fill="#222222" />
+    <path d="M4 10H12V12H4V10Z" fill="#A0522D" />
+  </svg>
+);
+
+export const VillagerIcon = ({ className }: IconProps) => (
+  <svg width="32" height="32" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style={iconStyle} className={className}>
+    <path d="M5 4H11V6H12V7H4V6H5V4Z" fill="#D2B48C" />
+    <path d="M6 3H10V4H6V3Z" fill="#A0522D" />
+    <path d="M4 7H12V12H4V7Z" fill="#008080" />
+    <path d="M5 8H11V11H5V8Z" fill="#00AAAA" />
+  </svg>
+);

@@ -25,7 +25,6 @@ export default function GameClient() {
   const [gameState, setGameState] = useState<'playing' | 'won' | 'lost'>('playing');
   
   const [selectedInventoryId, setSelectedInventoryId] = useState<string | null>(null);
-  const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null);
   const [workshopSlots, setWorkshopSlots] = useState<(Weapon | null)[]>([null, null]);
 
   const [trust, setTrust] = useState(MAX_TRUST);
@@ -36,6 +35,8 @@ export default function GameClient() {
   const audioCtxRef = useRef<AudioContext | null>(null);
 
   const { toast } = useToast();
+
+  const activeCustomerId = customers.length > 0 ? customers[0].id : null;
 
   const playTickSound = useCallback(() => {
     if (!audioCtxRef.current) return;
@@ -53,22 +54,55 @@ export default function GameClient() {
     oscillator.stop(audioCtxRef.current.currentTime + 0.15);
   }, []);
 
+  const playBellSound = useCallback(() => {
+    if (!audioCtxRef.current) return;
+    const time = audioCtxRef.current.currentTime;
+    const osc1 = audioCtxRef.current.createOscillator();
+    const gain1 = audioCtxRef.current.createGain();
+    osc1.connect(gain1);
+    gain1.connect(audioCtxRef.current.destination);
+
+    osc1.type = 'sine';
+    osc1.frequency.setValueAtTime(1200, time);
+    gain1.gain.setValueAtTime(0.3, time);
+    gain1.gain.exponentialRampToValueAtTime(0.001, time + 0.5);
+
+    const osc2 = audioCtxRef.current.createOscillator();
+    const gain2 = audioCtxRef.current.createGain();
+    osc2.connect(gain2);
+    gain2.connect(audioCtxRef.current.destination);
+    
+    osc2.type = 'sine';
+    osc2.frequency.setValueAtTime(1500, time + 0.1);
+    gain2.gain.setValueAtTime(0.2, time + 0.1);
+    gain2.gain.exponentialRampToValueAtTime(0.001, time + 0.6);
+
+    osc1.start(time);
+    osc1.stop(time + 0.5);
+    osc2.start(time + 0.1);
+    osc2.stop(time + 0.6);
+  }, []);
+
   const fetchCustomers = useCallback(() => {
     const shuffled = [...allCustomers].sort(() => 0.5 - Math.random());
-    setCustomers(shuffled.slice(0, 2));
-  }, []);
+    const numCustomers = Math.min(shuffled.length, Math.floor(day / 2) + 1);
+    setCustomers(shuffled.slice(0, numCustomers));
+    if (numCustomers > 0) {
+      playBellSound();
+    }
+  }, [playBellSound, day]);
   
   const resetGame = useCallback(() => {
     setDay(1);
     setGold(100);
     setTrust(MAX_TRUST);
     setInventory([...initialWeapons]);
-    fetchCustomers();
     setGameState('playing');
     setSelectedInventoryId(null);
-    setSelectedCustomerId(null);
     setWorkshopSlots([null, null]);
-  }, [fetchCustomers]);
+    const shuffled = [...allCustomers].sort(() => 0.5 - Math.random());
+    setCustomers(shuffled.slice(0, 2));
+  }, []);
 
   useEffect(() => {
     resetGame();
@@ -95,18 +129,19 @@ export default function GameClient() {
       clearInterval(timerIntervalRef.current);
     }
 
-    if (selectedCustomerId && gameState === 'playing') {
+    if (activeCustomerId && gameState === 'playing') {
       setCustomerTimer(CUSTOMER_TIMER_SECONDS);
       timerIntervalRef.current = setInterval(() => {
         setCustomerTimer(prev => {
           if (prev <= 1) {
             if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
+            playBellSound();
             setTrust(t => Math.max(0, t - TRUST_PENALTY));
             toast({ variant: "destructive", title: "시간 초과!", description: "손님이 기다리다 지쳐 떠났습니다. 신뢰도가 하락합니다." });
-            setSelectedCustomerId(null);
+            setCustomers(c => c.slice(1));
             return CUSTOMER_TIMER_SECONDS;
           }
-          if (prev === Math.floor(CUSTOMER_TIMER_SECONDS / 2)) {
+          if (prev <= Math.floor(CUSTOMER_TIMER_SECONDS / 2) && prev > Math.floor(CUSTOMER_TIMER_SECONDS / 2) - 1) {
             playTickSound();
           }
           return prev - 1;
@@ -121,7 +156,7 @@ export default function GameClient() {
         clearInterval(timerIntervalRef.current);
       }
     };
-  }, [selectedCustomerId, gameState, playTickSound, toast]);
+  }, [activeCustomerId, gameState, playTickSound, toast, playBellSound]);
 
   useEffect(() => {
     if (gameStarted && customers.length === 0 && gameState === 'playing' && day <= MAX_DAYS) {
@@ -139,9 +174,9 @@ export default function GameClient() {
   }, [trust, gameState]);
 
   const handleSell = () => {
-    if (!selectedInventoryId || !selectedCustomerId) return;
+    if (!selectedInventoryId || !activeCustomerId) return;
     const weapon = inventory.find(w => w.id === selectedInventoryId);
-    const customer = customers.find(c => c.id === selectedCustomerId);
+    const customer = customers[0];
 
     if (!weapon || !customer) return;
 
@@ -153,14 +188,14 @@ export default function GameClient() {
       const salePrice = Math.floor(weapon.price * customer.offerMultiplier);
       setGold(gold + salePrice);
       setInventory(inventory.filter(w => w.id !== weapon.id));
-      setCustomers(customers.filter(c => c.id !== customer.id));
+      setCustomers(customers.slice(1));
+      playBellSound();
       toast({ title: "거래 성공!", description: `${weapon.name}을(를) ${salePrice}골드에 판매했습니다.` });
     } else {
       setTrust(t => Math.max(0, t - TRUST_PENALTY));
       toast({ variant: "destructive", title: "거래 실패!", description: "손님의 요구사항에 맞지 않아 신뢰도가 하락합니다." });
     }
     setSelectedInventoryId(null);
-    setSelectedCustomerId(null);
   };
   
   const handleNextDay = () => {
@@ -175,7 +210,6 @@ export default function GameClient() {
       toast({ title: `제 ${day + 1}일`, description: "새로운 하루가 시작되었습니다." });
     }
     setSelectedInventoryId(null);
-    setSelectedCustomerId(null);
   };
 
   const handleCombine = () => {
@@ -230,7 +264,7 @@ export default function GameClient() {
     const clickedItem = inventory.find(w => w.id === id);
     if (!clickedItem) return;
 
-    if (selectedCustomerId) {
+    if (activeCustomerId) {
       const isInWorkshop = workshopSlots.some(w => w?.id === id);
       if (isInWorkshop) {
         toast({ title: "조합 중인 아이템", description: "조합 중인 아이템은 판매할 수 없습니다."});
@@ -256,15 +290,6 @@ export default function GameClient() {
     }
   };
 
-  const handleSelectCustomer = (id: string) => {
-    if (selectedCustomerId === id) {
-      setSelectedCustomerId(null);
-    } else {
-      setSelectedCustomerId(id);
-      setSelectedInventoryId(null);
-    }
-  };
-
   return (
     <div className="flex flex-col h-screen bg-background text-foreground font-body p-4 md:p-6 lg:p-8 overflow-hidden">
         <Header day={day} maxDays={MAX_DAYS} gold={gold} targetGold={TARGET_GOLD} trust={trust} maxTrust={MAX_TRUST} />
@@ -273,8 +298,7 @@ export default function GameClient() {
             <div className="md:col-span-2 grid grid-rows-2 gap-6 overflow-hidden">
                 <CustomerArea
                   customers={customers} 
-                  selectedId={selectedCustomerId} 
-                  onSelect={handleSelectCustomer}
+                  activeCustomerId={activeCustomerId}
                   timer={customerTimer}
                   maxTime={CUSTOMER_TIMER_SECONDS}
                 />
@@ -292,8 +316,8 @@ export default function GameClient() {
         </main>
 
         <footer className="mt-6 flex justify-between items-center">
-          <Button onClick={handleSell} disabled={!selectedInventoryId || !selectedCustomerId} size="lg">
-            선택한 무기 판매
+          <Button onClick={handleSell} disabled={!selectedInventoryId || !activeCustomerId} size="lg">
+            무기 판매
           </Button>
           <Button onClick={handleNextDay} variant="secondary" size="lg" disabled={customers.length > 0 && day < MAX_DAYS}>
             다음 날로 ({day}/{MAX_DAYS})
