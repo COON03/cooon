@@ -8,7 +8,7 @@ import CustomerArea from './CustomerArea';
 import InventoryArea from './InventoryArea';
 import EndGameDialog from './EndGameDialog';
 import RecipeBook from './RecipeBook';
-import { findRecipe } from '@/lib/recipe-data';
+import { findRecipe, allRecipes } from '@/lib/recipe-data';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Book } from 'lucide-react';
@@ -36,7 +36,7 @@ export default function GameClient() {
   const [departingInfo, setDepartingInfo] = useState<{ id: string; message: string } | null>(null);
   const [isInteracting, setIsInteracting] = useState(false);
 
-  const [discoveredRecipes, setDiscoveredRecipes] = useState<Set<string>>(new Set());
+  const [discoveredRecipes, setDiscoveredRecipes] = useState<Set<string>>(new Set(allRecipes.map(r => r.id)));
   const [isRecipeBookOpen, setIsRecipeBookOpen] = useState(false);
 
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -99,7 +99,7 @@ export default function GameClient() {
     setInventory([...initialWeapons]);
     setGameState('playing');
     setWorkshopSlots([null, null]);
-    setDiscoveredRecipes(new Set());
+    setDiscoveredRecipes(new Set(allRecipes.map(r => r.id)));
   }, []);
 
   const fetchCustomers = useCallback(() => {
