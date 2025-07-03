@@ -87,13 +87,43 @@ export default function GameClient() {
   }, []);
 
   const fetchCustomers = useCallback(() => {
-    const shuffled = [...allCustomers].sort(() => 0.5 - Math.random());
-    const numCustomers = Math.min(shuffled.length, Math.floor(day / 2) + 1);
-    setCustomers(shuffled.slice(0, numCustomers));
-    if (numCustomers > 0) {
+    const customersPerDay = [0, 2, 3, 3, 4, 4, 5, 5]; // index is day
+    const numCustomers = customersPerDay[day] || 5;
+
+    // Filter customers that can appear on the current day.
+    // The allCustomers array is already sorted roughly by difficulty.
+    const unlockedCustomers = allCustomers.filter((_, index) => {
+        // More customers get unlocked as days go by
+        const unlockedCount = Math.min(allCustomers.length, 2 + Math.floor(day * 1.5));
+        return index < unlockedCount;
+    });
+
+    // On later days (day 4+), give more weight to impatient/picky customers to increase their frequency
+    const bonusCustomers = day > 3 ? unlockedCustomers.filter(c => c.personality !== 'normal') : [];
+
+    const potentialPool = [...unlockedCustomers, ...bonusCustomers];
+
+    const shuffled = [...potentialPool].sort(() => 0.5 - Math.random());
+    
+    // Get unique customers from the shuffled pool
+    const todaysCustomers: Customer[] = [];
+    const seenIds = new Set<string>();
+    for (const customer of shuffled) {
+      if (!seenIds.has(customer.id)) {
+        todaysCustomers.push(customer);
+        seenIds.add(customer.id);
+      }
+      if (todaysCustomers.length >= numCustomers) {
+        break;
+      }
+    }
+    
+    setCustomers(todaysCustomers);
+
+    if (todaysCustomers.length > 0) {
       playBellSound();
     }
-  }, [playBellSound, day]);
+  }, [day, playBellSound]);
   
   const resetGame = useCallback(() => {
     setDay(1);
@@ -106,84 +136,19 @@ export default function GameClient() {
     setCustomers(shuffled.slice(0, 2));
   }, []);
 
-  useEffect(() => {
-    resetGame();
-    setGameStarted(true);
-  }, [resetGame]);
-
-  useEffect(() => {
-    const initAudio = () => {
-        if (!audioCtxRef.current) {
-            try {
-              audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
-            } catch (e) {
-              console.error("Web Audio API is not supported in this browser");
-            }
-        }
-        window.removeEventListener('click', initAudio);
-    };
-    window.addEventListener('click', initAudio, { once: true });
-    return () => window.removeEventListener('click', initAudio);
-  }, []);
-
-  useEffect(() => {
-    if (timerIntervalRef.current) {
-      clearInterval(timerIntervalRef.current);
-    }
-
-    if (activeCustomer && gameState === 'playing' && !isInteracting) {
-      setCustomerTimer(activeCustomer.patience);
-      timerIntervalRef.current = setInterval(() => {
-        setCustomerTimer(prev => {
-          if (prev <= 1) {
-            if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
-            playBellSound();
-            
-            setIsInteracting(true);
-            setDepartingInfo({ id: activeCustomer.id, message: "기다리다 지쳤네. 다음에 오지." });
-
-            setTimeout(() => {
-                const penalty = activeCustomer.personality === 'picky' ? PICKY_TRUST_PENALTY : TRUST_PENALTY;
-                setTrust(t => Math.max(0, t - penalty));
-                toast({ variant: "destructive", title: "시간 초과!", description: `손님이 기다리다 지쳐 떠났습니다. 신뢰도가 ${penalty} 하락합니다.` });
-                setCustomers(c => c.slice(1));
-                setDepartingInfo(null);
-                setIsInteracting(false);
-            }, 1200);
-
-            return CUSTOMER_TIMER_DEFAULT;
-          }
-          if (prev <= Math.floor(activeCustomer.patience / 2) && prev > Math.floor(activeCustomer.patience / 2) - 1) {
-            playTickSound();
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    } else {
-        setCustomerTimer(CUSTOMER_TIMER_DEFAULT);
-    }
-
-    return () => {
-      if (timerIntervalRef.current) {
-        clearInterval(timerIntervalRef.current);
+  const handleNextDay = useCallback(() => {
+    if (day >= MAX_DAYS) {
+      if (gameState === 'playing') {
+        setGameState(gold >= TARGET_GOLD ? 'won' : 'lost');
       }
-    };
-  }, [activeCustomer, gameState, playTickSound, toast, playBellSound, isInteracting]);
-
-  useEffect(() => {
-    if (gameStarted && customers.length === 0 && gameState === 'playing' && day <= MAX_DAYS && !isInteracting) {
-      const timer = setTimeout(() => {
-        handleNextDay();
-      }, 1500);
-      return () => clearTimeout(timer);
+    } else {
+      setDay(day + 1);
+      // fetchCustomers is now called by useEffect on day change
+      setInventory(prev => [...prev, generateNewItem(day + 1)]);
+      toast({ title: `제 ${day + 1}일`, description: "새로운 하루가 시작되었습니다." });
     }
-  }, [customers.length, gameStarted, gameState, day, isInteracting]);
-
-  useEffect(() => {
-    if (trust <= 0 && gameState === 'playing') {
-      setGameState('lost');
-    }
-  }, [trust, gameState]);
+    setWorkshopSlots([null, null]);
+  }, [day, gameState, gold, toast]);
 
   const handleSell = () => {
     const selectedItems = workshopSlots.filter(Boolean) as Weapon[];
@@ -224,20 +189,6 @@ export default function GameClient() {
     }, 1200);
   };
   
-  const handleNextDay = () => {
-    if (day >= MAX_DAYS) {
-      if (gameState === 'playing') {
-        setGameState(gold >= TARGET_GOLD ? 'won' : 'lost');
-      }
-    } else {
-      setDay(day + 1);
-      fetchCustomers();
-      setInventory(prev => [...prev, generateNewItem(day + 1)]);
-      toast({ title: `제 ${day + 1}일`, description: "새로운 하루가 시작되었습니다." });
-    }
-    setWorkshopSlots([null, null]);
-  };
-
   const handleCombine = () => {
     const [w1, w2] = workshopSlots;
     if (!w1 || !w2) {
@@ -306,6 +257,91 @@ export default function GameClient() {
         }
     }
   };
+
+  useEffect(() => {
+    resetGame();
+    setGameStarted(true);
+  }, [resetGame]);
+  
+  useEffect(() => {
+    if(gameStarted) {
+      fetchCustomers();
+    }
+  }, [day, gameStarted, fetchCustomers]);
+
+  useEffect(() => {
+    const initAudio = () => {
+        if (!audioCtxRef.current) {
+            try {
+              audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+            } catch (e) {
+              console.error("Web Audio API is not supported in this browser");
+            }
+        }
+        window.removeEventListener('click', initAudio);
+    };
+    window.addEventListener('click', initAudio, { once: true });
+    return () => window.removeEventListener('click', initAudio);
+  }, []);
+
+  useEffect(() => {
+    if (timerIntervalRef.current) {
+      clearInterval(timerIntervalRef.current);
+    }
+
+    if (activeCustomer && gameState === 'playing' && !isInteracting) {
+      setCustomerTimer(activeCustomer.patience);
+      timerIntervalRef.current = setInterval(() => {
+        setCustomerTimer(prev => {
+          if (prev <= 1) {
+            if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
+            playBellSound();
+            
+            setIsInteracting(true);
+            setDepartingInfo({ id: activeCustomer.id, message: "기다리다 지쳤네. 다음에 오지." });
+
+            setTimeout(() => {
+                const penalty = activeCustomer.personality === 'picky' ? PICKY_TRUST_PENALTY : TRUST_PENALTY;
+                setTrust(t => Math.max(0, t - penalty));
+                toast({ variant: "destructive", title: "시간 초과!", description: `손님이 기다리다 지쳐 떠났습니다. 신뢰도가 ${penalty} 하락합니다.` });
+                setCustomers(c => c.slice(1));
+                setDepartingInfo(null);
+                setIsInteracting(false);
+            }, 1200);
+
+            return CUSTOMER_TIMER_DEFAULT;
+          }
+          if (prev <= Math.floor(activeCustomer.patience / 2) && prev > Math.floor(activeCustomer.patience / 2) - 1) {
+            playTickSound();
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    } else {
+        setCustomerTimer(CUSTOMER_TIMER_DEFAULT);
+    }
+
+    return () => {
+      if (timerIntervalRef.current) {
+        clearInterval(timerIntervalRef.current);
+      }
+    };
+  }, [activeCustomer, gameState, playTickSound, toast, playBellSound, isInteracting]);
+
+  useEffect(() => {
+    if (gameStarted && customers.length === 0 && gameState === 'playing' && day <= MAX_DAYS && !isInteracting) {
+      const timer = setTimeout(() => {
+        handleNextDay();
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [customers.length, gameStarted, gameState, day, isInteracting, handleNextDay]);
+
+  useEffect(() => {
+    if (trust <= 0 && gameState === 'playing') {
+      setGameState('lost');
+    }
+  }, [trust, gameState]);
 
   return (
     <div className="flex flex-col h-screen bg-background text-foreground font-body p-4 md:p-6 lg:p-8 overflow-hidden">

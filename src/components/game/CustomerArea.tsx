@@ -81,34 +81,43 @@ const CustomerArea: React.FC<CustomerAreaProps> = ({ customers, activeCustomerId
                   <CustomerSpriteCmp type={customer.sprite} />
                 </div>
                 
-                {/* Speech Bubble */}
-                {isVisuallyActive && (
-                  <div className={cn("absolute bottom-full mb-16 w-64 bg-card text-card-foreground p-3 rounded-lg shadow-lg text-center left-1/2 -translate-x-1/2 z-30", isActuallyActive && "animate-bubble-bob")}>
-                    {isActuallyActive && activeCustomer && (
-                        <>
-                          <p className="text-sm my-1 italic text-muted-foreground">"{activeCustomer.requestText}"</p>
-                          <ul className="text-sm list-disc list-inside mt-2 text-left mx-auto max-w-max">
-                            <li>종류: <span className="font-semibold text-accent">{activeCustomer.wants.type}</span></li>
-                            <li>최소 공격력: <span className="font-semibold text-red-400">{activeCustomer.wants.minAttack}</span></li>
-                            <li>최소 속도: <span className="font-semibold text-blue-400">{activeCustomer.wants.minSpeed}</span></li>
-                          </ul>
-                          <div className="mt-3">
-                              <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
-                                  <div className="flex items-center">
-                                      <TimerIcon className="w-3 h-3 mr-1" />
-                                      <span>남은 시간</span>
-                                  </div>
-                                  <span>{timer}초</span>
-                              </div>
-                              <Progress value={(timer / maxTime) * 100} className="h-1.5" />
-                          </div>
-                        </>
-                    )}
-                    {isDeparting && departingInfo && (
+                {/* Departing Speech Bubble */}
+                {isDeparting && departingInfo && (
+                    <div className="absolute bottom-full mb-4 w-64 bg-card text-card-foreground p-3 rounded-lg shadow-lg text-center left-1/2 -translate-x-1/2 z-30">
                         <p className="font-bold text-lg italic text-muted-foreground">"{departingInfo.message}"</p>
-                    )}
-                    <div className="absolute w-0 h-0 border-x-8 border-x-transparent border-t-8 border-t-card bottom-[-8px] left-1/2 -translate-x-1/2"></div>
-                  </div>
+                        <div className="absolute w-0 h-0 border-x-8 border-x-transparent border-t-8 border-t-card bottom-[-8px] left-1/2 -translate-x-1/2"></div>
+                    </div>
+                )}
+                
+                {/* Active Customer Speech Bubbles */}
+                {isActuallyActive && activeCustomer && (
+                  <>
+                    {/* Left Bubble: Unique Dialogue */}
+                    <div className="absolute bottom-full mb-2 w-48 bg-white/95 text-black p-3 rounded-lg shadow-lg text-center z-30 animate-bubble-bob" style={{ right: 'calc(50% + 1rem)' }}>
+                        <p className="text-sm italic">"{activeCustomer.requestText}"</p>
+                        <div className="absolute w-0 h-0 border-x-8 border-x-transparent border-t-8 border-t-white/95 bottom-[-8px] right-4"></div>
+                    </div>
+
+                    {/* Right Bubble: Requirements */}
+                    <div className="absolute bottom-full mb-2 w-56 bg-card text-card-foreground p-3 rounded-lg shadow-lg text-center z-30" style={{ left: 'calc(50% + 1rem)' }}>
+                        <ul className="text-sm list-disc list-inside text-left mx-auto max-w-max">
+                          <li>종류: <span className="font-semibold text-accent">{activeCustomer.wants.type}</span></li>
+                          <li>최소 공격력: <span className="font-semibold text-red-400">{activeCustomer.wants.minAttack}</span></li>
+                          <li>최소 속도: <span className="font-semibold text-blue-400">{activeCustomer.wants.minSpeed}</span></li>
+                        </ul>
+                        <div className="mt-3">
+                            <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
+                                <div className="flex items-center">
+                                    <TimerIcon className="w-3 h-3 mr-1" />
+                                    <span>남은 시간</span>
+                                </div>
+                                <span>{timer}초</span>
+                            </div>
+                            <Progress value={(timer / maxTime) * 100} className="h-1.5" />
+                        </div>
+                        <div className="absolute w-0 h-0 border-x-8 border-x-transparent border-t-8 border-t-card bottom-[-8px] left-4"></div>
+                    </div>
+                  </>
                 )}
               </div>
             );
