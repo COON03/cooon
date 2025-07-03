@@ -8,10 +8,12 @@ import CustomerArea from './CustomerArea';
 import InventoryArea from './InventoryArea';
 import EndGameDialog from './EndGameDialog';
 import RecipeBook from './RecipeBook';
-import { findRecipe, allRecipes } from '@/lib/recipe-data';
+import { findRecipe, allRecipes, type Recipe } from '@/lib/recipe-data';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Book } from 'lucide-react';
+import { ArrowRight, Book } from 'lucide-react';
+import { WeaponIcon } from './WeaponIcon';
+import { Card } from '../ui/card';
 
 const TARGET_GOLD = 1000;
 const MAX_DAYS = 7;
@@ -38,6 +40,11 @@ export default function GameClient() {
 
   const [discoveredRecipes, setDiscoveredRecipes] = useState<Set<string>>(new Set(allRecipes.map(r => r.id)));
   const [isRecipeBookOpen, setIsRecipeBookOpen] = useState(false);
+  
+  const [combinationPreview, setCombinationPreview] = useState<{
+    name: string;
+    type: WeaponType | 'Random';
+  } | null>(null);
 
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
@@ -265,6 +272,24 @@ export default function GameClient() {
   }, [day, gameStarted, fetchCustomers]);
 
   useEffect(() => {
+    const [w1, w2] = workshopSlots;
+    if (w1 && w2) {
+      const recipe = findRecipe(w1.type, w2.type);
+      if (recipe) {
+        if (recipe.isRandom) {
+          setCombinationPreview({ name: '랜덤 무기', type: 'Random' });
+        } else {
+          setCombinationPreview(recipe.output);
+        }
+      } else {
+        setCombinationPreview(null);
+      }
+    } else {
+      setCombinationPreview(null);
+    }
+  }, [workshopSlots]);
+
+  useEffect(() => {
     const initAudio = () => {
         if (!audioCtxRef.current) {
             try {
@@ -377,9 +402,26 @@ export default function GameClient() {
                 <Button onClick={handleSell} disabled={isInteracting || selectedCount !== 1 || !activeCustomer} size="lg">
                     판매하기
                 </Button>
-                <Button onClick={handleCombine} disabled={isInteracting || selectedCount !== 2} variant="secondary" size="lg">
-                    조합하기
-                </Button>
+                
+                <div className="flex items-center gap-2">
+                    <Button 
+                        onClick={handleCombine} 
+                        disabled={isInteracting || !combinationPreview} 
+                        variant="secondary" 
+                        size="lg"
+                    >
+                        {combinationPreview ? `${combinationPreview.name} 만들기` : '조합하기'}
+                    </Button>
+                    {combinationPreview && (
+                        <div className="flex items-center gap-2 text-muted-foreground">
+                            <ArrowRight className="h-5 w-5" />
+                            <Card className="flex items-center justify-center p-1 bg-muted">
+                                <WeaponIcon type={combinationPreview.type} className="w-8 h-8"/>
+                            </Card>
+                        </div>
+                    )}
+                </div>
+
                 <Button onClick={handleClearWorkshop} disabled={isInteracting || selectedCount === 0} variant="outline" size="lg">
                     선택 초기화
                 </Button>
