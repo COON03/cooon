@@ -28,9 +28,9 @@ const CustomerArea: React.FC<CustomerAreaProps> = ({ customers, activeCustomerId
   const activeCustomer = customers.find(c => c.id === activeCustomerId);
 
   return (
-    <div className="w-full h-full bg-[#2E2926] relative flex items-end justify-center overflow-hidden">
+    <div className="w-full h-full bg-[#6d5645] relative flex items-end justify-center overflow-hidden">
       <Image
-        src="https://placehold.co/1200x800/2E2926/2E2926.png"
+        src="https://placehold.co/1200x800/6d5645/6d5645.png"
         alt="Weapon shop background"
         data-ai-hint="pixel art shop interior"
         fill
@@ -39,8 +39,8 @@ const CustomerArea: React.FC<CustomerAreaProps> = ({ customers, activeCustomerId
       />
       
       {/* Shop Counter */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-[#4E342E]/80 border-t-4 border-[#2E2926] z-10 shadow-[0_-8px_20px_rgba(0,0,0,0.5)]">
-        <div className="h-5 bg-[#3E2723]/90 opacity-80 border-b-2 border-black/50"></div>
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-[#594236]/80 border-t-4 border-[#4a372d] z-10 shadow-[0_-8px_20px_rgba(0,0,0,0.5)]">
+        <div className="h-5 bg-[#4a372d]/90 opacity-80 border-b-2 border-black/50"></div>
       </div>
 
       {/* Customer queue container */}
