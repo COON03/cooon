@@ -7,7 +7,6 @@ import { ScrollArea } from '../ui/scroll-area';
 
 interface InventoryAreaProps {
   inventory: Weapon[];
-  selectedId: string | null;
   workshopSlots: (Weapon | null)[];
   onSelect: (id: string) => void;
 }
@@ -31,7 +30,7 @@ const WeaponIcon = ({ type }: { type: Weapon['type'] }) => {
   }
 };
 
-const InventoryArea: React.FC<InventoryAreaProps> = ({ inventory, selectedId, onSelect, workshopSlots }) => {
+const InventoryArea: React.FC<InventoryAreaProps> = ({ inventory, onSelect, workshopSlots }) => {
   const workshopIds = workshopSlots.map(w => w?.id).filter(Boolean);
 
   return (
@@ -40,8 +39,7 @@ const InventoryArea: React.FC<InventoryAreaProps> = ({ inventory, selectedId, on
       <ScrollArea className="flex-grow pr-4 -mr-4">
         <div className="grid grid-cols-1 gap-4">
           {inventory.map((weapon) => {
-            const isInWorkshop = workshopIds.includes(weapon.id);
-            const isSelectedForTrade = selectedId === weapon.id;
+            const isSelected = workshopIds.includes(weapon.id);
             const isRare = rareWeaponTypes.includes(weapon.type);
 
             return (
@@ -50,9 +48,8 @@ const InventoryArea: React.FC<InventoryAreaProps> = ({ inventory, selectedId, on
               onClick={() => onSelect(weapon.id)}
               className={cn(
                 'transition-all duration-200 cursor-pointer hover:shadow-lg hover:shadow-primary/20',
-                isSelectedForTrade && !isInWorkshop ? 'ring-2 ring-primary' : '',
-                isInWorkshop ? 'ring-2 ring-purple-500 bg-purple-900/20 opacity-70' : '',
-                isRare && !isInWorkshop && 'border-yellow-400/50 shadow-lg shadow-yellow-400/20'
+                isSelected ? 'ring-2 ring-primary' : '',
+                isRare && !isSelected && 'border-yellow-400/50 shadow-lg shadow-yellow-400/20'
               )}
             >
               <CardHeader className="flex flex-row items-center gap-4 space-y-0 pb-2">

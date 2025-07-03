@@ -6,7 +6,6 @@ import type { Weapon, Customer } from '@/lib/game-types';
 import Header from './Header';
 import CustomerArea from './CustomerArea';
 import InventoryArea from './InventoryArea';
-import WorkshopArea from './WorkshopArea';
 import EndGameDialog from './EndGameDialog';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -24,7 +23,6 @@ export default function GameClient() {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [gameState, setGameState] = useState<'playing' | 'won' | 'lost'>('playing');
   
-  const [selectedInventoryId, setSelectedInventoryId] = useState<string | null>(null);
   const [workshopSlots, setWorkshopSlots] = useState<(Weapon | null)[]>([null, null]);
 
   const [trust, setTrust] = useState(MAX_TRUST);
@@ -37,6 +35,7 @@ export default function GameClient() {
   const { toast } = useToast();
 
   const activeCustomerId = customers.length > 0 ? customers[0].id : null;
+  const selectedCount = workshopSlots.filter(Boolean).length;
 
   const playTickSound = useCallback(() => {
     if (!audioCtxRef.current) return;
@@ -98,7 +97,6 @@ export default function GameClient() {
     setTrust(MAX_TRUST);
     setInventory([...initialWeapons]);
     setGameState('playing');
-    setSelectedInventoryId(null);
     setWorkshopSlots([null, null]);
     const shuffled = [...allCustomers].sort(() => 0.5 - Math.random());
     setCustomers(shuffled.slice(0, 2));
@@ -174,8 +172,10 @@ export default function GameClient() {
   }, [trust, gameState]);
 
   const handleSell = () => {
-    if (!selectedInventoryId || !activeCustomerId) return;
-    const weapon = inventory.find(w => w.id === selectedInventoryId);
+    const selectedItems = workshopSlots.filter(Boolean) as Weapon[];
+    if (selectedItems.length !== 1 || !activeCustomerId) return;
+
+    const weapon = selectedItems[0];
     const customer = customers[0];
 
     if (!weapon || !customer) return;
@@ -195,7 +195,7 @@ export default function GameClient() {
       setTrust(t => Math.max(0, t - TRUST_PENALTY));
       toast({ variant: "destructive", title: "거래 실패!", description: "손님의 요구사항에 맞지 않아 신뢰도가 하락합니다." });
     }
-    setSelectedInventoryId(null);
+    setWorkshopSlots([null, null]);
   };
   
   const handleNextDay = () => {
@@ -209,7 +209,7 @@ export default function GameClient() {
       setInventory(prev => [...prev, generateNewItem(day + 1)]);
       toast({ title: `제 ${day + 1}일`, description: "새로운 하루가 시작되었습니다." });
     }
-    setSelectedInventoryId(null);
+    setWorkshopSlots([null, null]);
   };
 
   const handleCombine = () => {
@@ -257,36 +257,27 @@ export default function GameClient() {
 
   const handleClearWorkshop = () => {
     setWorkshopSlots([null, null]);
-    setSelectedInventoryId(null);
   };
   
   const handleSelectInventory = (id: string) => {
     const clickedItem = inventory.find(w => w.id === id);
     if (!clickedItem) return;
 
-    if (activeCustomerId) {
-      const isInWorkshop = workshopSlots.some(w => w?.id === id);
-      if (isInWorkshop) {
-        toast({ title: "조합 중인 아이템", description: "조합 중인 아이템은 판매할 수 없습니다."});
-        return;
-      }
-      setSelectedInventoryId(prevId => (prevId === id ? null : id));
-      return;
-    }
+    const slotIndex = workshopSlots.findIndex(s => s?.id === id);
 
-    const isInWorkshop = workshopSlots.some(w => w?.id === id);
-    if (isInWorkshop) {
-      setWorkshopSlots(prev => prev.map(s => s?.id === id ? null : s));
-    } else {
-      const emptySlotIndex = workshopSlots.findIndex(s => s === null);
-      if (emptySlotIndex !== -1) {
+    if (slotIndex > -1) {
         const newSlots = [...workshopSlots];
-        newSlots[emptySlotIndex] = clickedItem;
+        newSlots[slotIndex] = null;
         setWorkshopSlots(newSlots);
-        setSelectedInventoryId(null);
-      } else {
-        toast({ variant: "destructive", title: "대장간이 꽉 찼습니다", description: "먼저 조합하거나 초기화해주세요." });
-      }
+    } else {
+        const emptySlotIndex = workshopSlots.findIndex(s => s === null);
+        if (emptySlotIndex !== -1) {
+            const newSlots = [...workshopSlots];
+            newSlots[emptySlotIndex] = clickedItem;
+            setWorkshopSlots(newSlots);
+        } else {
+            toast({ variant: "destructive", title: "조합 슬롯이 꽉 찼습니다", description: "최대 2개의 무기만 선택할 수 있습니다." });
+        }
     }
   };
 
@@ -294,7 +285,7 @@ export default function GameClient() {
     <div className="flex flex-col h-screen bg-background text-foreground font-body p-4 md:p-6 lg:p-8 overflow-hidden">
         <Header day={day} maxDays={MAX_DAYS} gold={gold} targetGold={TARGET_GOLD} trust={trust} maxTrust={MAX_TRUST} />
         
-        <main className="flex-grow grid grid-cols-1 md:grid-cols-3 gap-6 mt-4 overflow-hidden">
+        <main className="flex-grow grid grid-cols-1 md:grid-cols-3 gap-6 mt-2 overflow-hidden">
             <div className="md:col-span-2 relative overflow-hidden rounded-lg">
                 <CustomerArea
                   customers={customers} 
@@ -302,30 +293,32 @@ export default function GameClient() {
                   timer={customerTimer}
                   maxTime={CUSTOMER_TIMER_SECONDS}
                 />
-                <div className="absolute bottom-0 left-0 right-0 z-30">
-                    <div className="p-4 bg-card/80 backdrop-blur-sm rounded-t-lg border-t border-border/50">
-                        <WorkshopArea slots={workshopSlots} onCombine={handleCombine} onClear={handleClearWorkshop} />
-                    </div>
-                </div>
             </div>
 
             <div className="md:col-span-1 flex flex-col overflow-y-auto">
                  <InventoryArea
                     inventory={inventory}
-                    selectedId={selectedInventoryId}
                     onSelect={handleSelectInventory}
                     workshopSlots={workshopSlots}
                  />
             </div>
         </main>
 
-        <footer className="mt-6 flex justify-between items-center">
-          <Button onClick={handleSell} disabled={!selectedInventoryId || !activeCustomerId} size="lg">
-            무기 판매
-          </Button>
-          <Button onClick={handleNextDay} variant="secondary" size="lg" disabled={customers.length > 0 && day < MAX_DAYS}>
-            다음 날로 ({day}/{MAX_DAYS})
-          </Button>
+        <footer className="mt-4 flex flex-wrap gap-4 justify-between items-center">
+            <div className="flex items-center gap-2">
+                <Button onClick={handleSell} disabled={selectedCount !== 1 || !activeCustomerId} size="lg">
+                    판매하기
+                </Button>
+                <Button onClick={handleCombine} disabled={selectedCount !== 2} variant="secondary" size="lg">
+                    조합하기
+                </Button>
+                <Button onClick={handleClearWorkshop} disabled={selectedCount === 0} variant="outline" size="lg">
+                    선택 초기화
+                </Button>
+            </div>
+            <Button onClick={handleNextDay} variant="secondary" size="lg" disabled={customers.length > 0 && day < MAX_DAYS}>
+                다음 날로 ({day}/{MAX_DAYS})
+            </Button>
         </footer>
 
         <EndGameDialog gameState={gameState} gold={gold} onPlayAgain={resetGame} />
