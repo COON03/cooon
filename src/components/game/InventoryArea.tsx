@@ -27,8 +27,7 @@ const WeaponIcon = ({ type }: { type: Weapon['type'] }) => {
 };
 
 const InventoryArea: React.FC<InventoryAreaProps> = ({ inventory, selectedId, onSelect, workshopSlots }) => {
-  const isWorkshopFull = workshopSlots.every(slot => slot !== null);
-  const workshopIds = workshopSlots.map(w => w?.id);
+  const workshopIds = workshopSlots.map(w => w?.id).filter(Boolean);
 
   return (
     <div className='flex flex-col h-full'>
@@ -37,18 +36,16 @@ const InventoryArea: React.FC<InventoryAreaProps> = ({ inventory, selectedId, on
         <div className="grid grid-cols-1 gap-4">
           {inventory.map((weapon) => {
             const isInWorkshop = workshopIds.includes(weapon.id);
-            const isSelected = selectedId === weapon.id && !isInWorkshop;
-            const isDisabled = (isWorkshopFull && !isInWorkshop) || (selectedId !== null && !isSelected);
+            const isSelectedForTrade = selectedId === weapon.id;
 
             return (
             <Card
               key={weapon.id}
-              onClick={() => !isDisabled && onSelect(weapon.id)}
+              onClick={() => onSelect(weapon.id)}
               className={cn(
-                'transition-all duration-200',
-                isDisabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:shadow-lg hover:shadow-primary/20',
-                isSelected ? 'ring-2 ring-primary' : '',
-                isInWorkshop ? 'ring-2 ring-purple-500 bg-purple-900/20' : ''
+                'transition-all duration-200 cursor-pointer hover:shadow-lg hover:shadow-primary/20',
+                isSelectedForTrade && !isInWorkshop ? 'ring-2 ring-primary' : '',
+                isInWorkshop ? 'ring-2 ring-purple-500 bg-purple-900/20 opacity-70' : ''
               )}
             >
               <CardHeader className="flex flex-row items-center gap-4 space-y-0 pb-2">

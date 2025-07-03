@@ -4,14 +4,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { KnightIcon } from '@/lib/icons';
 import { cn } from '@/lib/utils';
 import { ScrollArea, ScrollBar } from '../ui/scroll-area';
+import { Progress } from '../ui/progress';
+import { TimerIcon } from 'lucide-react';
 
 interface CustomerAreaProps {
   customers: Customer[];
   selectedId: string | null;
   onSelect: (id: string) => void;
+  timer: number;
+  maxTime: number;
 }
 
-const CustomerArea: React.FC<CustomerAreaProps> = ({ customers, selectedId, onSelect }) => {
+const CustomerArea: React.FC<CustomerAreaProps> = ({ customers, selectedId, onSelect, timer, maxTime }) => {
   return (
     <div className='flex flex-col h-full'>
       <h2 className="text-2xl font-headline font-semibold mb-4 text-primary-foreground/90">손님 대기열</h2>
@@ -39,6 +43,18 @@ const CustomerArea: React.FC<CustomerAreaProps> = ({ customers, selectedId, onSe
                   <li>최소 공격력: {customer.wants.minAttack}</li>
                   <li>최소 속도: {customer.wants.minSpeed}</li>
                 </ul>
+                {selectedId === customer.id && (
+                  <div className="mt-4">
+                    <div className="flex items-center justify-between text-sm text-muted-foreground mb-1">
+                      <div className="flex items-center">
+                        <TimerIcon className="w-4 h-4 mr-1.5" />
+                        <span>남은 시간</span>
+                      </div>
+                      <span>{timer}초</span>
+                    </div>
+                    <Progress value={(timer / maxTime) * 100} className="h-2" />
+                  </div>
+                )}
               </CardContent>
             </Card>
           )) : (
