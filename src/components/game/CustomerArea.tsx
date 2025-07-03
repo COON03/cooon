@@ -46,26 +46,23 @@ const CustomerArea: React.FC<CustomerAreaProps> = ({ customers, activeCustomerId
       {/* Customer queue container */}
       <div className="relative w-full h-full flex justify-center items-end z-20">
         {customers.length > 0 ? (
-          customers.slice().reverse().map((customer, index) => {
-            const isFrontOfQueue = index === customers.length - 1;
+          customers.map((customer, index) => {
+            const isFrontOfQueue = index === 0;
             const zIndex = 20 - index;
             return (
               <div
                 key={customer.id}
                 className={cn(
-                    'absolute transition-all duration-500 ease-in-out group',
+                    'absolute transition-all duration-700 ease-in-out',
                 )}
                 style={{
-                    right: `${15 + index * 12}%`,
+                    left: isFrontOfQueue ? '60%' : `${45 - (index-1) * 18}%`,
                     bottom: '8rem',
-                    transform: `scale(${1 - index * 0.2})`,
+                    transform: `translateX(-50%) scale(${isFrontOfQueue ? 1.1 : 1 - index * 0.2})`,
                     zIndex: zIndex,
                 }}
               >
-                <div className={cn(
-                    'transition-transform duration-300', 
-                    isFrontOfQueue ? 'scale-110' : 'group-hover:scale-105'
-                )}>
+                <div className={cn('transition-transform duration-300')}>
                   <CustomerSpriteCmp type={customer.sprite} />
                 </div>
                 
@@ -93,7 +90,7 @@ const CustomerArea: React.FC<CustomerAreaProps> = ({ customers, activeCustomerId
                 )}
                 
                 {!isFrontOfQueue && (
-                     <div className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 bg-black/60 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                     <div className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 bg-black/60 text-white text-xs px-2 py-1 rounded">
                          {customer.name}
                      </div>
                  )}

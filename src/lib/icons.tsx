@@ -34,46 +34,47 @@ export const BowIcon = ({ className }: IconProps) => (
 );
 
 export const ScytheIcon = ({ className }: IconProps) => (
-  <svg width="24" height="24" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style={iconStyle} className={className}>
-    <path d="M3 13L10 6L12 8L5 15H3V13Z" fill="#A0522D" />
-    <path d="M4 12L10 6L11 7L5 13H4V12Z" fill="#804000" />
-    <path d="M9 5L13 1L15 3L11 7L9 5Z" fill="#C0C0C0" />
-    <path d="M10 5L13 2L14 3L11 6L10 5Z" fill="white" />
-  </svg>
+    <svg width="24" height="24" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style={iconStyle} className={className}>
+        <path d="M3 13L10 6L12 8L5 15H3V13Z" fill="#4a044e" />
+        <path d="M4 12L10 6L11 7L5 13H4V12Z" fill="#2e102f" />
+        <path d="M9 5L13 1L15 3L11 7L9 5Z" fill="#a855f7" />
+        <path d="M10 5L13 2L14 3L11 6L10 5Z" fill="#d8b4fe" />
+        <path d="M13 1L12 0L16 4L15 3L13 1Z" fill="#facc15"/>
+    </svg>
 );
 
 export const SpearIcon = ({ className }: IconProps) => (
-  <svg width="24" height="24" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style={iconStyle} className={className}>
-    <path d="M8 1L7 2H9L8 1Z" fill="#C0C0C0" />
-    <path d="M8 2L7 3H9L8 2Z" fill="white" />
-    <path d="M8 2V15H7V2H8Z" fill="#A0522D" />
-    <path d="M8 3V15H7V3H8Z" fill="#804000" />
-  </svg>
+    <svg width="24" height="24" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style={iconStyle} className={className}>
+        <path d="M8 2V15H7V2H8Z" fill="#854d0e" />
+        <path d="M8 3V15H7V3H8Z" fill="#a16207" />
+        <path d="M8 1L6 4H10L8 1Z" fill="#fde047" />
+        <path d="M8 2L7 4H9L8 2Z" fill="#fef08a" />
+    </svg>
 );
 
 export const DaggerIcon = ({ className }: IconProps) => (
-  <svg width="24" height="24" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style={iconStyle} className={className}>
-    <path d="M8 4L7 5V9L5 11V12H11V11L9 9V5L8 4Z" fill="#C0C0C0" />
-    <path d="M8 5L9 6V9L8 10L7 9V6L8 5Z" fill="white" />
-    <path d="M6 12H10V13H6V12Z" fill="#A52A2A" />
-  </svg>
+    <svg width="24" height="24" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style={iconStyle} className={className}>
+        <path d="M8 4L7 5V9L5 11V12H11V11L9 9V5L8 4Z" fill="#1e3a8a" />
+        <path d="M8 5L9 6V9L8 10L7 9V6L8 5Z" fill="#60a5fa" />
+        <path d="M6 12H10V13H6V12Z" fill="#9333ea" />
+    </svg>
 );
 
 export const WhipIcon = ({ className }: IconProps) => (
-  <svg width="24" height="24" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style={iconStyle} className={className}>
-    <path d="M3 11H5V13H3V11Z" fill="#A0522D"/>
-    <path d="M5 12C6 11 8 8 10 6C12 4 13 2 13 2" stroke="#717171" strokeWidth="1"/>
-    <path d="M5 11C6 10 8 7 10 5C12 3 13 1 13 1" stroke="#C0C0C0" strokeWidth="1"/>
-  </svg>
+    <svg width="24" height="24" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style={iconStyle} className={className}>
+        <path d="M3 11H5V13H3V11Z" fill="#78350f" />
+        <path d="M5 12C6 11 8 8 10 6C12 4 13 2 13 2" stroke="#fb923c" strokeWidth="1"/>
+        <path d="M5 11C6 10 8 7 10 5C12 3 13 1 13 1" stroke="#fdba74" strokeWidth="1"/>
+    </svg>
 );
 
 export const ClawIcon = ({ className }: IconProps) => (
-  <svg width="24" height="24" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style={iconStyle} className={className}>
-    <path d="M3 10H8V12H3V10Z" fill="#A0522D" />
-    <path d="M2 4L4 6L6 4Z M6 4L8 6L10 4Z M10 4L12 6L14 4Z" fill="#C0C0C0" />
-    <path d="M3 5L5 7L7 5Z M7 5L9 7L11 5Z M11 5L13 7L15 5Z" fill="white" />
-    <path d="M2 4V8H3V4L2 4Z M6 4V8H7V4L6 4Z M10 4V8H11V4L10 4Z" fill="#B0B0B0" />
-  </svg>
+    <svg width="24" height="24" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style={iconStyle} className={className}>
+        <path d="M3 10H8V12H3V10Z" fill="#4b5563" />
+        <path d="M2 4L4 6L6 4Z M6 4L8 6L10 4Z M10 4L12 6L14 4Z" fill="#fde047" />
+        <path d="M3 5L5 7L7 5Z M7 5L9 7L11 5Z M11 5L13 7L15 5Z" fill="#fef9c3" />
+        <path d="M2 4V8H3V4L2 4Z M6 4V8H7V4L6 4Z M10 4V8H11V4L10 4Z" fill="#eab308" />
+    </svg>
 );
 
 export const GoldCoinIcon = ({ className }: IconProps) => (
@@ -86,69 +87,49 @@ export const GoldCoinIcon = ({ className }: IconProps) => (
 
 export const KnightIcon = ({ className }: IconProps) => (
     <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style={iconStyle} className={className}>
-        <rect x="18" y="22" width="12" height="16" fill="#a5a5a5"/>
-        <rect x="19" y="23" width="10" height="14" fill="#c0c0c0"/>
-        
-        <rect x="16" y="16" width="16" height="10" fill="#6d6d6d"/>
-        <rect x="17" y="17" width="14" height="8" fill="#a5a5a5"/>
-        <rect x="20" y="20" width="8" height="2" fill="#212121"/>
-        <rect x="21" y="20" width="2" height="2" fill="white"/>
-        <rect x="25" y="20" width="2" height="2" fill="white"/>
-        
-        <rect x="23" y="14" width="2" height="4" fill="#d00000"/>
-        
-        <rect x="34" y="28" width="6" height="8" fill="#6d6d6d"/>
-        <rect x="35" y="29" width="4" height="6" fill="#a5a5a5"/>
+        <path d="M24 40C17.3726 40 12 34.6274 12 28C12 21.3726 17.3726 16 24 16C30.6274 16 36 21.3726 36 28C36 34.6274 30.6274 40 24 40Z" fill="#9CA3AF"/>
+        <path d="M24 38C18.4772 38 14 33.5228 14 28C14 22.4772 18.4772 18 24 18C29.5228 18 34 22.4772 34 28C34 33.5228 29.5228 38 24 38Z" fill="#D1D5DB"/>
+        <path d="M18 14H30L32 20H16L18 14Z" fill="#6B7280"/>
+        <path d="M20 22H28V26H20V22Z" fill="#374151"/>
+        <rect x="23" y="10" width="2" height="5" fill="#DC2626"/>
+        <rect x="21" y="23" width="2" height="2" fill="white"/>
+        <rect x="25" y="23" width="2" height="2" fill="white"/>
+        <path d="M8 28C8 26.8954 8.89543 26 10 26C11.1046 26 12 26.8954 12 28C12 29.1046 11.1046 30 10 30C8.89543 30 8 29.1046 8 28Z" fill="#9CA3AF"/>
     </svg>
 );
 
 export const MageIcon = ({ className }: IconProps) => (
     <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style={iconStyle} className={className}>
-        <path d="M24 12L16 18V38H32V18L24 12Z" fill="#4a148c"/>
-        <path d="M24 14L18 19V36H30V19L24 14Z" fill="#6a1b9a"/>
-        
-        <path d="M24 6L14 16H34L24 6Z" fill="#311b92"/>
-        <path d="M24 8L16 16H32L24 8Z" fill="#4527a0"/>
-        <rect x="20" y="14" width="8" height="2" fill="#ffd700"/>
-        
-        <rect x="20" y="22" width="2" height="2" fill="white"/>
-        <rect x="26" y="22" width="2" height="2" fill="white"/>
-        
-        <rect x="36" y="26" width="4" height="10" fill="#8d6e63"/>
-        <rect x="38" y="24" width="4" height="4" fill="#00bcd4"/>
+        <path d="M24 40C17.3726 40 12 34.6274 12 28C12 21.3726 17.3726 16 24 16C30.6274 16 36 21.3726 36 28C36 34.6274 30.6274 40 24 40Z" fill="#A78BFA"/>
+        <path d="M24 38C18.4772 38 14 33.5228 14 28C14 22.4772 18.4772 18 24 18C29.5228 18 34 22.4772 34 28C34 33.5228 29.5228 38 24 38Z" fill="#C4B5FD"/>
+        <path d="M24 6L14 20H34L24 6Z" fill="#6D28D9"/>
+        <path d="M24 8L16 20H32L24 8Z" fill="#8B5CF6"/>
+        <rect x="14" y="19" width="20" height="2" fill="#FBBF24"/>
+        <rect x="21" y="24" width="2" height="2" fill="#FAF5FF"/>
+        <rect x="25" y="24" width="2" height="2" fill="#FAF5FF"/>
+        <path d="M38 28C38 26.8954 38.8954 26 40 26C41.1046 26 42 26.8954 42 28C42 29.1046 41.1046 30 40 30C38.8954 30 38 29.1046 38 28Z" fill="#C4B5FD"/>
     </svg>
 );
 
 export const RogueIcon = ({ className }: IconProps) => (
     <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style={iconStyle} className={className}>
-        <path d="M24 14C18 14 14 18 14 24V38H34V24C34 18 30 14 24 14Z" fill="#212121"/>
-        <path d="M24 16C19 16 16 20 16 24V36H32V24C32 20 29 16 24 16Z" fill="#424242"/>
-        
-        <path d="M24 10L18 18H30L24 10Z" fill="#212121"/>
-        
-        <rect x="21" y="22" width="2" height="2" fill="#e0e0e0"/>
-        <rect x="25" y="22" width="2" height="2" fill="#e0e0e0"/>
-        
-        <rect x="36" y="28" width="2" height="6" fill="#a52a2a"/>
-        <path d="M37 28L35 26H39L37 28Z" fill="#c0c0c0"/>
+        <path d="M24 40C17.3726 40 12 34.6274 12 28C12 21.3726 17.3726 16 24 16C30.6274 16 36 21.3726 36 28C36 34.6274 30.6274 40 24 40Z" fill="#4A5568"/>
+        <path d="M24 38C18.4772 38 14 33.5228 14 28C14 22.4772 18.4772 18 24 18C29.5228 18 34 22.4772 34 28C34 33.5228 29.5228 38 24 38Z" fill="#718096"/>
+        <path d="M16 24V20C16 16 20 12 24 12C28 12 32 16 32 20V24H16Z" fill="#1A202C"/>
+        <rect x="21" y="23" width="2" height="2" fill="#FCA5A5"/>
+        <rect x="25" y="23" width="2" height="2" fill="#FCA5A5"/>
+        <path d="M8 28C8 26.8954 8.89543 26 10 26C11.1046 26 12 26.8954 12 28C12 29.1046 11.1046 30 10 30C8.89543 30 8 29.1046 8 28Z" fill="#718096"/>
     </svg>
 );
 
 export const VillagerIcon = ({ className }: IconProps) => (
     <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style={iconStyle} className={className}>
-        <rect x="16" y="20" width="16" height="18" fill="#8d6e63"/>
-        <rect x="17" y="21" width="14" height="16" fill="#a1887f"/>
-        
-        <rect x="18" y="14" width="12" height="8" fill="#ffe0b2"/>
-        <rect x="19" y="15" width="10" height="6" fill="#ffcc80"/>
-
-        <rect x="16" y="12" width="16" height="4" fill="#4e342e"/>
-        <rect x="17" y="13" width="14" height="2" fill="#3e2723"/>
-        
-        <rect x="21" y="18" width="2" height="2" fill="#212121"/>
-        <rect x="25" y="18" width="2" height="2" fill="#212121"/>
-        
-        <rect x="35" y="26" width="6" height="6" fill="#ffe0b2"/>
-        <rect x="36" y="27" width="4" height="4" fill="#ffcc80"/>
+        <path d="M24 40C17.3726 40 12 34.6274 12 28C12 21.3726 17.3726 16 24 16C30.6274 16 36 21.3726 36 28C36 34.6274 30.6274 40 24 40Z" fill="#D97706"/>
+        <path d="M24 38C18.4772 38 14 33.5228 14 28C14 22.4772 18.4772 18 24 18C29.5228 18 34 22.4772 34 28C34 33.5228 29.5228 38 24 38Z" fill="#F59E0B"/>
+        <rect x="16" y="12" width="16" height="6" fill="#78350F"/>
+        <rect x="16" y="17" width="16" height="2" fill="#FBBF24"/>
+        <rect x="21" y="24" width="2" height="2" fill="#000000"/>
+        <rect x="25" y="24" width="2" height="2" fill="#000000"/>
+        <path d="M38 28C38 26.8954 38.8954 26 40 26C41.1046 26 42 26.8954 42 28C42 29.1046 41.1046 30 40 30C38.8954 30 38 29.1046 38 28Z" fill="#F59E0B"/>
     </svg>
 );
