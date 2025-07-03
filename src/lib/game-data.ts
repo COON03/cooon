@@ -1,12 +1,10 @@
 import type { Weapon, Customer, WeaponType } from './game-types';
 
 export const initialWeapons: Weapon[] = [
-  { id: 'w1', name: '녹슨 검', type: 'Sword', price: 20 },
-  { id: 'w2', name: '나무꾼의 도끼', type: 'Axe', price: 25 },
-  { id: 'w3', name: '연습용 활', type: 'Bow', price: 30 },
-  { id: 'w4', name: '낡은 검', type: 'Sword', price: 22 },
-  { id: 'w5', name: '이 빠진 손도끼', type: 'Axe', price: 28 },
-  { id: 'w6', name: '부러진 단궁', type: 'Bow', price: 32 },
+  { id: 'w1', name: '기본 검', type: 'Sword', price: 20 },
+  { id: 'w2', name: '기본 도끼', type: 'Axe', price: 25 },
+  { id: 'w3', name: '기본 활', type: 'Bow', price: 30 },
+  { id: 'w4', name: '여분의 검', type: 'Sword', price: 20 },
 ];
 
 export const allCustomers: Customer[] = [

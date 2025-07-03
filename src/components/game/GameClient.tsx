@@ -148,7 +148,7 @@ export default function GameClient() {
     
     const newSupplies: Weapon[] = [];
     const basicWeaponTypes: ('Sword' | 'Axe' | 'Bow')[] = ['Sword', 'Axe', 'Bow'];
-    const minStock = 3;
+    const minStock = 3 + Math.floor((nextDay - 1) / 3); // Days 1-3: 3, Days 4-6: 4, Day 7: 5
 
     basicWeaponTypes.forEach(type => {
         const currentStock = inventory.filter(w => w.type === type).length;
