@@ -30,6 +30,9 @@ export default function GameClient() {
   const [customerTimer, setCustomerTimer] = useState(CUSTOMER_TIMER_DEFAULT);
   const [gameStarted, setGameStarted] = useState(false);
   
+  const [departingInfo, setDepartingInfo] = useState<{ id: string; message: string } | null>(null);
+  const [isInteracting, setIsInteracting] = useState(false);
+
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
 
@@ -128,17 +131,26 @@ export default function GameClient() {
       clearInterval(timerIntervalRef.current);
     }
 
-    if (activeCustomer && gameState === 'playing') {
+    if (activeCustomer && gameState === 'playing' && !isInteracting) {
       setCustomerTimer(activeCustomer.patience);
       timerIntervalRef.current = setInterval(() => {
         setCustomerTimer(prev => {
           if (prev <= 1) {
             if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
             playBellSound();
-            const penalty = activeCustomer.personality === 'picky' ? PICKY_TRUST_PENALTY : TRUST_PENALTY;
-            setTrust(t => Math.max(0, t - penalty));
-            toast({ variant: "destructive", title: "시간 초과!", description: `손님이 기다리다 지쳐 떠났습니다. 신뢰도가 ${penalty} 하락합니다.` });
-            setCustomers(c => c.slice(1));
+            
+            setIsInteracting(true);
+            setDepartingInfo({ id: activeCustomer.id, message: "기다리다 지쳤네. 다음에 오지." });
+
+            setTimeout(() => {
+                const penalty = activeCustomer.personality === 'picky' ? PICKY_TRUST_PENALTY : TRUST_PENALTY;
+                setTrust(t => Math.max(0, t - penalty));
+                toast({ variant: "destructive", title: "시간 초과!", description: `손님이 기다리다 지쳐 떠났습니다. 신뢰도가 ${penalty} 하락합니다.` });
+                setCustomers(c => c.slice(1));
+                setDepartingInfo(null);
+                setIsInteracting(false);
+            }, 1200);
+
             return CUSTOMER_TIMER_DEFAULT;
           }
           if (prev <= Math.floor(activeCustomer.patience / 2) && prev > Math.floor(activeCustomer.patience / 2) - 1) {
@@ -156,16 +168,16 @@ export default function GameClient() {
         clearInterval(timerIntervalRef.current);
       }
     };
-  }, [activeCustomer, gameState, playTickSound, toast, playBellSound]);
+  }, [activeCustomer, gameState, playTickSound, toast, playBellSound, isInteracting]);
 
   useEffect(() => {
-    if (gameStarted && customers.length === 0 && gameState === 'playing' && day <= MAX_DAYS) {
+    if (gameStarted && customers.length === 0 && gameState === 'playing' && day <= MAX_DAYS && !isInteracting) {
       const timer = setTimeout(() => {
         handleNextDay();
       }, 1500);
       return () => clearTimeout(timer);
     }
-  }, [customers.length, gameStarted, gameState, day]);
+  }, [customers.length, gameStarted, gameState, day, isInteracting]);
 
   useEffect(() => {
     if (trust <= 0 && gameState === 'playing') {
@@ -175,12 +187,16 @@ export default function GameClient() {
 
   const handleSell = () => {
     const selectedItems = workshopSlots.filter(Boolean) as Weapon[];
-    if (selectedItems.length !== 1 || !activeCustomer) return;
+    if (selectedItems.length !== 1 || !activeCustomer || isInteracting) return;
 
+    setIsInteracting(true);
     const weapon = selectedItems[0];
     const customer = customers[0];
 
-    if (!weapon || !customer) return;
+    if (!weapon || !customer) {
+        setIsInteracting(false);
+        return;
+    }
 
     const meetsReqs = weapon.type === customer.wants.type &&
                       weapon.attack >= customer.wants.minAttack &&
@@ -190,15 +206,22 @@ export default function GameClient() {
       const salePrice = Math.floor(weapon.price * customer.offerMultiplier);
       setGold(gold + salePrice);
       setInventory(inventory.filter(w => w.id !== weapon.id));
-      setCustomers(customers.slice(1));
       playBellSound();
       toast({ title: "거래 성공!", description: `${weapon.name}을(를) ${salePrice}골드에 판매했습니다.` });
+      setDepartingInfo({ id: customer.id, message: "이거 좋군! 고맙네." });
     } else {
       const penalty = customer.personality === 'picky' ? PICKY_TRUST_PENALTY : TRUST_PENALTY;
       setTrust(t => Math.max(0, t - penalty));
       toast({ variant: "destructive", title: "거래 실패!", description: `손님의 요구에 맞지 않아 신뢰도가 ${penalty} 하락합니다.` });
+      setDepartingInfo({ id: customer.id, message: "흠, 이건 내가 찾던 게 아니야." });
     }
     setWorkshopSlots([null, null]);
+
+    setTimeout(() => {
+        setCustomers(c => c.slice(1));
+        setDepartingInfo(null);
+        setIsInteracting(false);
+    }, 1200);
   };
   
   const handleNextDay = () => {
@@ -295,6 +318,7 @@ export default function GameClient() {
                   activeCustomerId={activeCustomer?.id ?? null}
                   timer={customerTimer}
                   maxTime={activeCustomer?.patience ?? CUSTOMER_TIMER_DEFAULT}
+                  departingInfo={departingInfo}
                 />
             </div>
 
@@ -309,17 +333,17 @@ export default function GameClient() {
 
         <footer className="mt-4 flex flex-wrap gap-4 justify-between items-center">
             <div className="flex items-center gap-2">
-                <Button onClick={handleSell} disabled={selectedCount !== 1 || !activeCustomer} size="lg">
+                <Button onClick={handleSell} disabled={isInteracting || selectedCount !== 1 || !activeCustomer} size="lg">
                     판매하기
                 </Button>
-                <Button onClick={handleCombine} disabled={selectedCount !== 2} variant="secondary" size="lg">
+                <Button onClick={handleCombine} disabled={isInteracting || selectedCount !== 2} variant="secondary" size="lg">
                     조합하기
                 </Button>
-                <Button onClick={handleClearWorkshop} disabled={selectedCount === 0} variant="outline" size="lg">
+                <Button onClick={handleClearWorkshop} disabled={isInteracting || selectedCount === 0} variant="outline" size="lg">
                     선택 초기화
                 </Button>
             </div>
-            <Button onClick={handleNextDay} variant="secondary" size="lg" disabled={customers.length > 0 && day < MAX_DAYS}>
+            <Button onClick={handleNextDay} variant="secondary" size="lg" disabled={isInteracting || (customers.length > 0 && day < MAX_DAYS)}>
                 다음 날로 ({day}/{MAX_DAYS})
             </Button>
         </footer>

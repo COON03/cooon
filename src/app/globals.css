@@ -57,3 +57,16 @@
     @apply bg-background text-foreground;
   }
 }
+
+@keyframes bubble-bob {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-4px) scale(1.02);
+  }
+}
+
+.animate-bubble-bob {
+  animation: bubble-bob 2s ease-in-out infinite;
+}
