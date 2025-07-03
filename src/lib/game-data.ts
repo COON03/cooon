@@ -19,6 +19,12 @@ export const allCustomers: Customer[] = [
     { id: 'c4', name: '왕실 기사', sprite: 'Knight', requestText: "균형 잡힌 좋은 검을 찾고 있네.", wants: { type: 'Sword', minAttack: 10, minSpeed: 10 }, offerMultiplier: 2.0 },
     { id: 'c5', name: '드워프 전사', sprite: 'Rogue', requestText: "묵직한 한 방이 있는 도끼는 없나?", wants: { type: 'Axe', minAttack: 15, minSpeed: 2 }, offerMultiplier: 2.2 },
     { id: 'c6', name: '마법사 길드원', sprite: 'Mage', requestText: "마력이 깃든 활이 필요합니다.", wants: { type: 'Bow', minAttack: 12, minSpeed: 15 }, offerMultiplier: 2.5 },
+    { id: 'c7', name: '그림자 암살자', sprite: 'Rogue', requestText: "그림자처럼 빠른 단검... 있나?", wants: { type: 'Dagger', minAttack: 18, minSpeed: 25 }, offerMultiplier: 3.0 },
+    { id: 'c8', name: '고대 유적 탐험가', sprite: 'Villager', requestText: "이 채찍, 꽤 쓸만해 보이는데... 더 좋은 건 없나?", wants: { type: 'Whip', minAttack: 15, minSpeed: 30 }, offerMultiplier: 3.2 },
+    { id: 'c9', name: '사령술사', sprite: 'Mage', requestText: "영혼을 거두는 낫이 필요하다.", wants: { type: 'Scythe', minAttack: 25, minSpeed: 18 }, offerMultiplier: 3.5 },
+    { id: 'c10', name: '왕궁 근위대장', sprite: 'Knight', requestText: "전장을 꿰뚫는 강력한 창을 원한다.", wants: { type: 'Spear', minAttack: 30, minSpeed: 20 }, offerMultiplier: 3.3 },
+    { id: 'c11', name: '수수께끼의 격투가', sprite: 'Rogue', requestText: "내 주먹보다 강한 클로가 있다면 보여줘.", wants: { type: 'Claw', minAttack: 28, minSpeed: 22 }, offerMultiplier: 3.4 },
+    { id: 'c12', name: '깐깐한 귀족', sprite: 'Knight', requestText: "힘? 속도? 아니, 중요한 건 '뽀대'지! 아무 무기나 보여줘봐.", wants: { type: 'Sword', minAttack: 1, minSpeed: 1 }, offerMultiplier: 1.1 },
 ];
 
 export const generateNewItem = (day: number): Weapon => {
