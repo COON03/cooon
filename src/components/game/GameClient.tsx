@@ -92,6 +92,16 @@ export default function GameClient() {
     osc2.stop(time + 0.6);
   }, []);
 
+  const resetGame = useCallback(() => {
+    setDay(1);
+    setGold(100);
+    setTrust(MAX_TRUST);
+    setInventory([...initialWeapons]);
+    setGameState('playing');
+    setWorkshopSlots([null, null]);
+    setDiscoveredRecipes(new Set());
+  }, []);
+
   const fetchCustomers = useCallback(() => {
     const customersPerDay = [0, 10, 13, 16, 20, 24, 27, 30]; 
     const numCustomers = customersPerDay[day] || 30;
@@ -101,12 +111,13 @@ export default function GameClient() {
         return index < unlockedCount;
     });
     
-    const difficultCustomers = unlockedCustomers.filter(c => c.personality !== 'normal' || ['Scythe', 'Magic Staff', 'Chain', 'Claw', 'Rapier', 'Whip', 'Boomerang'].includes(c.wants.type));
-    
     let potentialPool = [...unlockedCustomers];
-    if (difficultCustomers.length > 0) {
-      for (let i = 1; i < day; i++) {
-          potentialPool.push(...difficultCustomers);
+    if (unlockedCustomers.length > 0) {
+      const difficultCustomers = unlockedCustomers.filter(c => c.personality !== 'normal' || ['Scythe', 'Magic Staff', 'Chain', 'Claw', 'Rapier', 'Whip', 'Boomerang'].includes(c.wants.type));
+      if (difficultCustomers.length > 0) {
+        for (let i = 1; i < day; i++) {
+            potentialPool.push(...difficultCustomers);
+        }
       }
     }
 
@@ -126,16 +137,6 @@ export default function GameClient() {
     }
   }, [day, playBellSound]);
   
-  const resetGame = useCallback(() => {
-    setDay(1);
-    setGold(100);
-    setTrust(MAX_TRUST);
-    setInventory([...initialWeapons]);
-    setGameState('playing');
-    setWorkshopSlots([null, null]);
-    setDiscoveredRecipes(new Set());
-  }, []);
-
   const handleNextDay = useCallback(() => {
     if (day >= MAX_DAYS) {
       if (gameState === 'playing') {
@@ -195,9 +196,9 @@ export default function GameClient() {
 
     const recipe = findRecipe(w1.type, w2.type);
     
-    setInventory(inventory.filter(w => w.id !== w1.id && w.id !== w2.id));
-
     if (recipe) {
+      setInventory(inventory.filter(w => w.id !== w1.id && w.id !== w2.id));
+      
       let newWeaponData: { name: string, type: WeaponType, multiplier: number };
       const basePrice = w1.price + w2.price;
 
@@ -218,16 +219,10 @@ export default function GameClient() {
       toast({ title: "희귀 무기 조합 성공!", description: `새로운 무기 '${finalWeapon.name}' (${finalWeapon.type})이(가) 탄생했습니다!` });
       
       setDiscoveredRecipes(prev => new Set(prev).add(recipe.id));
+      setWorkshopSlots([null, null]);
     } else {
-      const failedWeapon: Weapon = {
-        id: `w_fail_${Date.now()}`, name: '실패한 합금', type: w1.type,
-        price: Math.floor((w1.price + w2.price) * 0.5),
-      };
-      setInventory(prev => [...prev, failedWeapon]);
-      toast({ variant: "destructive", title: "조합 실패!", description: `알 수 없는 조합입니다. 불안정한 합금이 생성되었습니다.` });
+      toast({ variant: "destructive", title: "조합 불가", description: "알 수 없는 조합입니다. 다른 무기를 선택해주세요." });
     }
-    
-    setWorkshopSlots([null, null]);
   };
 
   const handleClearWorkshop = () => {
