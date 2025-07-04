@@ -1,5 +1,5 @@
-import React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import React, { useState, useMemo, useEffect } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { allRecipes, Recipe } from '@/lib/recipe-data';
 import type { WeaponType } from '@/lib/game-types';
@@ -8,8 +8,9 @@ import {
   MagicStaffIcon, ChainIcon, RapierIcon, BoomerangIcon,
   EnhancedSwordIcon, EnhancedAxeIcon, EnhancedBowIcon
 } from '@/lib/icons';
-import { Plus, Equal } from 'lucide-react';
+import { Plus, Equal, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Card } from '../ui/card';
+import { Button } from '../ui/button';
 
 const WeaponIcon = ({ type }: { type: WeaponType }) => {
   const className = "w-12 h-12";
@@ -80,6 +81,34 @@ interface RecipeBookProps {
 }
 
 const RecipeBook: React.FC<RecipeBookProps> = ({ isOpen, onOpenChange, discoveredRecipes }) => {
+  const [currentPage, setCurrentPage] = useState(0);
+
+  const pagedRecipes = useMemo(() => {
+    const getRecipe = (id: string) => allRecipes.find(r => r.id === id);
+    return [
+      [getRecipe('recipe_rapier'), getRecipe('recipe_magic_staff'), getRecipe('recipe_scythe')],
+      [getRecipe('recipe_boomerang'), getRecipe('recipe_magic_staff'), getRecipe('recipe_whip')],
+      [getRecipe('recipe_chain'), getRecipe('recipe_scythe'), getRecipe('recipe_whip')],
+      [getRecipe('recipe_enhanced_sword'), getRecipe('recipe_enhanced_bow'), getRecipe('recipe_enhanced_axe')],
+    ].map(page => page.filter((r): r is Recipe => r !== undefined));
+  }, []);
+
+  const totalPages = pagedRecipes.length;
+
+  const handlePrevPage = () => {
+    setCurrentPage(prev => Math.max(0, prev - 1));
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage(prev => Math.min(totalPages - 1, prev + 1));
+  };
+
+  useEffect(() => {
+    if (!isOpen) {
+      setTimeout(() => setCurrentPage(0), 150);
+    }
+  }, [isOpen]);
+
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl h-[80vh] flex flex-col">
@@ -91,11 +120,22 @@ const RecipeBook: React.FC<RecipeBookProps> = ({ isOpen, onOpenChange, discovere
         </DialogHeader>
         <ScrollArea className="flex-grow h-full pr-6 -mr-6 mt-4">
             <div className="flex flex-col gap-2">
-                {allRecipes.map(recipe => (
-                    <RecipeEntry key={recipe.id} recipe={recipe} discovered={discoveredRecipes.has(recipe.id)} />
+                {pagedRecipes.length > 0 && pagedRecipes[currentPage].map(recipe => (
+                    <RecipeEntry key={`${currentPage}-${recipe.id}`} recipe={recipe} discovered={discoveredRecipes.has(recipe.id)} />
                 ))}
             </div>
         </ScrollArea>
+        <DialogFooter className="flex-row items-center justify-center pt-4 sm:justify-center space-x-2">
+           <Button variant="outline" size="icon" onClick={handlePrevPage} disabled={currentPage === 0}>
+             <ChevronLeft className="h-4 w-4" />
+             <span className="sr-only">Previous Page</span>
+           </Button>
+           <span className="text-lg font-medium w-20 text-center tabular-nums">{currentPage + 1} / {totalPages}</span>
+           <Button variant="outline" size="icon" onClick={handleNextPage} disabled={currentPage === totalPages - 1}>
+             <ChevronRight className="h-4 w-4" />
+             <span className="sr-only">Next Page</span>
+           </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
