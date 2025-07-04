@@ -35,6 +35,7 @@ interface GameClientProps {
 export default function GameClient({ onReturnToTitle, onGameWon }: GameClientProps) {
   const [day, setDay] = useState(1);
   const [gold, setGold] = useState(0);
+  const [cumulativeRevenue, setCumulativeRevenue] = useState(0);
   const [inventory, setInventory] = useState<Weapon[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [gameState, setGameState] = useState<'playing' | 'won' | 'lost'>('playing');
@@ -288,6 +289,7 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
   const resetGame = useCallback(() => {
     setDay(1);
     setGold(0);
+    setCumulativeRevenue(0);
     setLives(INITIAL_LIVES);
     setMaxLives(INITIAL_LIVES);
     setTimerBonus(1.0);
@@ -336,6 +338,7 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
 
       const newGold = gold + totalGain;
       setGold(newGold);
+      setCumulativeRevenue(rev => rev + totalGain);
       setInventory(inventory.filter(w => w.id !== weapon.id));
       playBellSound();
       
@@ -696,7 +699,7 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
 
         <EndGameDialog 
             gameState={gameState} 
-            gold={gold} 
+            gold={cumulativeRevenue} 
             onPlayAgain={resetGame}
             onReturnToTitle={onReturnToTitle}
         />
