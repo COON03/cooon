@@ -73,11 +73,11 @@ const EndGameDialog: React.FC<EndGameDialogProps> = ({ gameState, gold, day, las
             <AlertDialogDescription className="text-center pt-4">
               당신의 여정이 끝났습니다. 최종 결과는...
               <div className="my-6">
-                <p className="text-lg text-foreground">최종 자산</p>
-                <p className="text-4xl font-bold text-yellow-400 flex items-center justify-center gap-2">
+                <div className="text-lg text-foreground">최종 자산</div>
+                <div className="text-4xl font-bold text-yellow-400 flex items-center justify-center gap-2">
                   <GoldCoinIcon className="w-8 h-8" />
                   {gold} G
-                </p>
+                </div>
               </div>
               <div className='flex justify-center'>
                 {gameState === 'won'
