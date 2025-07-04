@@ -77,7 +77,7 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
   const currentTargetGold = DAILY_TARGETS[day] || DAILY_TARGETS[MAX_DAYS];
 
   const sortedInventory = React.useMemo(() => {
-    const weaponTypeSortOrder: WeaponType[] = ['Sword', 'Axe', 'Bow', 'Enhanced Sword', 'Enhanced Axe', 'Enhanced Bow', 'Rapier', 'Scythe', 'Magic Staff', 'Whip', 'Boomerang', 'Chain'];
+    const weaponTypeSortOrder: WeaponType[] = ['Sword', 'Enhanced Sword', 'Rapier', 'Bow', 'Enhanced Bow', 'Boomerang', 'Axe', 'Enhanced Axe', 'Chain', 'Magic Staff', 'Scythe', 'Whip'];
     return [...inventory].sort((a, b) => {
         const typeAIndex = weaponTypeSortOrder.indexOf(a.type);
         const typeBIndex = weaponTypeSortOrder.indexOf(b.type);
