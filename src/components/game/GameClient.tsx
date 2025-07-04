@@ -647,8 +647,6 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
             gameState={gameState} 
             gold={gold} 
             onPlayAgain={resetGame} 
-            day={day} 
-            lastCustomer={lastServedCustomer}
         />
         <RecipeBook 
             isOpen={isRecipeBookOpen} 
