@@ -148,15 +148,15 @@ export const generateNewItem = (day: number, type: 'Sword' | 'Axe' | 'Bow'): Wea
 
     switch(type) {
         case 'Sword':
-            name = '보급용 검';
+            name = '기본 검';
             price = 20 + day * 2;
             break;
         case 'Axe':
-            name = '보급용 도끼';
+            name = '기본 도끼';
             price = 25 + day * 2;
             break;
         case 'Bow':
-            name = '보급용 활';
+            name = '기본 활';
             price = 30 + day * 2;
             break;
     }
