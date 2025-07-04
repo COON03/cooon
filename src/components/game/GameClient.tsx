@@ -17,7 +17,7 @@ import { Card } from '../ui/card';
 import PassiveSkillDialog from './PassiveSkillDialog';
 import { allSkills } from '@/lib/skill-data';
 
-const DAILY_TARGETS = [0, 490, 650, 810, 1130, 1460, 1940, 2430]; // Day 0 is unused
+const DAILY_TARGETS = [0, 390, 520, 650, 900, 1170, 1550, 1940]; // Day 0 is unused
 const MAX_DAYS = 7;
 const INITIAL_LIVES = 3;
 const CUSTOMER_TIMER_DEFAULT = 30;
@@ -84,9 +84,6 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
   }
 
   const sortedInventory = React.useMemo(() => {
-    const weaponFamilyOrder: WeaponType[] = ['Sword', 'Rapier', 'Enhanced Sword', 'Bow', 'Boomerang', 'Enhanced Bow', 'Axe', 'Chain', 'Enhanced Axe'];
-    const otherWeapons: WeaponType[] = ['Scythe', 'Whip', 'Magic Staff'];
-    
     const getFamily = (type: WeaponType): string => {
         if (['Sword', 'Rapier', 'Enhanced Sword'].includes(type)) return 'Sword';
         if (['Bow', 'Boomerang', 'Enhanced Bow'].includes(type)) return 'Bow';
@@ -95,7 +92,7 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
     };
 
     const familySortOrder = ['Sword', 'Bow', 'Axe', 'Other'];
-    const typeSortOrder = [...weaponFamilyOrder, ...otherWeapons];
+    const typeSortOrder: WeaponType[] = ['Sword', 'Rapier', 'Enhanced Sword', 'Bow', 'Boomerang', 'Enhanced Bow', 'Axe', 'Chain', 'Enhanced Axe', 'Scythe', 'Whip', 'Magic Staff'];
 
     return [...inventory].sort((a, b) => {
         const familyA = getFamily(a.type);
@@ -163,23 +160,42 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
   }, []);
 
   const fetchCustomers = useCallback(() => {
-    const customersPerDay = [0, 10, 13, 16, 20, 24, 27, 30]; 
-    const numCustomers = customersPerDay[day] || 30;
+    const customersPerDay = [0, 15, 18, 22, 26, 30, 34, 40];
+    const numCustomers = customersPerDay[day] || 40;
 
     const availableCustomers = allCustomers.filter(c => !c.minDay || c.minDay <= day);
     const specialCustomers = availableCustomers.filter(c => c.personality === 'special');
     const normalCustomers = availableCustomers.filter(c => c.personality !== 'special');
 
-    let potentialPool = [...normalCustomers];
-    if (normalCustomers.length > 0) {
-      const difficultCustomers = normalCustomers.filter(c => c.personality !== 'normal' || ['Scythe', 'Magic Staff', 'Chain', 'Rapier', 'Whip', 'Boomerang'].includes(c.wants.type));
-      if (difficultCustomers.length > 0) {
-        const difficultyMultiplier = day >= 4 ? 1.5 : 1.0;
-        const difficultCustomersToAdd = Math.max(1, Math.floor((day - 1) * badCustomerRate * difficultyMultiplier));
-        for (let i = 0; i < difficultCustomersToAdd; i++) {
-            potentialPool.push(...difficultCustomers);
-        }
+    let potentialPool: Customer[] = [];
+
+    if (day === 1) {
+      // Day 1: Adjust Rapier customer ratio to ~20%
+      const rapierCustomer = normalCustomers.find(c => c.wants.type === 'Rapier');
+      const otherCustomers = normalCustomers.filter(c => c.wants.type !== 'Rapier');
+
+      potentialPool = [...otherCustomers];
+      if (otherCustomers.length > 0) {
+        // We add one more non-rapier customer to achieve a 4:1 ratio (20%).
+        // On day 1, there are 3 other customer types, so adding one more makes it 4.
+        potentialPool.push(otherCustomers[Math.floor(Math.random() * otherCustomers.length)]);
       }
+      
+      if (rapierCustomer) {
+        potentialPool.push(rapierCustomer);
+      }
+    } else {
+        potentialPool = [...normalCustomers];
+        if (normalCustomers.length > 0) {
+          const difficultCustomers = normalCustomers.filter(c => c.personality !== 'normal' || ['Scythe', 'Magic Staff', 'Chain', 'Rapier', 'Whip', 'Boomerang'].includes(c.wants.type));
+          if (difficultCustomers.length > 0) {
+            const difficultyMultiplier = day >= 4 ? 1.5 : 1.0;
+            const difficultCustomersToAdd = Math.max(1, Math.floor((day - 1) * badCustomerRate * difficultyMultiplier));
+            for (let i = 0; i < difficultCustomersToAdd; i++) {
+                potentialPool.push(...difficultCustomers);
+            }
+          }
+        }
     }
 
     const todaysCustomers: Customer[] = [];
@@ -192,24 +208,27 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
 
     // From day 5, ensure at least one special customer is placed in the middle of the queue.
     if (day >= 5 && specialCustomers.length > 0 && todaysCustomers.length > 0) {
-        const randomSpecialCustomer = specialCustomers[Math.floor(Math.random() * specialCustomers.length)];
-        
-        // Place the special customer somewhere in the middle half of the day's queue
-        const queueLength = todaysCustomers.length;
-        // e.g. for 20 customers, from index 5 to 14.
-        const startRange = Math.floor(queueLength * 0.25);
-        const range = Math.floor(queueLength * 0.5);
-        const insertionIndex = startRange + Math.floor(Math.random() * range);
+        if (!todaysCustomers.some(c => c.personality === 'special')) {
+          const randomSpecialCustomer = specialCustomers[Math.floor(Math.random() * specialCustomers.length)];
+          
+          // Place the special customer somewhere in the middle half of the day's queue
+          const queueLength = todaysCustomers.length;
+          // e.g. for 20 customers, from index 5 to 14.
+          const startRange = Math.floor(queueLength * 0.25);
+          const range = Math.floor(queueLength * 0.5);
+          const insertionIndex = startRange + Math.floor(Math.random() * range);
 
-        // Replace a customer at that index.
-        todaysCustomers[insertionIndex] = randomSpecialCustomer;
+          // Replace a customer at that index.
+          todaysCustomers[insertionIndex] = randomSpecialCustomer;
+        }
     }
     
     setCustomers(c => {
-      if (todaysCustomers.length > 0 && c.length === 0) {
+      const newCustomers = todaysCustomers.map(cust => ({...cust, id: `${cust.id}_${Math.random()}`}));
+      if (newCustomers.length > 0 && c.length === 0) {
         playBellSound();
       }
-      return [...c, ...todaysCustomers.map(cust => ({...cust, id: `${cust.id}_${Math.random()}`}))];
+      return [...c, ...newCustomers];
     });
 
   }, [day, playBellSound, badCustomerRate]);
