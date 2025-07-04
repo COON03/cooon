@@ -17,7 +17,7 @@ import { Card } from '../ui/card';
 import PassiveSkillDialog from './PassiveSkillDialog';
 import { allSkills } from '@/lib/skill-data';
 
-const DAILY_TARGETS = [0, 300, 400, 500, 700, 900, 1200, 1500]; // Day 0 is unused
+const DAILY_TARGETS = [0, 450, 600, 750, 1050, 1350, 1800, 2250]; // Day 0 is unused
 const MAX_DAYS = 7;
 const INITIAL_LIVES = 3;
 const CUSTOMER_TIMER_DEFAULT = 30;
@@ -76,6 +76,11 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
   const activeCustomer = customers.length > 0 ? customers[0] : null;
   const selectedCount = workshopSlots.filter(Boolean).length;
   const currentTargetGold = DAILY_TARGETS[day] || DAILY_TARGETS[MAX_DAYS];
+
+  let dayPenalty = 1.0;
+  if (day >= 4) {
+    dayPenalty = 1.0 - (day - 3) * 0.05; // Day 4: 0.95, Day 5: 0.9, Day 6: 0.85, Day 7: 0.8
+  }
 
   const sortedInventory = React.useMemo(() => {
     const weaponTypeSortOrder: WeaponType[] = ['Sword', 'Rapier', 'Enhanced Sword', 'Bow', 'Boomerang', 'Enhanced Bow', 'Axe', 'Chain', 'Enhanced Axe', 'Magic Staff', 'Scythe', 'Whip'];
@@ -475,7 +480,7 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
     setImpatientDialogue(null); // Reset for new customer
 
     if (activeCustomer && gameState === 'playing' && !isInteracting && !isDayCleared) {
-      const patience = Math.floor(activeCustomer.patience * timerBonus);
+      const patience = Math.floor(activeCustomer.patience * timerBonus * dayPenalty);
       setCustomerTimer(patience);
 
       timerIntervalRef.current = setInterval(() => {
@@ -528,7 +533,7 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
         clearInterval(timerIntervalRef.current);
       }
     };
-  }, [activeCustomer, gameState, isInteracting, timerBonus, playBellSound, playTickSound, toast, isDayCleared]);
+  }, [activeCustomer, gameState, isInteracting, timerBonus, playBellSound, playTickSound, toast, isDayCleared, dayPenalty]);
 
   useEffect(() => {
     const ranOutOfCustomers = gameStarted && customers.length === 0 && gameState === 'playing' && day <= MAX_DAYS && !isInteracting;
@@ -617,7 +622,7 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
                   customers={customers} 
                   activeCustomerId={activeCustomer?.id ?? null}
                   timer={customerTimer}
-                  maxTime={activeCustomer ? Math.floor(activeCustomer.patience * timerBonus) : CUSTOMER_TIMER_DEFAULT}
+                  maxTime={activeCustomer ? Math.floor(activeCustomer.patience * timerBonus * dayPenalty) : CUSTOMER_TIMER_DEFAULT}
                   departingInfo={departingInfo}
                   impatientDialogue={impatientDialogue}
                 />
