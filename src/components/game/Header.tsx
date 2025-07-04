@@ -38,7 +38,7 @@ const Header: React.FC<HeaderProps> = ({ day, maxDays, gold, targetGold, lives, 
             </div>
             <div>
               <div className='text-sm text-muted-foreground mb-1 flex items-center'>
-                생명력
+                신뢰도
               </div>
               <div className="flex items-center gap-1">
                 {hearts.map((isFilled, i) => (

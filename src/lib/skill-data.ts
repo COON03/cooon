@@ -9,7 +9,7 @@ export const allSkills: PassiveSkill[] = [
   {
     id: 'ADD_HEART',
     title: '격려',
-    description: '최대 생명력과 현재 생명력이 1 증가합니다.',
+    description: '최대 신뢰도와 현재 신뢰도가 1 증가합니다.',
   },
   {
     id: 'TIMER_BOOST',

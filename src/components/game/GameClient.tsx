@@ -292,7 +292,7 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
       }
     } else {
       setLives(l => Math.max(0, l - 1));
-      toast({ variant: "destructive", title: "거래 실패!", description: `손님의 요구에 맞지 않아 생명력이 1 감소합니다.` });
+      toast({ variant: "destructive", title: "거래 실패!", description: `손님의 요구에 맞지 않아 신뢰도가 1 감소합니다.` });
       
       const message = getRandomDialogue(customer.failDialogues, "흠, 이건 내가 찾던 게 아니야.");
       setDepartingInfo({ id: customer.id, message, status: 'fail' });
@@ -441,7 +441,7 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
 
             setTimeout(() => {
                 setLives(l => Math.max(0, l - 1));
-                toast({ variant: "destructive", title: "시간 초과!", description: `손님이 기다리다 지쳐 떠났습니다. 생명력이 1 하락합니다.` });
+                toast({ variant: "destructive", title: "시간 초과!", description: `손님이 기다리다 지쳐 떠났습니다. 신뢰도가 1 하락합니다.` });
                 setCustomers(c => c.slice(1));
                 setDepartingInfo(null);
                 setIsInteracting(false);
