@@ -19,7 +19,7 @@ import { allSkills } from '@/lib/skill-data';
 
 const DAILY_TARGETS = [0, 300, 400, 500, 700, 900, 1200, 1500]; // Day 0 is unused
 const MAX_DAYS = 7;
-const INITIAL_LIVES = 5;
+const INITIAL_LIVES = 3;
 const CUSTOMER_TIMER_DEFAULT = 30;
 
 const getRandomDialogue = (dialogues: string[] | undefined, defaultMessage: string): string => {
@@ -186,11 +186,15 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
     }
     
     // Open skill selection
-    const shuffledSkills = [...allSkills].sort(() => 0.5 - Math.random());
+    let skillPool = [...allSkills];
+    if (maxLives >= 5) {
+      skillPool = skillPool.filter(skill => skill.id !== 'ADD_HEART');
+    }
+    const shuffledSkills = skillPool.sort(() => 0.5 - Math.random());
     setAvailableSkills(shuffledSkills.slice(0, 3));
     setIsSkillSelectionOpen(true);
 
-  }, [day, gold, currentTargetGold, onGameWon]);
+  }, [day, gold, currentTargetGold, onGameWon, maxLives]);
 
   const handleSelectSkill = useCallback((skill: PassiveSkill) => {
     setIsSkillSelectionOpen(false);
@@ -203,8 +207,10 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
         toast({ title: "스킬 획득!", description: skill.description });
         break;
       case 'ADD_HEART':
-        setMaxLives(l => l + 1);
-        setLives(l => l + 1);
+        if (maxLives < 5) {
+            setMaxLives(l => l + 1);
+            setLives(l => l + 1);
+        }
         toast({ title: "스킬 획득!", description: skill.description });
         break;
       case 'TIMER_BOOST':
@@ -219,7 +225,7 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
     
     startNewDay(startingGoldForNextDay);
 
-  }, [startNewDay, toast]);
+  }, [startNewDay, toast, maxLives]);
 
   const resetGame = useCallback(() => {
     setDay(1);
