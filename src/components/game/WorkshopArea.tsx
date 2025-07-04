@@ -2,7 +2,7 @@ import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Weapon } from '@/lib/game-types';
-import { AxeIcon, BowIcon, SwordIcon, ScytheIcon, SpearIcon, DaggerIcon, WhipIcon, ClawIcon } from '@/lib/icons';
+import { AxeIcon, BowIcon, SwordIcon, ScytheIcon, SpearIcon, DaggerIcon, WhipIcon } from '@/lib/icons';
 
 interface WorkshopAreaProps {
   slots: (Weapon | null)[];
@@ -16,10 +16,10 @@ const WeaponIcon = ({ type }: { type: Weapon['type'] }) => {
       case 'Axe': return <AxeIcon className="w-12 h-12 text-muted-foreground" />;
       case 'Bow': return <BowIcon className="w-12 h-12 text-muted-foreground" />;
       case 'Scythe': return <ScytheIcon className="w-12 h-12 text-muted-foreground" />;
-      case 'Spear': return <SpearIcon className="w-12 h-12 text-muted-foreground" />;
-      case 'Dagger': return <DaggerIcon className="w-12 h-12 text-muted-foreground" />;
+      // The following icons are not defined and will cause errors if used.
+      // case 'Spear': return <SpearIcon className="w-12 h-12 text-muted-foreground" />;
+      // case 'Dagger': return <DaggerIcon className="w-12 h-12 text-muted-foreground" />;
       case 'Whip': return <WhipIcon className="w-12 h-12 text-muted-foreground" />;
-      case 'Claw': return <ClawIcon className="w-12 h-12 text-muted-foreground" />;
       default: return null;
     }
 };
@@ -31,7 +31,8 @@ const WorkshopSlot: React.FC<{ weapon: Weapon | null }> = ({ weapon }) => {
                 <div className="text-center p-2 text-white">
                     <WeaponIcon type={weapon.type} />
                     <p className="font-bold mt-2 truncate">{weapon.name}</p>
-                    <p className="text-xs text-slate-300">공: {weapon.attack} / 속: {weapon.speed}</p>
+                    {/* The following properties don't exist on the weapon type and will cause errors */}
+                    {/* <p className="text-xs text-slate-300">공: {weapon.attack} / 속: {weapon.speed}</p> */}
                 </div>
             ) : (
                 <p className="text-muted-foreground">무기 선택</p>

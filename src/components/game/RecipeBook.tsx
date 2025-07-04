@@ -4,7 +4,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { allRecipes, Recipe } from '@/lib/recipe-data';
 import type { WeaponType } from '@/lib/game-types';
 import {
-  SwordIcon, AxeIcon, BowIcon, ScytheIcon, WhipIcon, ClawIcon,
+  SwordIcon, AxeIcon, BowIcon, ScytheIcon, WhipIcon,
   MagicStaffIcon, ChainIcon, RapierIcon, BoomerangIcon
 } from '@/lib/icons';
 import { Plus, Equal } from 'lucide-react';
@@ -18,7 +18,6 @@ const WeaponIcon = ({ type }: { type: WeaponType }) => {
     case 'Bow': return <BowIcon className={className} />;
     case 'Scythe': return <ScytheIcon className={className} />;
     case 'Whip': return <WhipIcon className={className} />;
-    case 'Claw': return <ClawIcon className={className} />;
     case 'Magic Staff': return <MagicStaffIcon className={className} />;
     case 'Chain': return <ChainIcon className={className} />;
     case 'Rapier': return <RapierIcon className={className} />;

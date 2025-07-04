@@ -12,7 +12,7 @@ interface InventoryAreaProps {
   onSelect: (id: string) => void;
 }
 
-const rareWeaponTypes: WeaponType[] = ['Scythe', 'Magic Staff', 'Chain', 'Claw', 'Rapier', 'Whip', 'Boomerang'];
+const rareWeaponTypes: WeaponType[] = ['Scythe', 'Magic Staff', 'Chain', 'Rapier', 'Whip', 'Boomerang'];
 
 const InventoryArea: React.FC<InventoryAreaProps> = ({ inventory, onSelect, workshopSlots }) => {
   const workshopIds = workshopSlots.map(w => w?.id).filter(Boolean);

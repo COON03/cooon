@@ -86,13 +86,6 @@ export const allCustomers: Customer[] = [
         timeoutDialogues: mageTimeoutDialogues
     },
     { 
-        id: 'c7', name: '그림자 암살자', sprite: 'Rogue', requestText: "손에 장착할 클로... 10초 주지.", wants: { type: 'Claw' }, offerMultiplier: 3.0, patience: 10, personality: 'impatient',
-        successDialogues: ["피비린내를 감추기엔... 딱 좋군.", "어둠 속에서 유용하겠어."],
-        failDialogues: ["시간 낭비였군.", "실망스럽군."],
-        impatientDialogues: ["이 정도도 못 맞추나?", "흥, 내 시간은 비싸다.", "결정했나?"],
-        timeoutDialogues: coldTimeoutDialogues
-    },
-    { 
         id: 'c8', name: '고대 유적 탐험가', sprite: 'Villager', requestText: "이 채찍, 꽤 쓸만해 보이는데... 더 좋은 건 없나?", wants: { type: 'Whip' }, offerMultiplier: 3.2, patience: 30, personality: 'normal',
         successDialogues: ["이야, 이거 물건이네요! 탐험에 딱이겠어요!", "이걸로 어떤 유적이든 문제 없겠어요!"],
         failDialogues: ["이런 걸로는 유적의 위험에 대비할 수 없어.", "더 나은 건 없나?"],
@@ -112,13 +105,6 @@ export const allCustomers: Customer[] = [
         failDialogues: ["이걸로 적을 제압할 수 있겠나?", "훈련용으로도 부족하군."],
         impatientDialogues: ["임무 시간 초과 중이다!", "늦는 건 허락되지 않는다. 지금 당장!"],
         timeoutDialogues: knightTimeoutDialogues
-    },
-    { 
-        id: 'c11', name: '수수께끼의 격투가', sprite: 'Rogue', requestText: "내 주먹보다 강한 클로가 있다면 보여줘.", wants: { type: 'Claw' }, offerMultiplier: 3.4, patience: 25, personality: 'normal',
-        successDialogues: ["내 주먹과 잘 어울리겠군.", "내 기술을 쓰기에 부족함이 없겠어."],
-        failDialogues: ["내 주먹보다 약하군.", "맨손이 낫겠어."],
-        impatientDialogues: ["얼른 좀 해줄 수 없나?", "결정은 빠를수록 좋다.", "시간은 충분히 줬다."],
-        timeoutDialogues: coldTimeoutDialogues
     },
     { 
         id: 'c12', name: '깐깐한 귀족', sprite: 'Knight', requestText: "내 품격에 맞는 무기는... 아주 찾기 어려울걸? 채찍이라도 보여주게.", wants: { type: 'Whip' }, offerMultiplier: 4.0, patience: 25, personality: 'picky',

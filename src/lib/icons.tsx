@@ -52,15 +52,6 @@ export const WhipIcon = ({ className }: IconProps) => (
     </svg>
 );
 
-export const ClawIcon = ({ className }: IconProps) => (
-    <svg width="24" height="24" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style={iconStyle} className={className}>
-        <path d="M3 10H8V12H3V10Z" fill="#4b5563" />
-        <path d="M2 4L4 6L6 4Z M6 4L8 6L10 4Z M10 4L12 6L14 4Z" fill="#fde047" />
-        <path d="M3 5L5 7L7 5Z M7 5L9 7L11 5Z M11 5L13 7L15 5Z" fill="#fef9c3" />
-        <path d="M2 4V8H3V4L2 4Z M6 4V8H7V4L6 4Z M10 4V8H11V4L10 4Z" fill="#eab308" />
-    </svg>
-);
-
 export const MagicStaffIcon = ({ className }: IconProps) => (
     <svg width="24" height="24" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style={iconStyle} className={className}>
         <path d="M7 4H9V15H7V4Z" fill="#854d0e"/>

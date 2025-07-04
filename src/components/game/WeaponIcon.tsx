@@ -1,10 +1,10 @@
 import React from 'react';
 import type { WeaponType } from '@/lib/game-types';
-import { SwordIcon, AxeIcon, BowIcon, ScytheIcon, WhipIcon, ClawIcon, MagicStaffIcon, ChainIcon, RapierIcon, BoomerangIcon } from '@/lib/icons';
+import { SwordIcon, AxeIcon, BowIcon, ScytheIcon, WhipIcon, MagicStaffIcon, ChainIcon, RapierIcon, BoomerangIcon } from '@/lib/icons';
 import { cn } from '@/lib/utils';
 import { HelpCircle } from 'lucide-react';
 
-const rareWeaponTypes: WeaponType[] = ['Scythe', 'Magic Staff', 'Chain', 'Claw', 'Rapier', 'Whip', 'Boomerang'];
+const rareWeaponTypes: WeaponType[] = ['Scythe', 'Magic Staff', 'Chain', 'Rapier', 'Whip', 'Boomerang'];
 
 export const WeaponIcon = ({ type, className: extraClassName }: { type: WeaponType | 'Random', className?: string }) => {
   const isRare = rareWeaponTypes.includes(type as WeaponType);
@@ -24,7 +24,6 @@ export const WeaponIcon = ({ type, className: extraClassName }: { type: WeaponTy
     case 'Bow': return <BowIcon className={className} />;
     case 'Scythe': return <ScytheIcon className={className} />;
     case 'Whip': return <WhipIcon className={className} />;
-    case 'Claw': return <ClawIcon className={className} />;
     case 'Magic Staff': return <MagicStaffIcon className={className} />;
     case 'Chain': return <ChainIcon className={className} />;
     case 'Rapier': return <RapierIcon className={className} />;
