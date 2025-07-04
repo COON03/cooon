@@ -17,7 +17,7 @@ import { Card } from '../ui/card';
 import PassiveSkillDialog from './PassiveSkillDialog';
 import { allSkills } from '@/lib/skill-data';
 
-const DAILY_TARGETS = [0, 608, 810, 1013, 1418, 1823, 2430, 3038]; // Day 0 is unused
+const DAILY_TARGETS = [0, 490, 650, 810, 1130, 1460, 1940, 2430]; // Day 0 is unused
 const MAX_DAYS = 7;
 const INITIAL_LIVES = 3;
 const CUSTOMER_TIMER_DEFAULT = 30;
@@ -205,12 +205,12 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
         todaysCustomers[insertionIndex] = randomSpecialCustomer;
     }
     
-    setCustomers(todaysCustomers.map(c => ({...c, id: `${c.id}_${Math.random()}`})));
+    setCustomers(c => [...c, ...todaysCustomers.map(cust => ({...cust, id: `${cust.id}_${Math.random()}`}))]);
 
-    if (todaysCustomers.length > 0) {
+    if (todaysCustomers.length > 0 && customers.length === 0) {
       playBellSound();
     }
-  }, [day, playBellSound, badCustomerRate]);
+  }, [day, playBellSound, badCustomerRate, customers.length]);
   
   const startNewDay = useCallback((startingGold: number) => {
     const nextDay = day + 1;
@@ -295,13 +295,15 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
     setTimerBonus(1.0);
     setBadCustomerRate(1.0);
     setInventory([...initialWeapons]);
+    setCustomers([]);
     setGameState('playing');
     setWorkshopSlots([null, null, null]);
     setIsDayCleared(false);
     setDiscoveredRecipes(new Set());
     setLastServedCustomer(null);
     setServedCustomersCount(0);
-    fetchCustomers();
+    // Fetch initial customers
+    setTimeout(() => fetchCustomers(), 100);
   }, [fetchCustomers]);
 
   const handleSell = () => {
