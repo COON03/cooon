@@ -27,7 +27,7 @@ export interface Customer {
   rewardBonus?: { type: 'trust' | 'tip_chance' };
 }
 
-export type SkillId = 'ADD_GOLD' | 'ADD_HEART' | 'TIMER_BOOST' | 'REDUCE_BAD_CUSTOMERS';
+export type SkillId = 'ADD_GOLD' | 'ADD_HEART' | 'TIMER_BOOST' | 'GOLD_BOOST';
 
 export interface PassiveSkill {
   id: SkillId;

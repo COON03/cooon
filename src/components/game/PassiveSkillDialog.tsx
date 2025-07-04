@@ -7,7 +7,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Coins, Heart, Clock, UserMinus } from 'lucide-react';
+import { Coins, Heart, Clock, TrendingUp } from 'lucide-react';
 import type { PassiveSkill, SkillId } from '@/lib/game-types';
 
 interface PassiveSkillDialogProps {
@@ -25,8 +25,8 @@ const SkillIcon = ({ id }: { id: SkillId }) => {
       return <Heart className={className} />;
     case 'TIMER_BOOST':
       return <Clock className={className} />;
-    case 'REDUCE_BAD_CUSTOMERS':
-      return <UserMinus className={className} />;
+    case 'GOLD_BOOST':
+      return <TrendingUp className={className} />;
     default:
       return null;
   }

@@ -62,7 +62,7 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
   const [isSkillSelectionOpen, setIsSkillSelectionOpen] = useState(false);
   const [availableSkills, setAvailableSkills] = useState<PassiveSkill[]>([]);
   const [timerBonus, setTimerBonus] = useState(1.0);
-  const [badCustomerRate, setBadCustomerRate] = useState(1.0);
+  const [goldBonus, setGoldBonus] = useState(1.0);
   const [impatientDialogue, setImpatientDialogue] = useState<string | null>(null);
   const [isDayCleared, setIsDayCleared] = useState(false);
   const [lastServedCustomer, setLastServedCustomer] = useState<Customer | null>(null);
@@ -190,7 +190,7 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
           const difficultCustomers = normalCustomers.filter(c => c.personality !== 'normal' || ['Scythe', 'Magic Staff', 'Chain', 'Rapier', 'Whip', 'Boomerang'].includes(c.wants.type));
           if (difficultCustomers.length > 0) {
             const difficultyMultiplier = day >= 4 ? 1.5 : 1.0;
-            const difficultCustomersToAdd = Math.max(1, Math.floor((day - 1) * badCustomerRate * difficultyMultiplier));
+            const difficultCustomersToAdd = Math.max(1, Math.floor((day - 1) * difficultyMultiplier));
             for (let i = 0; i < difficultCustomersToAdd; i++) {
                 potentialPool.push(...difficultCustomers);
             }
@@ -214,7 +214,7 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
       return [...c, ...newCustomers];
     });
 
-  }, [day, playBellSound, badCustomerRate]);
+  }, [day, playBellSound]);
   
   const startNewDay = useCallback((startingGold: number) => {
     const nextDay = day + 1;
@@ -280,8 +280,8 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
         setTimerBonus(b => b + 0.05);
         toast({ title: "스킬 획득!", description: skill.description });
         break;
-      case 'REDUCE_BAD_CUSTOMERS':
-        setBadCustomerRate(r => Math.max(0.5, r - 0.25));
+      case 'GOLD_BOOST':
+        setGoldBonus(b => b + 0.05);
         toast({ title: "스킬 획득!", description: skill.description });
         break;
     }
@@ -297,7 +297,7 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
     setLives(INITIAL_LIVES);
     setMaxLives(INITIAL_LIVES);
     setTimerBonus(1.0);
-    setBadCustomerRate(1.0);
+    setGoldBonus(1.0);
     setInventory([...initialWeapons]);
     setCustomers([]);
     setGameState('playing');
@@ -329,7 +329,7 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
     const bonus = customer.rewardBonus;
 
     if (meetsReqs) {
-      const salePrice = weapon.price;
+      const salePrice = Math.floor(weapon.price * goldBonus);
       let totalGain = salePrice;
       
       const wasNotImpatient = impatientDialogue === null;

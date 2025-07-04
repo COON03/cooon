@@ -17,8 +17,8 @@ export const allSkills: PassiveSkill[] = [
     description: '손님들의 거래 제한 시간이 영구적으로 5% 증가합니다.',
   },
   {
-    id: 'REDUCE_BAD_CUSTOMERS',
-    title: '평판 상승',
-    description: '성격이 급하거나 까다로운 손님의 등장 확률이 감소합니다.',
+    id: 'GOLD_BOOST',
+    title: '흥정의 달인',
+    description: '거래 시 획득하는 골드가 5% 증가합니다.',
   },
 ];
