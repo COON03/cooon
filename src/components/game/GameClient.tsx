@@ -256,11 +256,33 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
 
     if (meetsReqs) {
       const salePrice = weapon.price;
-      const newGold = gold + salePrice;
+      let totalGain = salePrice;
+      
+      const wasNotImpatient = impatientDialogue === null;
+      const isTipping = wasNotImpatient && Math.random() < 0.07;
+      let tipAmount = 0;
+
+      if (isTipping) {
+        tipAmount = Math.floor(Math.random() * 41) + 10; // 10 to 50
+        totalGain += tipAmount;
+      }
+
+      const newGold = gold + totalGain;
       setGold(newGold);
       setInventory(inventory.filter(w => w.id !== weapon.id));
       playBellSound();
-      toast({ title: "거래 성공!", description: `${weapon.name}을(를) ${salePrice}골드에 판매했습니다.` });
+      
+      if(isTipping) {
+        toast({ 
+          title: "특별한 거래! 💰", 
+          description: `${weapon.name} 판매와 함께 팁으로 ${tipAmount}G를 받았습니다!`
+        });
+      } else {
+        toast({ 
+          title: "거래 성공!", 
+          description: `${weapon.name}을(를) ${salePrice}골드에 판매했습니다.` 
+        });
+      }
       
       const message = getRandomDialogue(customer.successDialogues, "이거 좋군! 고맙네.");
       setDepartingInfo({ id: customer.id, message, status: 'success' });
