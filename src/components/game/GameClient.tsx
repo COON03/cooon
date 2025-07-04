@@ -17,7 +17,7 @@ import { Card } from '../ui/card';
 import PassiveSkillDialog from './PassiveSkillDialog';
 import { allSkills } from '@/lib/skill-data';
 
-const DAILY_TARGETS = [0, 450, 600, 750, 1050, 1350, 1800, 2250]; // Day 0 is unused
+const DAILY_TARGETS = [0, 675, 900, 1125, 1575, 2025, 2700, 3375]; // Day 0 is unused
 const MAX_DAYS = 7;
 const INITIAL_LIVES = 3;
 const CUSTOMER_TIMER_DEFAULT = 30;
@@ -83,10 +83,30 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
   }
 
   const sortedInventory = React.useMemo(() => {
-    const weaponTypeSortOrder: WeaponType[] = ['Sword', 'Rapier', 'Enhanced Sword', 'Bow', 'Boomerang', 'Enhanced Bow', 'Axe', 'Chain', 'Enhanced Axe', 'Magic Staff', 'Scythe', 'Whip'];
+    const weaponFamilyOrder: WeaponType[] = ['Sword', 'Rapier', 'Enhanced Sword', 'Bow', 'Boomerang', 'Enhanced Bow', 'Axe', 'Chain', 'Enhanced Axe'];
+    const otherWeapons: WeaponType[] = ['Scythe', 'Whip', 'Magic Staff'];
+    
+    const getFamily = (type: WeaponType): string => {
+        if (['Sword', 'Rapier', 'Enhanced Sword'].includes(type)) return 'Sword';
+        if (['Bow', 'Boomerang', 'Enhanced Bow'].includes(type)) return 'Bow';
+        if (['Axe', 'Chain', 'Enhanced Axe'].includes(type)) return 'Axe';
+        return 'Other';
+    };
+
+    const familySortOrder = ['Sword', 'Bow', 'Axe', 'Other'];
+    const typeSortOrder = [...weaponFamilyOrder, ...otherWeapons];
+
     return [...inventory].sort((a, b) => {
-        const typeAIndex = weaponTypeSortOrder.indexOf(a.type);
-        const typeBIndex = weaponTypeSortOrder.indexOf(b.type);
+        const familyA = getFamily(a.type);
+        const familyB = getFamily(b.type);
+
+        const familyAIndex = familySortOrder.indexOf(familyA);
+        const familyBIndex = familySortOrder.indexOf(familyB);
+
+        if (familyAIndex !== familyBIndex) return familyAIndex - familyBIndex;
+        
+        const typeAIndex = typeSortOrder.indexOf(a.type);
+        const typeBIndex = typeSortOrder.indexOf(b.type);
         if (typeAIndex !== typeBIndex) return typeAIndex - typeBIndex;
 
         const nameCompare = a.name.localeCompare(b.name);
@@ -163,24 +183,25 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
 
     const todaysCustomers: Customer[] = [];
     if (potentialPool.length > 0) {
+      // Generate the list of customers for the day from the normal pool
       for (let i = 0; i < numCustomers; i++) {
-        // Low chance for a special customer to appear from day 5
-        if (day >= 5 && specialCustomers.length > 0 && Math.random() < 0.15) {
-          todaysCustomers.push(specialCustomers[Math.floor(Math.random() * specialCustomers.length)]);
-        } else {
-          todaysCustomers.push(potentialPool[Math.floor(Math.random() * potentialPool.length)]);
-        }
+        todaysCustomers.push(potentialPool[Math.floor(Math.random() * potentialPool.length)]);
       }
     }
 
-    // From day 5, ensure at least one special customer.
+    // From day 5, ensure at least one special customer is placed in the middle of the queue.
     if (day >= 5 && specialCustomers.length > 0 && todaysCustomers.length > 0) {
-        const hasSpecialCustomer = todaysCustomers.some(customer => customer.personality === 'special');
-        if (!hasSpecialCustomer) {
-            const randomIndex = Math.floor(Math.random() * todaysCustomers.length);
-            const randomSpecialCustomer = specialCustomers[Math.floor(Math.random() * specialCustomers.length)];
-            todaysCustomers[randomIndex] = randomSpecialCustomer;
-        }
+        const randomSpecialCustomer = specialCustomers[Math.floor(Math.random() * specialCustomers.length)];
+        
+        // Place the special customer somewhere in the middle half of the day's queue
+        const queueLength = todaysCustomers.length;
+        // e.g. for 20 customers, from index 5 to 14.
+        const startRange = Math.floor(queueLength * 0.25);
+        const range = Math.floor(queueLength * 0.5);
+        const insertionIndex = startRange + Math.floor(Math.random() * range);
+
+        // Replace a customer at that index.
+        todaysCustomers[insertionIndex] = randomSpecialCustomer;
     }
     
     setCustomers(todaysCustomers.map(c => ({...c, id: `${c.id}_${Math.random()}`})));
