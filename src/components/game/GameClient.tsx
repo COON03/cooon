@@ -76,6 +76,20 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
   const selectedCount = workshopSlots.filter(Boolean).length;
   const currentTargetGold = DAILY_TARGETS[day] || DAILY_TARGETS[MAX_DAYS];
 
+  const sortedInventory = React.useMemo(() => {
+    const weaponTypeSortOrder: WeaponType[] = ['Sword', 'Axe', 'Bow', 'Rapier', 'Scythe', 'Magic Staff', 'Whip', 'Boomerang', 'Chain'];
+    return [...inventory].sort((a, b) => {
+        const typeAIndex = weaponTypeSortOrder.indexOf(a.type);
+        const typeBIndex = weaponTypeSortOrder.indexOf(b.type);
+        if (typeAIndex !== typeBIndex) return typeAIndex - typeBIndex;
+
+        const nameCompare = a.name.localeCompare(b.name);
+        if (nameCompare !== 0) return nameCompare;
+        
+        return a.price - b.price;
+    });
+  }, [inventory]);
+
   const playTickSound = useCallback(() => {
     if (!audioCtxRef.current) return;
     const oscillator = audioCtxRef.current.createOscillator();
@@ -132,7 +146,7 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
     
     let potentialPool = [...unlockedCustomers];
     if (unlockedCustomers.length > 0) {
-      const difficultCustomers = unlockedCustomers.filter(c => c.personality !== 'normal' || ['Scythe', 'Magic Staff', 'Chain', 'Claw', 'Rapier', 'Whip', 'Boomerang'].includes(c.wants.type));
+      const difficultCustomers = unlockedCustomers.filter(c => c.personality !== 'normal' || ['Scythe', 'Magic Staff', 'Chain', 'Rapier', 'Whip', 'Boomerang'].includes(c.wants.type));
       if (difficultCustomers.length > 0) {
         const difficultyMultiplier = day >= 4 ? 1.5 : 1.0;
         const difficultCustomersToAdd = Math.max(1, Math.floor((day - 1) * badCustomerRate * difficultyMultiplier));
@@ -427,7 +441,7 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
     }
     setImpatientDialogue(null); // Reset for new customer
 
-    if (activeCustomer && gameState === 'playing' && !isInteracting) {
+    if (activeCustomer && gameState === 'playing' && !isInteracting && !isDayCleared) {
       const patience = Math.floor(activeCustomer.patience * timerBonus);
       setCustomerTimer(patience);
 
@@ -480,7 +494,7 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
         clearInterval(timerIntervalRef.current);
       }
     };
-  }, [activeCustomer, gameState, isInteracting, timerBonus, playBellSound, playTickSound, toast]);
+  }, [activeCustomer, gameState, isInteracting, timerBonus, playBellSound, playTickSound, toast, isDayCleared]);
 
   useEffect(() => {
     const ranOutOfCustomers = gameStarted && customers.length === 0 && gameState === 'playing' && day <= MAX_DAYS && !isInteracting;
@@ -569,7 +583,7 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
 
             <div className="md:col-span-1 flex flex-col overflow-y-auto">
                  <InventoryArea
-                    inventory={inventory}
+                    inventory={sortedInventory}
                     onSelect={handleSelectInventory}
                     workshopSlots={workshopSlots}
                  />
