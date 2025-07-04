@@ -166,6 +166,16 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
         }
       }
     }
+
+    // From day 5, ensure at least one special customer.
+    if (day >= 5 && specialCustomers.length > 0 && todaysCustomers.length > 0) {
+        const hasSpecialCustomer = todaysCustomers.some(customer => customer.personality === 'special');
+        if (!hasSpecialCustomer) {
+            const randomIndex = Math.floor(Math.random() * todaysCustomers.length);
+            const randomSpecialCustomer = specialCustomers[Math.floor(Math.random() * specialCustomers.length)];
+            todaysCustomers[randomIndex] = randomSpecialCustomer;
+        }
+    }
     
     setCustomers(todaysCustomers.map(c => ({...c, id: `${c.id}_${Math.random()}`})));
 
@@ -647,7 +657,8 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
         <EndGameDialog 
             gameState={gameState} 
             gold={gold} 
-            onPlayAgain={resetGame} 
+            onPlayAgain={resetGame}
+            onReturnToTitle={onReturnToTitle}
         />
         <RecipeBook 
             isOpen={isRecipeBookOpen} 

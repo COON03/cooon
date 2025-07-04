@@ -15,9 +15,10 @@ interface EndGameDialogProps {
   gameState: 'playing' | 'won' | 'lost';
   gold: number;
   onPlayAgain: () => void;
+  onReturnToTitle: () => void;
 }
 
-const EndGameDialog: React.FC<EndGameDialogProps> = ({ gameState, gold, onPlayAgain }) => {
+const EndGameDialog: React.FC<EndGameDialogProps> = ({ gameState, gold, onPlayAgain, onReturnToTitle }) => {
   const isOpen = gameState === 'won' || gameState === 'lost';
 
   return (
@@ -46,7 +47,11 @@ const EndGameDialog: React.FC<EndGameDialogProps> = ({ gameState, gold, onPlayAg
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogAction onClick={onPlayAgain}>새로운 7일 시작하기</AlertDialogAction>
+          {gameState === 'won' ? (
+            <AlertDialogAction onClick={onReturnToTitle}>타이틀로 가기</AlertDialogAction>
+          ) : (
+            <AlertDialogAction onClick={onPlayAgain}>새로운 7일 시작하기</AlertDialogAction>
+          )}
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
