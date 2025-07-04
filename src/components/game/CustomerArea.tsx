@@ -105,7 +105,7 @@ const CustomerArea: React.FC<CustomerAreaProps> = ({ customers, activeCustomerId
                     {/* Left Bubble: Unique / Impatient Dialogue */}
                     <div
                       className={cn(
-                        "absolute bottom-24 right-full mr-4 w-48 bg-card text-card-foreground p-3 rounded-lg shadow-lg text-center z-30 animate-bubble-bob",
+                        "absolute bottom-1/2 translate-y-1/2 right-full mr-2 w-48 bg-card text-card-foreground p-3 rounded-lg shadow-lg text-center z-30 animate-bubble-bob",
                          isImpatient && "border-2 border-yellow-400"
                       )}
                     >
@@ -116,13 +116,13 @@ const CustomerArea: React.FC<CustomerAreaProps> = ({ customers, activeCustomerId
                     </div>
 
                     {/* Right Bubble: Requirements */}
-                    <div className="absolute bottom-24 left-full ml-4 w-40 bg-card text-card-foreground p-3 rounded-lg shadow-lg z-30">
+                    <div className="absolute bottom-1/2 translate-y-1/2 left-full ml-2 w-40 bg-card text-card-foreground p-2 rounded-lg shadow-lg z-30">
                         <div className="flex flex-col items-center justify-center h-full text-center">
-                            <p className="font-semibold mb-1 text-muted-foreground">요구사항</p>
-                            <p className="text-accent font-bold text-base mb-2">{activeCustomer.wants.type}</p>
-                             <div className="flex items-center gap-2">
-                                <TimerClock progress={(timer / maxTime) * 100} />
-                                <span className="text-sm text-muted-foreground font-semibold w-8">{timer}s</span>
+                            <p className="font-semibold mb-1 text-muted-foreground text-sm">요구사항</p>
+                            <p className="text-accent font-bold text-base mb-1">{activeCustomer.wants.type}</p>
+                             <div className="flex items-center gap-1">
+                                <TimerClock progress={(timer / maxTime) * 100} className="w-8 h-8"/>
+                                <span className="text-xs text-muted-foreground font-semibold w-8">{timer}s</span>
                             </div>
                         </div>
                         <div className="absolute w-0 h-0 border-y-8 border-y-transparent border-r-8 border-r-card top-1/2 -translate-y-1/2 right-full"></div>
