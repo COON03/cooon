@@ -604,6 +604,12 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
   }, [lives, gameState]);
 
   useEffect(() => {
+    if (isDayCleared && !isInteracting && gameState === 'playing') {
+      handleNextDay();
+    }
+  }, [isDayCleared, isInteracting, gameState, handleNextDay]);
+
+  useEffect(() => {
     if (isUpdatingInventory.current) {
         isUpdatingInventory.current = false;
         return;
@@ -716,11 +722,6 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
                     선택 초기화
                 </Button>
             </div>
-            {isDayCleared && day < MAX_DAYS && (
-              <Button onClick={handleNextDay} variant="secondary" size="lg" disabled={isInteracting}>
-                  목표 달성! 다음 날로
-              </Button>
-            )}
         </footer>
 
         <EndGameDialog 
