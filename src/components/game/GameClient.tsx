@@ -243,6 +243,8 @@ export default function GameClient() {
         setIsInteracting(false);
         return;
     }
+    
+    setLastServedCustomer(customer);
 
     const meetsReqs = weapon.type === customer.wants.type;
 
@@ -251,7 +253,6 @@ export default function GameClient() {
       const newGold = gold + salePrice;
       setGold(newGold);
       setInventory(inventory.filter(w => w.id !== weapon.id));
-      setLastServedCustomer(customer);
       playBellSound();
       toast({ title: "거래 성공!", description: `${weapon.name}을(를) ${salePrice}골드에 판매했습니다.` });
       
@@ -403,6 +404,8 @@ export default function GameClient() {
           if (newTimerValue <= 1) {
             if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
             playBellSound();
+            
+            setLastServedCustomer(activeCustomer);
             
             setIsInteracting(true);
             const message = getRandomDialogue(activeCustomer.timeoutDialogues, "기다리다 지쳤네. 다음에 오지.");
