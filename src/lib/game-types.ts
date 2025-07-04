@@ -23,6 +23,7 @@ export interface Customer {
   successDialogues: string[];
   failDialogues: string[];
   impatientDialogues: string[];
+  timeoutDialogues: string[];
 }
 
 export type SkillId = 'ADD_GOLD' | 'ADD_HEART' | 'TIMER_BOOST' | 'REDUCE_BAD_CUSTOMERS';

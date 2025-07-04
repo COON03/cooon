@@ -405,7 +405,8 @@ export default function GameClient() {
             playBellSound();
             
             setIsInteracting(true);
-            setDepartingInfo({ id: activeCustomer.id, message: "기다리다 지쳤네. 다음에 오지.", status: 'fail' });
+            const message = getRandomDialogue(activeCustomer.timeoutDialogues, "기다리다 지쳤네. 다음에 오지.");
+            setDepartingInfo({ id: activeCustomer.id, message, status: 'fail' });
 
             setTimeout(() => {
                 setLives(l => Math.max(0, l - 1));
