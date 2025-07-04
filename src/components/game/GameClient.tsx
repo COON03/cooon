@@ -49,7 +49,7 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
   const [departingInfo, setDepartingInfo] = useState<{ id: string; message: string; status: 'success' | 'fail' } | null>(null);
   const [isInteracting, setIsInteracting] = useState(false);
 
-  const [discoveredRecipes, setDiscoveredRecipes] = useState<Set<string>>(new Set(allRecipes.map(r => r.id)));
+  const [discoveredRecipes, setDiscoveredRecipes] = useState<Set<string>>(new Set());
   const [isRecipeBookOpen, setIsRecipeBookOpen] = useState(false);
   
   const [combinationPreview, setCombinationPreview] = useState<{
@@ -65,6 +65,7 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
   const [impatientDialogue, setImpatientDialogue] = useState<string | null>(null);
   const [isDayCleared, setIsDayCleared] = useState(false);
   const [lastServedCustomer, setLastServedCustomer] = useState<Customer | null>(null);
+  const [servedCustomersCount, setServedCustomersCount] = useState(0);
 
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
@@ -269,8 +270,9 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
     setGameState('playing');
     setWorkshopSlots([null, null, null]);
     setIsDayCleared(false);
-    setDiscoveredRecipes(new Set(allRecipes.map(r => r.id)));
+    setDiscoveredRecipes(new Set());
     setLastServedCustomer(null);
+    setServedCustomersCount(0);
     fetchCustomers();
   }, [fetchCustomers]);
 
@@ -344,6 +346,7 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
     setWorkshopSlots([null, null, null]);
 
     setTimeout(() => {
+        setServedCustomersCount(prev => prev + 1);
         setCustomers(c => c.slice(1));
         setDepartingInfo(null);
         setIsInteracting(false);
@@ -389,7 +392,9 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
 
         toast({ title: "희귀 무기 조합 성공!", description: `새로운 무기 '${finalWeapon.name}' (${finalWeapon.type})이(가) 탄생했습니다!` });
       
-        setDiscoveredRecipes(prev => new Set(prev).add(recipe.id));
+        if (!discoveredRecipes.has(recipe.id)) {
+            setDiscoveredRecipes(prev => new Set(prev).add(recipe.id));
+        }
         setWorkshopSlots([finalWeapon, null, null]);
     } else {
       toast({ variant: "destructive", title: "조합 불가", description: "알 수 없는 조합입니다. 다른 무기를 선택해주세요." });
@@ -490,6 +495,7 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
             setTimeout(() => {
                 setLives(l => Math.max(0, l - 1));
                 toast({ variant: "destructive", title: "시간 초과!", description: `손님이 기다리다 지쳐 떠났습니다. 신뢰도가 1 하락합니다.` });
+                setServedCustomersCount(prev => prev + 1);
                 setCustomers(c => c.slice(1));
                 setDepartingInfo(null);
                 setIsInteracting(false);
@@ -595,7 +601,15 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
             </Button>
         </div>
 
-        <Header day={day} maxDays={MAX_DAYS} gold={gold} targetGold={currentTargetGold} lives={lives} maxLives={maxLives} />
+        <Header 
+          day={day} 
+          maxDays={MAX_DAYS} 
+          gold={gold} 
+          targetGold={currentTargetGold} 
+          lives={lives} 
+          maxLives={maxLives} 
+          servedCustomersCount={servedCustomersCount}
+        />
         
         <main className="flex-grow grid grid-cols-1 md:grid-cols-3 gap-6 mt-2 overflow-hidden">
             <div className="md:col-span-2 relative overflow-hidden rounded-lg">
