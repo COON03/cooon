@@ -17,7 +17,7 @@ import { Card } from '../ui/card';
 import PassiveSkillDialog from './PassiveSkillDialog';
 import { allSkills } from '@/lib/skill-data';
 
-const DAILY_TARGETS = [0, 390, 520, 650, 900, 1170, 1550, 1940]; // Day 0 is unused
+const DAILY_TARGETS = [0, 400, 500, 700, 900, 1200, 1600, 1900]; // Day 0 is unused
 const MAX_DAYS = 7;
 const INITIAL_LIVES = 3;
 const CUSTOMER_TIMER_DEFAULT = 30;
