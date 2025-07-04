@@ -249,7 +249,7 @@ export default function GameClient() {
     const meetsReqs = weapon.type === customer.wants.type;
 
     if (meetsReqs) {
-      const salePrice = Math.floor(weapon.price * customer.offerMultiplier);
+      const salePrice = weapon.price;
       const newGold = gold + salePrice;
       setGold(newGold);
       setInventory(inventory.filter(w => w.id !== weapon.id));
