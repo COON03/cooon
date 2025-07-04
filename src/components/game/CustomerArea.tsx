@@ -105,7 +105,7 @@ const CustomerArea: React.FC<CustomerAreaProps> = ({ customers, activeCustomerId
                     {/* Left Bubble: Unique / Impatient Dialogue */}
                     <div
                       className={cn(
-                        "absolute bottom-full right-1/2 mb-8 mr-12 w-44 bg-card text-card-foreground p-3 rounded-lg shadow-lg text-center z-30 animate-bubble-bob",
+                        "absolute bottom-full right-1/2 mb-2 mr-12 w-44 bg-card text-card-foreground p-3 rounded-lg shadow-lg text-center z-30 animate-bubble-bob",
                          isImpatient && "border-2 border-yellow-400"
                       )}
                     >
@@ -118,10 +118,10 @@ const CustomerArea: React.FC<CustomerAreaProps> = ({ customers, activeCustomerId
                     </div>
 
                     {/* Right Bubble: Requirements */}
-                    <div className="absolute bottom-full left-1/2 mb-2 ml-12 w-44 bg-card text-card-foreground p-3 rounded-lg shadow-lg z-30">
+                    <div className="absolute bottom-full left-1/2 mb-2 ml-12 w-40 bg-card text-card-foreground p-3 rounded-lg shadow-lg z-30">
                         <div className="flex flex-col items-center justify-center h-full text-center">
-                            <p className="font-semibold mb-2 text-muted-foreground">요구사항</p>
-                            <p className="text-accent font-bold text-lg mb-3">{activeCustomer.wants.type}</p>
+                            <p className="font-semibold mb-1 text-muted-foreground">요구사항</p>
+                            <p className="text-accent font-bold text-base mb-2">{activeCustomer.wants.type}</p>
                              <div className="flex items-center gap-2">
                                 <TimerClock progress={(timer / maxTime) * 100} />
                                 <span className="text-sm text-muted-foreground font-semibold w-8">{timer}s</span>
