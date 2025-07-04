@@ -185,7 +185,7 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
         potentialPool.push(rapierCustomer);
       }
     } else {
-        potentialPool = [...normalCustomers];
+        potentialPool = [...normalCustomers, ...specialCustomers];
         if (normalCustomers.length > 0) {
           const difficultCustomers = normalCustomers.filter(c => c.personality !== 'normal' || ['Scythe', 'Magic Staff', 'Chain', 'Rapier', 'Whip', 'Boomerang'].includes(c.wants.type));
           if (difficultCustomers.length > 0) {
@@ -204,23 +204,6 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
       for (let i = 0; i < numCustomers; i++) {
         todaysCustomers.push(potentialPool[Math.floor(Math.random() * potentialPool.length)]);
       }
-    }
-
-    // From day 5, ensure at least one special customer is placed in the middle of the queue.
-    if (day >= 5 && specialCustomers.length > 0 && todaysCustomers.length > 0) {
-        if (!todaysCustomers.some(c => c.personality === 'special')) {
-          const randomSpecialCustomer = specialCustomers[Math.floor(Math.random() * specialCustomers.length)];
-          
-          // Place the special customer somewhere in the middle half of the day's queue
-          const queueLength = todaysCustomers.length;
-          // e.g. for 20 customers, from index 5 to 14.
-          const startRange = Math.floor(queueLength * 0.25);
-          const range = Math.floor(queueLength * 0.5);
-          const insertionIndex = startRange + Math.floor(Math.random() * range);
-
-          // Replace a customer at that index.
-          todaysCustomers[insertionIndex] = randomSpecialCustomer;
-        }
     }
     
     setCustomers(c => {
@@ -743,3 +726,5 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
     </div>
   );
 }
+
+    
