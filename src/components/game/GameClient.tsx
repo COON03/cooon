@@ -11,7 +11,7 @@ import RecipeBook from './RecipeBook';
 import { findRecipe, allRecipes, type Recipe } from '@/lib/recipe-data';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowRight, Book } from 'lucide-react';
+import { ArrowRight, Book, Home } from 'lucide-react';
 import { WeaponIcon } from './WeaponIcon';
 import { Card } from '../ui/card';
 import PassiveSkillDialog from './PassiveSkillDialog';
@@ -27,7 +27,12 @@ const getRandomDialogue = (dialogues: string[] | undefined, defaultMessage: stri
   return dialogues[Math.floor(Math.random() * dialogues.length)];
 };
 
-export default function GameClient() {
+interface GameClientProps {
+  onReturnToTitle: () => void;
+  onGameWon: () => void;
+}
+
+export default function GameClient({ onReturnToTitle, onGameWon }: GameClientProps) {
   const [day, setDay] = useState(1);
   const [gold, setGold] = useState(100);
   const [inventory, setInventory] = useState<Weapon[]>([]);
@@ -176,6 +181,7 @@ export default function GameClient() {
 
     if (day >= MAX_DAYS) {
       setGameState('won');
+      onGameWon();
       return;
     }
     
@@ -184,7 +190,7 @@ export default function GameClient() {
     setAvailableSkills(shuffledSkills.slice(0, 3));
     setIsSkillSelectionOpen(true);
 
-  }, [day, gold, currentTargetGold]);
+  }, [day, gold, currentTargetGold, onGameWon]);
 
   const handleSelectSkill = useCallback((skill: PassiveSkill) => {
     setIsSkillSelectionOpen(false);
@@ -498,15 +504,26 @@ export default function GameClient() {
 
   return (
     <div className="flex flex-col h-screen bg-background text-foreground font-body p-4 md:p-6 lg:p-8 overflow-hidden">
-        <Button 
-            variant="outline" 
-            size="icon" 
-            className="absolute top-6 left-6 z-50 h-12 w-12 rounded-full shadow-lg bg-card hover:bg-card/80"
-            onClick={() => setIsRecipeBookOpen(true)}
-        >
-            <Book className="w-6 h-6" />
-            <span className="sr-only">무기 도감 열기</span>
-        </Button>
+        <div className="absolute top-6 left-6 z-50 flex items-center gap-2">
+            <Button 
+                variant="outline" 
+                size="icon" 
+                className="h-12 w-12 rounded-full shadow-lg bg-card hover:bg-card/80"
+                onClick={onReturnToTitle}
+            >
+                <Home className="w-6 h-6" />
+                <span className="sr-only">타이틀로</span>
+            </Button>
+            <Button 
+                variant="outline" 
+                size="icon" 
+                className="h-12 w-12 rounded-full shadow-lg bg-card hover:bg-card/80"
+                onClick={() => setIsRecipeBookOpen(true)}
+            >
+                <Book className="w-6 h-6" />
+                <span className="sr-only">무기 도감 열기</span>
+            </Button>
+        </div>
 
         <Header day={day} maxDays={MAX_DAYS} gold={gold} targetGold={currentTargetGold} lives={lives} maxLives={maxLives} />
         
