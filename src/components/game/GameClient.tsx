@@ -205,12 +205,14 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
         todaysCustomers[insertionIndex] = randomSpecialCustomer;
     }
     
-    setCustomers(c => [...c, ...todaysCustomers.map(cust => ({...cust, id: `${cust.id}_${Math.random()}`}))]);
+    setCustomers(c => {
+      if (todaysCustomers.length > 0 && c.length === 0) {
+        playBellSound();
+      }
+      return [...c, ...todaysCustomers.map(cust => ({...cust, id: `${cust.id}_${Math.random()}`}))];
+    });
 
-    if (todaysCustomers.length > 0 && customers.length === 0) {
-      playBellSound();
-    }
-  }, [day, playBellSound, badCustomerRate, customers.length]);
+  }, [day, playBellSound, badCustomerRate]);
   
   const startNewDay = useCallback((startingGold: number) => {
     const nextDay = day + 1;
@@ -562,20 +564,19 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
   }, [activeCustomer, gameState, isInteracting, timerBonus, playBellSound, playTickSound, toast, isDayCleared, dayPenalty]);
 
   useEffect(() => {
-    const ranOutOfCustomers = gameStarted && customers.length === 0 && gameState === 'playing' && day <= MAX_DAYS && !isInteracting;
-    const metGoal = isDayCleared && !isInteracting && gameState === 'playing';
-
-    if (metGoal && day < MAX_DAYS) {
-      const timer = setTimeout(() => {
-        handleNextDay();
-      }, 200);
-      return () => clearTimeout(timer);
+    // This effect manages the customer queue when the game is active.
+    
+    // Do nothing if the game is not playing, a transaction is happening, or the day's goal is met.
+    if (gameState !== 'playing' || isInteracting || isDayCleared) {
+      return;
     }
 
-    if (ranOutOfCustomers && !metGoal) {
+    // Fetch more customers if the queue is running low to ensure a continuous flow.
+    const shouldFetchMoreCustomers = gameStarted && customers.length < 5;
+    if (shouldFetchMoreCustomers) {
       fetchCustomers();
     }
-  }, [customers.length, gameStarted, gameState, day, isInteracting, handleNextDay, isDayCleared, fetchCustomers]);
+  }, [customers.length, gameStarted, gameState, isInteracting, isDayCleared, fetchCustomers]);
 
   useEffect(() => {
     if (lives <= 0 && gameState === 'playing') {
