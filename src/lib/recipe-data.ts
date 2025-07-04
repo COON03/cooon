@@ -69,19 +69,14 @@ export const allRecipes: Recipe[] = [
     },
   },
   {
-    id: 'recipe_random_axe_axe',
+    id: 'recipe_chain',
     inputs: ['Axe', 'Axe'],
     output: { 
-      type: 'Claw', 
-      name: '강철 클로 또는 가시 사슬',
-      description: '두 도끼를 합치면, 때로는 날카로운 클로가, 때로는 육중한 사슬이 됩니다.',
+      type: 'Chain', 
+      name: '가시 사슬',
+      description: '두 도끼의 육중함을 합쳐, 적을 속박하는 가시 사슬이 되었습니다.',
       multiplier: 1.8
     },
-    isRandom: true,
-    randomOutputs: [
-        { type: 'Claw', name: '강철 클로', multiplier: 1.8 },
-        { type: 'Chain', name: '가시 사슬', multiplier: 1.8 }
-    ]
   }
 ];
 
