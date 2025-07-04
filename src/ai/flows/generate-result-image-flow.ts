@@ -33,7 +33,7 @@ const generateResultImageFlow = ai.defineFlow(
     inputSchema: GenerateResultImageInputSchema,
     outputSchema: GenerateResultImageOutputSchema,
   },
-  async (input) => {
+  async ({ gold, day, customerSprite, customerName }) => {
     const { media } = await ai.generate({
       model: 'googleai/gemini-2.0-flash-preview-image-generation',
       prompt: `Generate a pixel art game result screen for a game called "7일의 상인".
@@ -41,11 +41,11 @@ const generateResultImageFlow = ai.defineFlow(
       The image should be a final score screen.
       It must contain the following text elements, written in a clear pixel font:
       - Title: "모험 종료" (Adventure Over)
-      - Final Gold: "{{gold}} G"
-      - Reached Day: "제 {{day}}일"
-      - Last Customer: "{{customerName}}"
+      - Final Gold: "${gold} G"
+      - Reached Day: "제 ${day}일"
+      - Last Customer: "${customerName}"
 
-      The screen must also feature a detailed pixel art depiction of the last customer. The customer is a {{customerSprite}}.
+      The screen must also feature a detailed pixel art depiction of the last customer. The customer is a ${customerSprite}.
       The overall tone should be a bit melancholic but rewarding.
       The background should be the interior of a dimly lit, rustic medieval weapon shop.
       Do not include any buttons or UI elements other than the text mentioned above.
