@@ -39,7 +39,7 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [gameState, setGameState] = useState<'playing' | 'won' | 'lost'>('playing');
   
-  const [workshopSlots, setWorkshopSlots] = useState<(Weapon | null)[]>([null, null]);
+  const [workshopSlots, setWorkshopSlots] = useState<(Weapon | null)[]>([null, null, null]);
 
   const [lives, setLives] = useState(INITIAL_LIVES);
   const [maxLives, setMaxLives] = useState(INITIAL_LIVES);
@@ -77,7 +77,7 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
   const currentTargetGold = DAILY_TARGETS[day] || DAILY_TARGETS[MAX_DAYS];
 
   const sortedInventory = React.useMemo(() => {
-    const weaponTypeSortOrder: WeaponType[] = ['Sword', 'Axe', 'Bow', 'Rapier', 'Scythe', 'Magic Staff', 'Whip', 'Boomerang', 'Chain'];
+    const weaponTypeSortOrder: WeaponType[] = ['Sword', 'Axe', 'Bow', 'Enhanced Sword', 'Enhanced Axe', 'Enhanced Bow', 'Rapier', 'Scythe', 'Magic Staff', 'Whip', 'Boomerang', 'Chain'];
     return [...inventory].sort((a, b) => {
         const typeAIndex = weaponTypeSortOrder.indexOf(a.type);
         const typeBIndex = weaponTypeSortOrder.indexOf(b.type);
@@ -139,14 +139,13 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
     const customersPerDay = [0, 10, 13, 16, 20, 24, 27, 30]; 
     const numCustomers = customersPerDay[day] || 30;
 
-    const unlockedCustomers = allCustomers.filter((_, index) => {
-        const unlockedCount = Math.min(allCustomers.length, 2 + Math.floor(day * 2));
-        return index < unlockedCount;
-    });
-    
-    let potentialPool = [...unlockedCustomers];
-    if (unlockedCustomers.length > 0) {
-      const difficultCustomers = unlockedCustomers.filter(c => c.personality !== 'normal' || ['Scythe', 'Magic Staff', 'Chain', 'Rapier', 'Whip', 'Boomerang'].includes(c.wants.type));
+    const availableCustomers = allCustomers.filter(c => !c.minDay || c.minDay <= day);
+    const specialCustomers = availableCustomers.filter(c => c.personality === 'special');
+    const normalCustomers = availableCustomers.filter(c => c.personality !== 'special');
+
+    let potentialPool = [...normalCustomers];
+    if (normalCustomers.length > 0) {
+      const difficultCustomers = normalCustomers.filter(c => c.personality !== 'normal' || ['Scythe', 'Magic Staff', 'Chain', 'Rapier', 'Whip', 'Boomerang'].includes(c.wants.type));
       if (difficultCustomers.length > 0) {
         const difficultyMultiplier = day >= 4 ? 1.5 : 1.0;
         const difficultCustomersToAdd = Math.max(1, Math.floor((day - 1) * badCustomerRate * difficultyMultiplier));
@@ -156,13 +155,16 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
       }
     }
 
-    const shuffled = [...potentialPool].sort(() => 0.5 - Math.random());
-
     const todaysCustomers: Customer[] = [];
-    if (shuffled.length > 0) {
-        for (let i = 0; i < numCustomers; i++) {
-            todaysCustomers.push(shuffled[i % shuffled.length]);
+    if (potentialPool.length > 0) {
+      for (let i = 0; i < numCustomers; i++) {
+        // Low chance for a special customer to appear from day 5
+        if (day >= 5 && specialCustomers.length > 0 && Math.random() < 0.15) {
+          todaysCustomers.push(specialCustomers[Math.floor(Math.random() * specialCustomers.length)]);
+        } else {
+          todaysCustomers.push(potentialPool[Math.floor(Math.random() * potentialPool.length)]);
         }
+      }
     }
     
     setCustomers(todaysCustomers.map(c => ({...c, id: `${c.id}_${Math.random()}`})));
@@ -182,9 +184,14 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
         description: "새로운 하루가 시작되었습니다." 
     });
     
-    setWorkshopSlots([null, null]);
+    setWorkshopSlots([null, null, null]);
     setIsDayCleared(false);
-    fetchCustomers();
+    
+    // Using a timeout to ensure state updates before fetching new customers.
+    setTimeout(() => {
+        fetchCustomers();
+    }, 100);
+
   }, [day, toast, fetchCustomers]);
 
   const handleNextDay = useCallback(() => {
@@ -250,7 +257,7 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
     setBadCustomerRate(1.0);
     setInventory([...initialWeapons]);
     setGameState('playing');
-    setWorkshopSlots([null, null]);
+    setWorkshopSlots([null, null, null]);
     setIsDayCleared(false);
     setDiscoveredRecipes(new Set(allRecipes.map(r => r.id)));
     setLastServedCustomer(null);
@@ -273,13 +280,15 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
     setLastServedCustomer(customer);
 
     const meetsReqs = weapon.type === customer.wants.type;
+    const bonus = customer.rewardBonus;
 
     if (meetsReqs) {
       const salePrice = weapon.price;
       let totalGain = salePrice;
       
       const wasNotImpatient = impatientDialogue === null;
-      const isTipping = wasNotImpatient && Math.random() < 0.07;
+      const tipChance = 0.07 + (bonus?.type === 'tip_chance' ? 0.43 : 0);
+      const isTipping = wasNotImpatient && Math.random() < tipChance;
       let tipAmount = 0;
 
       if (isTipping) {
@@ -292,6 +301,11 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
       setInventory(inventory.filter(w => w.id !== weapon.id));
       playBellSound();
       
+      if (bonus?.type === 'trust') {
+          setLives(l => Math.min(maxLives, l + 1));
+          toast({ title: "특별한 거래! ❤️", description: "거래에 만족한 손님이 신뢰도를 높여주었습니다!" });
+      }
+
       if(isTipping) {
         toast({ 
           title: "특별한 거래! 💰", 
@@ -317,7 +331,7 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
       const message = getRandomDialogue(customer.failDialogues, "흠, 이건 내가 찾던 게 아니야.");
       setDepartingInfo({ id: customer.id, message, status: 'fail' });
     }
-    setWorkshopSlots([null, null]);
+    setWorkshopSlots([null, null, null]);
 
     setTimeout(() => {
         setCustomers(c => c.slice(1));
@@ -327,50 +341,52 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
   };
   
   const handleCombine = () => {
-    const [w1, w2] = workshopSlots;
-    if (!w1 || !w2) {
-        toast({ variant: "destructive", title: "조합 실패", description: "무기 2개를 선택해주세요." });
-        return;
+    const selectedItems = workshopSlots.filter(Boolean) as Weapon[];
+    if (selectedItems.length < 2) {
+      toast({ variant: "destructive", title: "조합 실패", description: "무기를 2개 이상 선택해주세요." });
+      return;
     }
-
-    const recipe = findRecipe(w1.type, w2.type);
+    
+    const types = selectedItems.map(w => w.type);
+    const recipe = findRecipe(types);
     
     if (recipe) {
-      const lastItemIndex = inventory.findIndex(w => w.id === w2.id);
-      if (lastItemIndex === -1) return;
+        const selectedIds = selectedItems.map(w => w.id);
+        const lastItemIndex = inventory.findIndex(w => w.id === selectedIds[selectedIds.length - 1]);
+        if (lastItemIndex === -1) return;
 
-      let inventoryAfterRemoval = inventory.filter(w => w.id !== w1.id && w.id !== w2.id);
+        let inventoryAfterRemoval = inventory.filter(w => !selectedIds.includes(w.id));
       
-      let newWeaponData: { name: string, type: WeaponType, multiplier: number };
-      const basePrice = w1.price + w2.price;
+        let newWeaponData: { name: string, type: WeaponType, multiplier: number };
+        const basePrice = selectedItems.reduce((sum, item) => sum + item.price, 0);
 
-      if (recipe.isRandom && recipe.randomOutputs) {
-          newWeaponData = recipe.randomOutputs[Math.floor(Math.random() * recipe.randomOutputs.length)];
-      } else {
-          newWeaponData = recipe.output;
-      }
+        if (recipe.isRandom && recipe.randomOutputs) {
+            newWeaponData = recipe.randomOutputs[Math.floor(Math.random() * recipe.randomOutputs.length)];
+        } else {
+            newWeaponData = recipe.output;
+        }
       
-      const finalWeapon: Weapon = { 
-        id: `w_rare_${Date.now()}`, 
-        name: newWeaponData.name, 
-        type: newWeaponData.type, 
-        price: Math.floor(basePrice * newWeaponData.multiplier) 
-      };
+        const finalWeapon: Weapon = { 
+            id: `w_rare_${Date.now()}`, 
+            name: newWeaponData.name, 
+            type: newWeaponData.type, 
+            price: Math.floor(basePrice * newWeaponData.multiplier) 
+        };
 
-      inventoryAfterRemoval.splice(lastItemIndex, 0, finalWeapon);
-      setInventory(inventoryAfterRemoval);
+        inventoryAfterRemoval.splice(lastItemIndex, 0, finalWeapon);
+        setInventory(inventoryAfterRemoval);
 
-      toast({ title: "희귀 무기 조합 성공!", description: `새로운 무기 '${finalWeapon.name}' (${finalWeapon.type})이(가) 탄생했습니다!` });
+        toast({ title: "희귀 무기 조합 성공!", description: `새로운 무기 '${finalWeapon.name}' (${finalWeapon.type})이(가) 탄생했습니다!` });
       
-      setDiscoveredRecipes(prev => new Set(prev).add(recipe.id));
-      setWorkshopSlots([finalWeapon, null]);
+        setDiscoveredRecipes(prev => new Set(prev).add(recipe.id));
+        setWorkshopSlots([finalWeapon, null, null]);
     } else {
       toast({ variant: "destructive", title: "조합 불가", description: "알 수 없는 조합입니다. 다른 무기를 선택해주세요." });
     }
   };
 
   const handleClearWorkshop = () => {
-    setWorkshopSlots([null, null]);
+    setWorkshopSlots([null, null, null]);
   };
   
   const handleSelectInventory = (id: string) => {
@@ -390,7 +406,7 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
             newSlots[emptySlotIndex] = clickedItem;
             setWorkshopSlots(newSlots);
         } else {
-            toast({ variant: "destructive", title: "조합 슬롯이 꽉 찼습니다", description: "최대 2개의 무기만 선택할 수 있습니다." });
+            toast({ variant: "destructive", title: "조합 슬롯이 꽉 찼습니다", description: "최대 3개의 무기만 선택할 수 있습니다." });
         }
     }
   };
@@ -403,9 +419,10 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
   }, [gameStarted, resetGame]);
 
   useEffect(() => {
-    const [w1, w2] = workshopSlots;
-    if (w1 && w2) {
-      const recipe = findRecipe(w1.type, w2.type);
+    const selectedItems = workshopSlots.filter(Boolean) as Weapon[];
+    if (selectedItems.length >= 2) {
+      const types = selectedItems.map(w => w.type);
+      const recipe = findRecipe(types);
       if (recipe) {
         if (recipe.isRandom) {
           setCombinationPreview({ name: '랜덤 무기', type: 'Random' });
@@ -599,7 +616,7 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
                 <div className="flex items-center gap-2">
                     <Button 
                         onClick={handleCombine} 
-                        disabled={isInteracting || !combinationPreview || isDayCleared} 
+                        disabled={isInteracting || !combinationPreview || isDayCleared || selectedCount < 2} 
                         variant="secondary" 
                         size="lg"
                     >

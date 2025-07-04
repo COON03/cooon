@@ -16,6 +16,17 @@ export const SwordIcon = ({ className }: IconProps) => (
   </svg>
 );
 
+export const EnhancedSwordIcon = ({ className }: IconProps) => (
+    <svg width="24" height="24" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style={iconStyle} className={className}>
+        <path d="M8 1L7 2V7L3 11V13H5V15H7V13H9V15H11V13H13V11L9 7V2L8 1Z" fill="#F7B500" />
+        <path d="M8 2L9 3V7L8 8L7 7V3L8 2Z" fill="white" />
+        <path d="M7 8H9L13 12H11L9 10H7L5 12H3L7 8Z" fill="#A47E00" />
+        <path d="M7 13H9V15H7V13Z" fill="#8C0000" />
+        <path d="M8 0L9 1L8 2L7 1L8 0Z" fill="white" />
+    </svg>
+);
+
+
 export const AxeIcon = ({ className }: IconProps) => (
   <svg width="24" height="24" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style={iconStyle} className={className}>
     <path d="M6 6H10V15H6V6Z" fill="#A0522D" />
@@ -26,12 +37,34 @@ export const AxeIcon = ({ className }: IconProps) => (
   </svg>
 );
 
+export const EnhancedAxeIcon = ({ className }: IconProps) => (
+    <svg width="24" height="24" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style={iconStyle} className={className}>
+        <path d="M6 6H10V15H6V6Z" fill="#A0522D"/>
+        <path d="M7 7H9V14H7V7Z" fill="#804000"/>
+        <path d="M4 1H12V7H4V1Z" fill="#F7B500"/>
+        <path d="M5 2H11V6H5V2Z" fill="#FFE8A3"/>
+        <path d="M4 1H5V2H4V1ZM11 1H12V2H11V1ZM4 6H5V7H4V6ZM11 6H12V7H11V6Z" fill="#A47E00"/>
+        <path d="M2 3L3 4L2 5L1 4L2 3Z" fill="white" />
+        <path d="M14 3L15 4L14 5L13 4L14 3Z" fill="white" />
+    </svg>
+);
+
+
 export const BowIcon = ({ className }: IconProps) => (
   <svg width="24" height="24" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style={iconStyle} className={className}>
     <path d="M8 1C4 1 2 5 2 8C2 11 4 15 8 15V13C5 13 4 11 4 8C4 5 5 3 8 3H12L14 1H8Z" fill="#A0522D" />
     <path d="M8 2C6 2 5 4 5 8C5 12 6 14 8 14V12C7 12 6 10 6 8C6 6 7 4 8 4H11L13 2H8Z" fill="#804000" />
     <path d="M2 7H14V9H2V7Z" fill="#C0C0C0" />
   </svg>
+);
+
+export const EnhancedBowIcon = ({ className }: IconProps) => (
+    <svg width="24" height="24" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style={iconStyle} className={className}>
+        <path d="M8 1C4 1 2 5 2 8C2 11 4 15 8 15V13C5 13 4 11 4 8C4 5 5 3 8 3H12L14 1H8Z" fill="#F7B500"/>
+        <path d="M8 2C6 2 5 4 5 8C5 12 6 14 8 14V12C7 12 6 10 6 8C6 6 7 4 8 4H11L13 2H8Z" fill="#A47E00"/>
+        <path d="M2 7H14V9H2V7Z" fill="#FFE8A3"/>
+        <path d="M14 7L15 8L14 9L13 8L14 7Z" fill="white" />
+    </svg>
 );
 
 export const ScytheIcon = ({ className }: IconProps) => (

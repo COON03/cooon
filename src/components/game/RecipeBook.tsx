@@ -5,7 +5,8 @@ import { allRecipes, Recipe } from '@/lib/recipe-data';
 import type { WeaponType } from '@/lib/game-types';
 import {
   SwordIcon, AxeIcon, BowIcon, ScytheIcon, WhipIcon,
-  MagicStaffIcon, ChainIcon, RapierIcon, BoomerangIcon
+  MagicStaffIcon, ChainIcon, RapierIcon, BoomerangIcon,
+  EnhancedSwordIcon, EnhancedAxeIcon, EnhancedBowIcon
 } from '@/lib/icons';
 import { Plus, Equal } from 'lucide-react';
 import { Card } from '../ui/card';
@@ -22,6 +23,9 @@ const WeaponIcon = ({ type }: { type: WeaponType }) => {
     case 'Chain': return <ChainIcon className={className} />;
     case 'Rapier': return <RapierIcon className={className} />;
     case 'Boomerang': return <BoomerangIcon className={className} />;
+    case 'Enhanced Sword': return <EnhancedSwordIcon className={className} />;
+    case 'Enhanced Axe': return <EnhancedAxeIcon className={className} />;
+    case 'Enhanced Bow': return <EnhancedBowIcon className={className} />;
     default: return null;
   }
 };
@@ -37,9 +41,12 @@ const RecipeEntry = ({ recipe, discovered }: { recipe: Recipe, discovered: boole
     return (
         <Card className="flex items-center gap-4 p-4">
             <div className="flex items-center gap-2">
-                <WeaponIcon type={recipe.inputs[0]} />
-                <Plus className="w-6 h-6 text-muted-foreground" />
-                <WeaponIcon type={recipe.inputs[1]} />
+                {recipe.inputs.map((input, index) => (
+                    <React.Fragment key={index}>
+                        <WeaponIcon type={input} />
+                        {index < recipe.inputs.length - 1 && <Plus className="w-6 h-6 text-muted-foreground" />}
+                    </React.Fragment>
+                ))}
             </div>
             <Equal className="w-8 h-8 text-primary shrink-0" />
             <div className="flex-1 flex items-center gap-4">

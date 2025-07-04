@@ -2,7 +2,7 @@ import type { WeaponType } from './game-types';
 
 export interface Recipe {
   id: string;
-  inputs: [WeaponType, WeaponType];
+  inputs: WeaponType[];
   output: {
     type: WeaponType;
     name: string;
@@ -77,10 +77,41 @@ export const allRecipes: Recipe[] = [
       description: '두 도끼의 육중함을 합쳐, 적을 속박하는 가시 사슬이 되었습니다.',
       multiplier: 1.8
     },
+  },
+  {
+    id: 'recipe_enhanced_sword',
+    inputs: ['Sword', 'Sword', 'Sword'],
+    output: {
+        type: 'Enhanced Sword',
+        name: '대가의 검',
+        description: '세 자루의 검을 하나로 합쳐, 비교할 수 없는 예리함을 지녔습니다.',
+        multiplier: 3.5
+    }
+  },
+  {
+    id: 'recipe_enhanced_axe',
+    inputs: ['Axe', 'Axe', 'Axe'],
+    output: {
+        type: 'Enhanced Axe',
+        name: '파괴자의 도끼',
+        description: '세 자루의 도끼를 하나로 합쳐, 모든 것을 부술 듯한 파괴력을 가집니다.',
+        multiplier: 3.2
+    }
+  },
+  {
+    id: 'recipe_enhanced_bow',
+    inputs: ['Bow', 'Bow', 'Bow'],
+    output: {
+        type: 'Enhanced Bow',
+        name: '천리안의 활',
+        description: '세 개의 활을 하나로 합쳐, 시야 끝의 적도 꿰뚫을 수 있습니다.',
+        multiplier: 3.0
+    }
   }
 ];
 
-export const findRecipe = (type1: WeaponType, type2: WeaponType): Recipe | undefined => {
-    const sortedTypes = [type1, type2].sort().join(',');
-    return allRecipes.find(r => r.inputs.sort().join(',') === sortedTypes);
+export const findRecipe = (types: WeaponType[]): Recipe | undefined => {
+    const sortedTypes = [...types].sort().join(',');
+    if (sortedTypes.length === 0) return undefined;
+    return allRecipes.find(r => [...r.inputs].sort().join(',') === sortedTypes);
 };

@@ -113,6 +113,32 @@ export const allCustomers: Customer[] = [
         impatientDialogues: ["내 시간을 낭비하지 말게.", "언제까지 기다려야 하는 건가?", "이 가게, 소문보다 별로군."],
         timeoutDialogues: coldTimeoutDialogues
     },
+    { 
+        id: 'c_special1', name: '기사단장', sprite: 'Knight', requestText: "왕국 최고의 검을 가져오게.", wants: { type: 'Enhanced Sword' }, offerMultiplier: 1, patience: 25, personality: 'special',
+        successDialogues: ["이 무기라면 내 기사들을 맡겨도 되겠군."],
+        failDialogues: ["이런 걸로 왕국을 지킬 수 있겠나.", "실망스럽군."],
+        impatientDialogues: ["시간이 없네. 서두르게.", "왕국이 기다리고 있다."],
+        timeoutDialogues: knightTimeoutDialogues,
+        minDay: 5,
+    },
+    {
+        id: 'c_special2', name: '전설의 사냥꾼', sprite: 'Villager', requestText: "최고의 활이 필요하네. 마지막 사냥을 위해.", wants: { type: 'Enhanced Bow' }, offerMultiplier: 1, patience: 20, personality: 'special',
+        successDialogues: ["이 활... 마지막 사냥에 쓰기 딱이군."],
+        failDialogues: ["이걸로는 전설의 짐승을 상대할 수 없어.", "더 기다릴 수 없네."],
+        impatientDialogues: ["바람이 멈추기 전에...", "해는 지고 있네."],
+        timeoutDialogues: politeTimeoutDialogues,
+        minDay: 5,
+        rewardBonus: { type: 'tip_chance' }
+    },
+    { 
+        id: 'c_special3', name: '광전사 베르단', sprite: 'Rogue', requestText: "더 강한 도끼... 모든 걸 부술 도끼...!", wants: { type: 'Enhanced Axe' }, offerMultiplier: 1, patience: 15, personality: 'special',
+        successDialogues: ["좋아. 이 도끼로 모든 걸 박살내겠어."],
+        failDialogues: ["약하다! 이것론 부족해!", "크아아! 시간이 없다!"],
+        impatientDialogues: ["빨리! 더 빨리!", "피가 끓어오른다!"],
+        timeoutDialogues: cheerfulRudeTimeoutDialogues,
+        minDay: 5,
+        rewardBonus: { type: 'trust' }
+    },
 ];
 
 export const generateNewItem = (day: number, type: 'Sword' | 'Axe' | 'Bow'): Weapon => {
