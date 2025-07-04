@@ -314,7 +314,7 @@ export default function GameClient() {
       toast({ title: "희귀 무기 조합 성공!", description: `새로운 무기 '${finalWeapon.name}' (${finalWeapon.type})이(가) 탄생했습니다!` });
       
       setDiscoveredRecipes(prev => new Set(prev).add(recipe.id));
-      setWorkshopSlots([null, null]);
+      setWorkshopSlots([finalWeapon, null]);
     } else {
       toast({ variant: "destructive", title: "조합 불가", description: "알 수 없는 조합입니다. 다른 무기를 선택해주세요." });
     }
@@ -470,11 +470,15 @@ export default function GameClient() {
 
     const basicWeaponTypes: ('Sword' | 'Axe' | 'Bow')[] = ['Sword', 'Axe', 'Bow'];
     const itemsToAdd: Weapon[] = [];
+    const initialStockCount = 3;
 
     basicWeaponTypes.forEach(type => {
         const count = inventory.filter(w => w.type === type).length;
-        if (count < 2) {
-            itemsToAdd.push(generateNewItem(day, type));
+        if (count < initialStockCount) {
+            const itemsToCreate = initialStockCount - count;
+            for (let i = 0; i < itemsToCreate; i++) {
+                itemsToAdd.push(generateNewItem(day, type));
+            }
         }
     });
 
