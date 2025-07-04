@@ -82,7 +82,6 @@ const TitleScreen: React.FC<TitleScreenProps> = ({ onStartGame, hasWon }) => {
         <p className="text-2xl mb-10 text-muted-foreground">무기 가게 생존기</p>
         <div className="flex flex-col space-y-4">
           <Button onClick={onStartGame} size="lg" className="w-64">게임 시작</Button>
-          <Button variant="secondary" size="lg" className="w-64" disabled>이어하기</Button>
           <HowToPlayDialog />
         </div>
       </div>
