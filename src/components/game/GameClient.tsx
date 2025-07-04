@@ -77,7 +77,7 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
   const currentTargetGold = DAILY_TARGETS[day] || DAILY_TARGETS[MAX_DAYS];
 
   const sortedInventory = React.useMemo(() => {
-    const weaponTypeSortOrder: WeaponType[] = ['Sword', 'Enhanced Sword', 'Rapier', 'Bow', 'Enhanced Bow', 'Boomerang', 'Axe', 'Enhanced Axe', 'Chain', 'Magic Staff', 'Scythe', 'Whip'];
+    const weaponTypeSortOrder: WeaponType[] = ['Sword', 'Rapier', 'Enhanced Sword', 'Bow', 'Boomerang', 'Enhanced Bow', 'Axe', 'Chain', 'Enhanced Axe', 'Magic Staff', 'Scythe', 'Whip'];
     return [...inventory].sort((a, b) => {
         const typeAIndex = weaponTypeSortOrder.indexOf(a.type);
         const typeBIndex = weaponTypeSortOrder.indexOf(b.type);
@@ -352,8 +352,9 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
     
     if (recipe) {
         const selectedIds = selectedItems.map(w => w.id);
-        const lastItemIndex = inventory.findIndex(w => w.id === selectedIds[selectedIds.length - 1]);
-        if (lastItemIndex === -1) return;
+        const lastItem = selectedItems[selectedItems.length - 1];
+        const insertionIndex = inventory.findIndex(w => w.id === lastItem.id);
+        if (insertionIndex === -1) return;
 
         let inventoryAfterRemoval = inventory.filter(w => !selectedIds.includes(w.id));
       
@@ -373,7 +374,7 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
             price: Math.floor(basePrice * newWeaponData.multiplier) 
         };
 
-        inventoryAfterRemoval.splice(lastItemIndex, 0, finalWeapon);
+        inventoryAfterRemoval.splice(insertionIndex, 0, finalWeapon);
         setInventory(inventoryAfterRemoval);
 
         toast({ title: "희귀 무기 조합 성공!", description: `새로운 무기 '${finalWeapon.name}' (${finalWeapon.type})이(가) 탄생했습니다!` });
