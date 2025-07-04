@@ -17,7 +17,7 @@ import { Card } from '../ui/card';
 import PassiveSkillDialog from './PassiveSkillDialog';
 import { allSkills } from '@/lib/skill-data';
 
-const DAILY_TARGETS = [0, 675, 900, 1125, 1575, 2025, 2700, 3375]; // Day 0 is unused
+const DAILY_TARGETS = [0, 608, 810, 1013, 1418, 1823, 2430, 3038]; // Day 0 is unused
 const MAX_DAYS = 7;
 const INITIAL_LIVES = 3;
 const CUSTOMER_TIMER_DEFAULT = 30;
@@ -563,13 +563,17 @@ export default function GameClient({ onReturnToTitle, onGameWon }: GameClientPro
     const ranOutOfCustomers = gameStarted && customers.length === 0 && gameState === 'playing' && day <= MAX_DAYS && !isInteracting;
     const metGoal = isDayCleared && !isInteracting && gameState === 'playing';
 
-    if ((ranOutOfCustomers || metGoal) && day < MAX_DAYS) {
+    if (metGoal && day < MAX_DAYS) {
       const timer = setTimeout(() => {
         handleNextDay();
-      }, ranOutOfCustomers ? 1500 : 200);
+      }, 200);
       return () => clearTimeout(timer);
     }
-  }, [customers.length, gameStarted, gameState, day, isInteracting, handleNextDay, isDayCleared]);
+
+    if (ranOutOfCustomers && !metGoal) {
+      fetchCustomers();
+    }
+  }, [customers.length, gameStarted, gameState, day, isInteracting, handleNextDay, isDayCleared, fetchCustomers]);
 
   useEffect(() => {
     if (lives <= 0 && gameState === 'playing') {
